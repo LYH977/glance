@@ -8,17 +8,26 @@ import dash_table
 from app import app
 from dash.dependencies import Input, Output, State
 
+import task
+from celery.result import AsyncResult
+
 import base64
 import datetime
 import io
+import os
 import pandas as pd
+import redis
 
+redis_instance = redis.StrictRedis.from_url(os.environ['REDIS_URL'])
+task.update_data()
 layout = dbc.Jumbotron(
     [
+        html.Button('tony', id='testcelery'),
         html.H1("Glance", className="display-3"),
         html.P(
             "Watch the world with a glance",
             className="lead",
+            id='title'
         ),
         html.Hr(className="my-2"),
         html.P(
@@ -86,3 +95,14 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
             parse_contents(c, n, d) for c, n, d in
             zip(list_of_contents, list_of_names, list_of_dates)]
         return children
+
+@app.callback(Output('title', 'children'),
+              Input('testcelery', 'n_clicks'))
+
+def update_output(click):
+    if click is not None:
+        lala = redis_instance.hget(task.REDIS_HASH_NAME, task.REDIS_KEYS["DATE_UPDATED"] ).decode("utf-8")
+        print(lala)
+
+
+        return 'dd'

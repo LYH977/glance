@@ -8,7 +8,7 @@ from app import server
 
 from pages import homepage, single_view, carousel
 from layout.navbar import navbar
-from database import firebaseConfig
+
 
 app.layout = html.Div([
     navbar,
