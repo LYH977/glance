@@ -18,6 +18,12 @@ import os
 import pandas as pd
 import redis
 
+# pport = 'redis-12571.c1.ap-southeast-1-1.ec2.cloud.redislabs.com:12571'
+# redis_instance = redis.StrictRedis(
+#     host=pport,
+#     port=12571,
+#     password='EGXMBmAkHnhFTLYKGAUEGPdYwf0cZpDC'
+# )
 redis_instance = redis.StrictRedis.from_url(os.environ['REDIS_URL'])
 task.update_data()
 layout = dbc.Jumbotron(
@@ -49,7 +55,6 @@ layout = dbc.Jumbotron(
 
 def parse_contents(contents, filename, date):
     content_type, content_string = contents.split(',')
-
     decoded = base64.b64decode(content_string)
     try:
         if 'csv' in filename:
