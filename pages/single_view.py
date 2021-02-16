@@ -2,12 +2,14 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_daq as daq
-from app import app
-# from database import dbConfig
-from components import visualization
 from dash.dependencies import Input, Output, ALL, State, MATCH, ALLSMALLER
-import plotly.express as px
 from dash.exceptions import PreventUpdate
+
+from app import app
+
+from components import visualization, upload_modal
+import plotly.express as px
+# from database import dbConfig
 
 
 def set_slider_calendar(dataframe):
@@ -17,7 +19,7 @@ def set_slider_calendar(dataframe):
         calendar.append(value)
     return calendar
 
-
+upload_btn = upload_modal.modal
 data = visualization.data
 data2 = visualization.data2
 df_date = data['Date'].unique()
@@ -25,8 +27,6 @@ maxValue = df_date.shape[0] - 1
 
 layout = html.Div([
     dcc.Store(id='is-animating', data=False),
-    # dcc.Store(id='play-btn-record', data=0),
-    # dcc.Store(id='add-btn-record', data=0),
     dcc.Interval(
         id='interval',
         interval=200,
@@ -35,6 +35,7 @@ layout = html.Div([
         disabled=True
     ),
     html.Button('add visual', id='add-btn'),
+    upload_btn,
     html.Div(id='visual-container', children=[]),
     dcc.Slider(
         id='anim-slider',
