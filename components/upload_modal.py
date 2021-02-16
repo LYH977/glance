@@ -9,11 +9,11 @@ from dash.exceptions import PreventUpdate
 from app import app
 from utils.constant import FIGURE_TYPE
 import base64
-import datetime
 import io
-import os
 import pandas as pd
 
+dataset=[]
+parameter=[]
 modal = html.Div(
     [
         dbc.Button("Select File", id="open"),
@@ -34,75 +34,79 @@ modal = html.Div(
             ],
             id="modal",
             size="xl",
-            backdrop='static'
+            backdrop='static',
+
         ),
     ]
 )
+
+
+def parameter_option(name, id, multi = False):
+    return  \
+        dbc.FormGroup(
+                    [
+                        dbc.Label(name, className="mr-2"),
+                        dcc.Dropdown(
+                            style={'width': '100%'},
+                            id=id,
+                            options=[{"label": i, "value": i} for i in parameter],
+                            multi = multi
+                        ),
+                    ],
+                    # className="mr-3",
+                    style={'width': '50%'}
+        )
+
+
 def parse_contents(contents, filename, date):
     content_type, content_string = contents.split(',')
     decoded = base64.b64decode(content_string)
+    global dataset
+    global parameter
     try:
         if 'csv' in filename:
             # Assume that the user uploaded a CSV file
-            df = pd.read_csv(
+            dataset = pd.read_csv(
                 io.StringIO(decoded.decode('utf-8')))
         elif 'xls' in filename:
             # Assume that the user uploaded an excel file
-            df = pd.read_excel(io.BytesIO(decoded))
+            dataset = pd.read_excel(io.BytesIO(decoded))
     except Exception as e:
         print(e)
         return html.Div([
             'There was an error processing this file.'
         ])
-
+    parameter = dataset.columns
     return html.Div([
         html.H6(f'Filename: {filename}'),
         html.H6('Below are the first 5 rows.'),
 
         dash_table.DataTable(
-            data=df.head(5).to_dict('records'),
-            columns=[{'name': i, 'id': i} for i in df.columns]
+            data=dataset.head(5).to_dict('records'),
+            columns=[{'name': i, 'id': i} for i in dataset.columns]
         ),
         html.Br(),
         dbc.FormGroup(
             [
-                dbc.Label("Figure type", html_for="dropdown"),
+                dbc.Label("Visualization type", html_for="dropdown"),
                 dcc.Dropdown(
-                    id="figure-type",
+                    id="visual-type",
                     options=[{"label": i, "value": j} for i, j in zip(FIGURE_TYPE.keys(), FIGURE_TYPE.values())],
                 ),
             ]
         ),
         dbc.Form(
             [
-                dbc.FormGroup(
-                    [
-                        dbc.Label("Email", className="mr-2"),
-                        dcc.Dropdown(
-                            style={'width': '100%'},
-                            id="figure-type",
-                            options=[{"label": i, "value": j} for i, j in
-                                     zip(FIGURE_TYPE.keys(), FIGURE_TYPE.values())],
-                        ),                    ],
-                    # className="mr-3",
-                    style={'width': '50%'}
+                parameter_option('Latitude', 'latitude'),
+                parameter_option('Longitude', 'longitude'),
+                parameter_option('Size', 'size'),
+                parameter_option('Color', 'color'),
+                parameter_option('Animation Frame', 'anim_frame'),
+                parameter_option('Additional Message', 'message', True),
 
-                ),
-                dbc.FormGroup(
-                    [
-                        dbc.Label("Password", className="mr-2"),
-                        dcc.Dropdown(
-                            style={'width': '100%'},
-                            id="figure-type",
-                            options=[{"label": i, "value": j} for i, j in
-                                     zip(FIGURE_TYPE.keys(), FIGURE_TYPE.values())],
-                        ),                    ],
-                    # className="mr-3",
-                    style={'width': '50%'}
-                ),
             ],
             inline=True,
-            style={'background':'red'}
+            # style={'background':'red'}
         )
 
 

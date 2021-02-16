@@ -21,8 +21,9 @@ fig = px.scatter_mapbox(
     hover_name="Province/State",
     mapbox_style='dark', zoom=1,
     animation_frame="Date",
-    animation_group="Province/State",
+    # animation_group="Province/State",
     height=600,
+    hover_data=['Active','Confirmed']
     # custom_data=['Date']
 )
 
