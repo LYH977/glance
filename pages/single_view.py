@@ -71,13 +71,23 @@ def update_visual_container(add_clicks, deletable, div_children):
         input_id = 'No input yet'
     else:
         input_id = ctx.triggered[0]['prop_id'].split('.')[0]
-        print(ctx.triggered)
 
+    # if input_id == 'add-btn': # input from add button
+    #     new_child = html.Div(
+    #         style={'width': '50%', 'display': 'inline-block', 'outline': 'thin lightgrey solid', 'padding': 10, 'position':'relative'},
+    #         children=html.Div([
+    #             dcc.Graph(id={'type': 'visualization', 'index': add_clicks}, figure=visualization.fig),
+    #             html.Button('Delete', id={'type': 'dlt-btn', 'index': add_clicks}, style={'position':'absolute', 'top':0}),
+    #         ]),
+    #     )
+    #     print(div_children)
+    #     div_children.append(new_child)
+    #     return div_children
     if input_id == 'add-btn': # input from add button
         new_child = html.Div(
             style={'width': '50%', 'display': 'inline-block', 'outline': 'thin lightgrey solid', 'padding': 10, 'position':'relative'},
             children=html.Div([
-                dcc.Graph(id={'type': 'visualization', 'index': add_clicks}, figure=visualization.fig),
+                dcc.Graph(id={'type': 'visualization', 'index': add_clicks}, figure=visualization.create_scattermap(upload_modal.dataset, upload_modal.parameter)),
                 html.Button('Delete', id={'type': 'dlt-btn', 'index': add_clicks}, style={'position':'absolute', 'top':0}),
             ]),
         )

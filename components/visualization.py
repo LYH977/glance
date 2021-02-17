@@ -3,11 +3,35 @@ import plotly.express as px
 import dash_core_components as dcc
 import os
 
-access_token = 'pk.eyJ1IjoiZ2xhbmNlYXBwIiwiYSI6ImNrZ20xYnBkNTA0dnYydm10ZXB4cGVyNjIifQ.q23_rB25-GjegLJ48R3NBQ'
+access_token = os.environ['MAP_TOKEN']
 px.set_mapbox_access_token(access_token)
 
 # data_url = 'https://shahinrostami.com/datasets/time-series-19-covid-combined.csv'
 # data = pd.read_csv(data_url)
+
+def create_scattermap(dataframe,parameter):
+    fig = px.scatter_mapbox(
+        dataframe, lat=parameter['latitude'], lon=parameter['longitude'],
+        size=parameter['size'], size_max=50,
+        color=parameter['color'], color_continuous_scale=px.colors.sequential.Pinkyl,
+        hover_name=parameter['name'],
+        mapbox_style='dark', zoom=1,
+        animation_frame=parameter['frame'],
+        # animation_group="Province/State",
+        height=600,
+        hover_data=parameter['message']
+        # hover_data=['Active', 'Confirmed']
+        # custom_data=['Date']
+    )
+    fig.layout.sliders[0].visible = False
+    fig.layout.updatemenus[0].visible = False
+    fig.layout.updatemenus[0].buttons[0].args[1]["frame"]["duration"] = 200
+    fig.layout.updatemenus[0].buttons[0].args[1]["transition"]["duration"] = 200
+    fig.layout.coloraxis.showscale = False
+    fig.layout.margin.t = 30
+    fig.layout.margin.b = 30
+    fig.layout.updatemenus[0].showactive = True
+    return fig
 
 data = pd.read_csv(r"C:\Users\FORGE-15\PycharmProjects\glance\datasets\density.csv")
 missing_states = pd.isnull(data['Province/State'])
@@ -49,9 +73,9 @@ fig.layout.updatemenus[0].buttons[0].args[1]["transition"]["duration"] = 200
 fig.layout.coloraxis.showscale = False
 fig.layout.margin.t = 30
 fig.layout.margin.b = 30
+fig.layout.updatemenus[0].showactive = True
 
 # fig.layout.updatemenus[0].pad.t = 10
 
 # fig.layout.sliders[0].active = 5
-fig.layout.updatemenus[0].showactive = True
 

@@ -26,10 +26,14 @@ modal = html.Div(
                         children=html.Button('Upload File'),
                         multiple=True
                     ),
+                    html.Div(id='temp'),
                     html.Div(id='output-data-upload'),
                 ])),
                 dbc.ModalFooter(
-                    dbc.Button("Close", id="close", className="ml-auto")
+                    html.Div([
+                        dbc.Button("Create", id="create", className="ml-auto",color="success"),
+                        dbc.Button("Close", id="close", className="ml-auto",color="danger"),
+                    ])
                 ),
             ],
             id="modal",
@@ -49,7 +53,7 @@ def parameter_option(name, id, multi = False):
                         dcc.Dropdown(
                             style={'width': '100%'},
                             id=id,
-                            options=[{"label": i, "value": i} for i in parameter],
+                            options=[{"label": i, "value": i} for i in dataset.columns],
                             multi = multi
                         ),
                     ],
@@ -62,7 +66,6 @@ def parse_contents(contents, filename, date):
     content_type, content_string = contents.split(',')
     decoded = base64.b64decode(content_string)
     global dataset
-    global parameter
     try:
         if 'csv' in filename:
             # Assume that the user uploaded a CSV file
@@ -76,11 +79,10 @@ def parse_contents(contents, filename, date):
         return html.Div([
             'There was an error processing this file.'
         ])
-    parameter = dataset.columns
     return html.Div([
+        dcc.Store(id='parameter', data={}),
         html.H6(f'Filename: {filename}'),
         html.H6('Below are the first 5 rows.'),
-
         dash_table.DataTable(
             data=dataset.head(5).to_dict('records'),
             columns=[{'name': i, 'id': i} for i in dataset.columns]
@@ -101,9 +103,9 @@ def parse_contents(contents, filename, date):
                 parameter_option('Longitude', 'longitude'),
                 parameter_option('Size', 'size'),
                 parameter_option('Color', 'color'),
-                parameter_option('Animation Frame', 'anim_frame'),
+                parameter_option('Name', 'name'),
+                parameter_option('Animation Frame', 'frame'),
                 parameter_option('Additional Message', 'message', True),
-
             ],
             inline=True,
             # style={'background':'red'}
@@ -113,6 +115,34 @@ def parse_contents(contents, filename, date):
     ])
 
 
+@app.callback(  Output("parameter", "data"),
+            [
+                Input("latitude", "value"),
+                Input("longitude", "value"),
+                Input("size", "value"),
+                Input("color", "value"),
+                Input("frame", "value"),
+                Input("message", "value"),
+            ],
+                State("parameter", "data"),
+                prevent_initial_call=True
+)
+def update_option(lat, long, size, color, frame, msg,param):
+    ctx = dash.callback_context
+    input_value = None
+
+    if not ctx.triggered:
+        input_id = 'No input yet'
+        raise PreventUpdate
+
+    else:
+        input_id = ctx.triggered[0]['prop_id'].split('.')[0]
+        input_value = ctx.triggered[0]['value']
+
+    param[input_id] = input_value
+    print(param)
+
+    return   param
 
 
 
