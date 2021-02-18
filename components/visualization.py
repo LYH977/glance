@@ -10,8 +10,9 @@ px.set_mapbox_access_token(access_token)
 # data = pd.read_csv(data_url)
 
 def create_scattermap(dataframe,parameter):
+    data = dataframe.dropna()
     fig = px.scatter_mapbox(
-        dataframe, lat=parameter['latitude'], lon=parameter['longitude'],
+        data, lat=parameter['latitude'], lon=parameter['longitude'],
         size=parameter['size'], size_max=50,
         color=parameter['color'], color_continuous_scale=px.colors.sequential.Pinkyl,
         hover_name=parameter['name'],
@@ -38,6 +39,8 @@ missing_states = pd.isnull(data['Province/State'])
 data.loc[missing_states, 'Province/State'] = data.loc[missing_states, 'Country/Region']
 data['Active'] = data['Confirmed'] - data['Recovered'] - data['Deaths']
 data = data.dropna()
+df_date = data['Date'].unique()
+maxValue = df_date.shape[0] - 1
 fig = px.scatter_mapbox(
     data, lat="Lat", lon="Long",
     size="Active", size_max=50,
