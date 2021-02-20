@@ -34,6 +34,10 @@ def create_scattermap(dataframe,parameter):
     fig.layout.updatemenus[0].showactive = True
     return fig
 
+
+
+
+
 data = pd.read_csv(r"C:\Users\FORGE-15\PycharmProjects\glance\datasets\density.csv")
 missing_states = pd.isnull(data['Province/State'])
 data.loc[missing_states, 'Province/State'] = data.loc[missing_states, 'Country/Region']
@@ -60,14 +64,6 @@ fig.add_densitymapbox(
     z=data2['Magnitude'], radius=10, autocolorscale=True, showscale=False
 )
 
-# fig = px.density_mapbox(
-#     data, lat="Lat", lon="Long",
-#     z="Magnitude", radius=10,
-#     center=dict(lat=0, lon=180), zoom=0,
-#     animation_frame="Date",
-#     height=600,
-# )
-
 fig.layout.sliders[0].visible = False
 fig.layout.updatemenus[0].visible = False
 
@@ -82,3 +78,10 @@ fig.layout.updatemenus[0].showactive = True
 
 # fig.layout.sliders[0].active = 5
 
+# fig = px.density_mapbox(
+#     data, lat="Lat", lon="Long",
+#     z="Magnitude", radius=10,
+#     center=dict(lat=0, lon=180), zoom=0,
+#     animation_frame="Date",
+#     height=600,
+# )

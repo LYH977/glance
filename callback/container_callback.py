@@ -5,10 +5,12 @@ import dash_daq as daq
 from dash.dependencies import Input, Output, ALL, State, MATCH, ALLSMALLER
 from dash.exceptions import PreventUpdate
 
-from components import visualization, upload_modal
+from components import visualization, upload_modal, container
 from utils import collection
+from utils.method import  set_slider_calendar
 
-
+import os
+import base64
 
 
 
@@ -27,14 +29,9 @@ def register_update_visual_container(app):
             input_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
         if input_id == 'create': # input from add button
-            new_child = html.Div(
-                style={'width': '50%', 'display': 'inline-block', 'outline': 'thin lightgrey solid', 'padding': 10, 'position':'relative'},
-                children=html.Div([
-                    dcc.Graph(id={'type': 'visualization', 'index': add_clicks}, figure=visualization.create_scattermap(collection.data, param)),
-                    html.Button('Delete', id={'type': 'dlt-btn', 'index': add_clicks}, style={'position':'absolute', 'top':0}),
-                ]),
-            )
-            # print(div_children)
+            uuid = base64.b64encode(os.urandom(6)).decode('ascii')
+            new_child = container.render_container(add_clicks, param,uuid)
+
             div_children.append(new_child)
             return div_children
         else: # input from delete button

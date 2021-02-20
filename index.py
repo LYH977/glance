@@ -6,7 +6,7 @@ from dash.dependencies import Input, Output
 from app import app
 from app import server
 
-from pages import homepage, single_view, carousel
+from pages import homepage, dashboard, carousel
 from layout.navbar import navbar
 
 
@@ -22,7 +22,7 @@ def display_page(pathname):
     if pathname == '/pages/home' or pathname == '/':
         return homepage.layout
     if pathname == '/pages/singleView':
-        return single_view.layout
+        return dashboard.layout
     if pathname == '/pages/carousel':
         return carousel.layout
     else:

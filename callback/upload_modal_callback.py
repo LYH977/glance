@@ -14,6 +14,8 @@ import pandas as pd
 
 
 
+
+
 def parameter_option(name, id, multi = False):
     return  \
         dbc.FormGroup(
@@ -50,6 +52,7 @@ def parse_contents(contents, filename, date):
             'There was an error processing this file.'
         ])
     return html.Div([
+        dcc.Store(id='uuid', data=None),
         dcc.Store(id='parameter', data = SCATTER_MAP_PARAM),
         dcc.Store(id='is-filled', data = False),
         html.H6(f'Filename: {filename}'),
@@ -138,7 +141,8 @@ def register_update_output(app):
                 return children, dash.no_update
         elif input_id == 'open' or 'close' or 'create':
             return dash.no_update if is_open is True else [],\
-                   not is_open
+                   not is_open,
+
         else:
             raise PreventUpdate
 
@@ -165,3 +169,4 @@ def register_clear_upload(app):
     )
     def clear_upload (close):
         return None
+
