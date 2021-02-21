@@ -37,6 +37,8 @@ modal = html.Div(
             id="modal",
             size="xl",
             backdrop='static',
+            is_open=False,
+            autoFocus=False,
 
         ),
     ]

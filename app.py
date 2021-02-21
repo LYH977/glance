@@ -5,7 +5,8 @@ from callback.upload_modal_callback import \
     register_update_option, \
     register_update_output,\
     register_enable_create_btn, \
-    register_clear_upload
+    register_clear_upload,\
+    register_toggle_modal
 
 from callback.container_callback import \
     register_update_visual_container, \
@@ -29,6 +30,7 @@ register_update_figure(app)
 register_update_slider(app)
 register_update_playing_status(app)
 register_update_play_btn(app)
+register_toggle_modal(app)
 
 
 server = app.server

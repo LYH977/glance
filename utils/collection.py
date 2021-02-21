@@ -1,1 +1,2 @@
-data = []
+temp = None
+data={}
