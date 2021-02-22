@@ -103,7 +103,6 @@ def register_update_playing_status(app):
 
         df_date = collection.data[input_index]['Date'].unique()
         maxValue = df_date.shape[0] - 1
-        print(interval, maxValue)
         if input_type== 'anim-slider': #input from slider
 
             return \
