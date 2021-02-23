@@ -26,8 +26,9 @@ modal = html.Div(
                         children=html.Button('Upload File'),
                         multiple=True
                     ),
-                    html.Div(id='data-snapshot'),
-                    html.Div(id='output-form'),
+                    html.Div(id='after-upload'),
+                    # html.Div(id='data-snapshot'),
+                    # html.Div(id='output-form'),
                 ])),
                 dbc.ModalFooter(
                     html.Div([
@@ -100,3 +101,8 @@ def output_form_markup(type):
         )
     ])
 
+def after_upload_markup(filename):
+    return html.Div([
+        html.Div(id='data-snapshot',children=snapshot_markup(filename)),
+        html.Div(id='output-form'),
+    ])
