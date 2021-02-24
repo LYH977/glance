@@ -17,12 +17,14 @@ def render_container(create_clicks, param, ftype):
     data = collection.temp.dropna()
     df_date = data[param['frame']].unique()
     maxValue = df_date.shape[0] - 1
+    print('create_clicks',create_clicks)
     return html.Div(
                     style={'width': screen_width/2.2, 'display': 'inline-block', 'outline': 'thin lightgrey solid', 'padding': 10, 'position':'relative'},
                     children=html.Div([
                         dcc.Store(id={'type': 'is-animating', 'index': create_clicks}, data = False),
                         dcc.Store(id='uuid', data = create_clicks),
                         dcc.Store(id={'type': 'figure-type', 'index': create_clicks}, data = ftype),
+                        dcc.Store(id={'type': 'my_param', 'index': create_clicks}, data=param),
                         dcc.Interval(
                             id={'type': 'interval', 'index': create_clicks},
                             interval=200,

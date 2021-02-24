@@ -57,6 +57,12 @@ def register_update_figure(app):
             fig2['data'][0] = fig2['frames'][value]['data'][0]
         elif ftype== SCATTER_GEO:
             fig2['data'] = fig2['frames'][value]['data']
+        elif ftype == BAR_CHART_RACE:
+            fig2['data'][0] = fig2['frames'][value]['data'][0]
+        elif ftype == DENSITY:
+            fig2['data'][0] = fig2['frames'][value]['data'][0]
+        elif ftype == CHOROPLETH:
+            fig2['data'][0] = fig2['frames'][value]['data'][0]
         return fig2
 
 #############################################################################################################################################
@@ -94,10 +100,10 @@ def register_update_playing_status(app):
     @app.callback(
         [Output({'type':'is-animating', 'index': MATCH}, 'data'), Output({'type':'interval', 'index': MATCH}, 'n_intervals'), Output({'type':'slider-label', 'index': MATCH}, 'children')],
         [Input({'type':'play-btn', 'index': MATCH}, 'n_clicks'), Input({'type':'anim-slider', 'index': MATCH}, 'value')],
-        [State({'type':'is-animating', 'index': MATCH}, 'data'), State({'type':'interval', 'index': MATCH}, 'n_intervals')],
+        [State({'type':'is-animating', 'index': MATCH}, 'data'), State({'type':'interval', 'index': MATCH}, 'n_intervals'), State({'type':'my_param', 'index': MATCH}, 'data')],
         prevent_initial_call=True
     )
-    def update_playing_status(play_clicked, s_value, playing, interval):
+    def update_playing_status(play_clicked, s_value, playing, interval,param):
         ctx = dash.callback_context
         input_index=None
         if not ctx.triggered:
@@ -106,7 +112,7 @@ def register_update_playing_status(app):
             input_type = get_ctx_type(ctx)
             input_index=get_ctx_index(ctx)
 
-        df_date = collection.data[input_index]['Date'].unique()
+        df_date = collection.data[input_index][param['frame']].unique()
         maxValue = df_date.shape[0] - 1
         if input_type== 'anim-slider': #input from slider
 

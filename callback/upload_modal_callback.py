@@ -45,19 +45,28 @@ def parse_contents(contents, filename, date):
 def register_update_option(app):
     @app.callback( [ Output("parameter", "data"), Output('is-filled', 'data')],
                 [
-                    Input("latitude", "value"),
-                    Input("longitude", "value"),
-                    Input("size", "value"),
+                    # Input("latitude", "value"),
+                    # Input("longitude", "value"),
+                    # Input("size", "value"),
                     Input("color", "value"),
                     Input("name", "value"),
                     Input("frame", "value"),
                     Input("message", "value"),
+                    # Input("item", "value"),
+                    # Input("value", "value"),
+                    # Input("z", "value"),
+                    Input("locations", "value"),
                     Input('visual-type','value')
                 ],
                     State("parameter", "data"),
                     prevent_initial_call=True
     )
-    def update_option(lat, long, size, color, name, frame, msg, visual,param):
+    def update_option(
+            # lat, long,size
+             color, name,
+            frame,msg, locations,
+            # msg,item,value
+             visual, param):
         ctx = dash.callback_context
         input_value = None
         if not ctx.triggered:
@@ -70,7 +79,7 @@ def register_update_option(app):
 
         param[input_type] = input_value
         is_filled = False if None in param.values() or visual is None else True
-
+        # print(param)
         return  param, is_filled
 
 

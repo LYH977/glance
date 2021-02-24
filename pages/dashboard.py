@@ -17,29 +17,24 @@ from utils.method import  set_slider_calendar
 
 import plotly.express as px
 import pandas as pd
+from raceplotly.plots import barplot
 
 
+df = px.data.gapminder()
+fig = px.choropleth(df, locations="iso_alpha",
+                    color="lifeExp", # lifeExp is a column of gapminder
+                    hover_name="country", # column to add to hover information
+                    color_continuous_scale=px.colors.sequential.Plasma, animation_frame='year')
 
-# data = visualization.data
-# data2 = visualization.data2
-# df_date = data['Date'].unique()
-# maxValue = df_date.shape[0] - 1
-# df = px.data.gapminder()
-# print(df.head(10))
-# df.to_csv("output.csv")
-# fig = px.scatter_geo(df, locations="iso_alpha", color="continent",
-#                      hover_name="country", size="pop",
-#                      animation_frame="year",
-#                      projection="natural earth")
-
-layout = html.Div(
+# print(fig)
+layout = html.Div([
     dbc.Row([
         dbc.Col(html.Div(id='visual-container', children=[]), width="auto", style={'background':'green'})  ,
         dbc.Col(upload_modal.modal,style={'background':'yellow'}),
-        # dcc.Graph(id='temporary',    figure=fig)
-    ])
 
-, )
+    ])
+    ,dcc.Graph(id='temporary',    figure=fig)
+, ])
 
 
 # ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
