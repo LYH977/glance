@@ -40,7 +40,6 @@ def configure_fig(fig):
 
 
 def create_scattermap(dataframe,parameter):
-    print(px.data.gapminder().columns)
     data = dataframe.dropna()
     fig = px.scatter_mapbox(
         data, lat = parameter[SCATTER_MAP_CONSTANT[LATITUDE]],
@@ -127,6 +126,5 @@ def create_choropleth(dataframe,parameter):
         # hover_data=['Active', 'Confirmed']
         # custom_data=['Date']
     )
-    print(fig)
     configure_fig(fig)
     return fig

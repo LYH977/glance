@@ -167,7 +167,7 @@ def register_toggle_modal(app):
 
 def register_enable_create_btn(app):
     @app.callback(
-        [Output('create', 'disabled'), Output('parameter', 'data')] ,
+        [Output('create', 'disabled'),  Output('last-param', 'data')] ,
         [
             Input(SM_PARAM,'data'),
             Input(SG_PARAM, 'data'),
@@ -175,10 +175,12 @@ def register_enable_create_btn(app):
             Input(CH_PARAM, 'data'),
             Input(CA_PARAM, 'data'),
             Input(BC_PARAM, 'data'),
+            Input('create', 'n_clicks'),
         ],
+        State('visual-type', 'value'),
         prevent_initial_call=True
     )
-    def enable_create_btn (sm, sg, d, ch, ca, bc):
+    def enable_create_btn (sm, sg, d, ch, ca, bc, create, vtype):
         ctx = dash.callback_context
         if not ctx.triggered:
             input_id = 'No input yet'
@@ -187,8 +189,11 @@ def register_enable_create_btn(app):
             input_id = get_ctx_type(ctx)
             input_value = get_ctx_value(ctx)
 
+        if input_id == 'create':
+            return True, dash.no_update
         if input_value['parameter'] is not None and input_value['is_filled'] is True:
-            return False, input_value['parameter']
+            data = {'vtype': vtype, 'parameter':input_value['parameter'] }
+            return False, data
         else:
             raise PreventUpdate
 #############################################################################################################################################

@@ -18,6 +18,7 @@ modal = html.Div(
     [
         # dbc.Button("Select File", id="open"),
         html.Div('add',id="open", style={'width':200, 'height':200, 'background':'red'}),
+        dcc.Store(id='last-param', data={}),
         dbc.Modal(
             [
                 dbc.ModalHeader("Create New Visualization"),
@@ -84,11 +85,9 @@ def snapshot_markup (filename):
 def output_form_markup(type):
     parameter={}
     for p_id, p_info in FIGURE_PARAM[type].items():
-        print(p_id)
         parameter[p_id] = p_info['value']
     return html.Div([
         # dcc.Store(id='uuid', data=None),
-        dcc.Store(id='parameter', data = parameter),
         # dcc.Store(id='is-filled', data = False),
         # dcc.Store(id=CREATE_BTN_ID[type], data={'filled': False, 'parameter': parameter}),
         dcc.Store(id=SM_PARAM, data={'is_filled': False, 'parameter': parameter if type == SCATTER_MAP else None}),

@@ -7,6 +7,7 @@ from dash.exceptions import PreventUpdate
 
 from components import visualization, upload_modal, container
 from utils import collection
+from utils.collection import visual_container
 from utils.method import  get_ctx_type, get_ctx_property, get_ctx_value, get_ctx_index
 from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CAROUSEL, CHOROPLETH, BAR_CHART_RACE, FRAME_NAME
 
@@ -16,9 +17,9 @@ def register_update_visual_container(app):
     @app.callback(
          Output('visual-container', 'children') ,
         [ Input('create', 'n_clicks'), Input({'type':'dlt-btn', 'index': ALL},'n_clicks') ],
-        [ State('visual-container', 'children') , State('parameter', 'data'), State('visual-type', 'value')   ],
+        [ State('visual-container', 'children') , State('last-param', 'data')   ],
         prevent_initial_call=True)
-    def update_visual_container(create_clicks, deletable, div_children, param, vtype):
+    def update_visual_container(create_clicks, deletable, div_children, param):
         ctx = dash.callback_context
         if not ctx.triggered:
             input_type = 'No input yet'
@@ -27,13 +28,18 @@ def register_update_visual_container(app):
             # input_type = get_ctx_type(ctx)
 
         if input_type == 'create': # input from add button
-            new_child = container.render_container(create_clicks, param, vtype)
+            print('data', collection.data)
+
+            new_child = container.render_container(create_clicks, param['parameter'], param['vtype'])
             div_children.append(new_child)
+            visual_container.append(create_clicks)
 
             return div_children
         else: # input from delete button
             delete_index = get_ctx_index(ctx)
-            del div_children[int(delete_index) -1]
+            temp = visual_container.index(delete_index)
+            del div_children[temp]
+            del visual_container[temp]
             return div_children
 
 
