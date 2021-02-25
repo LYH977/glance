@@ -6,7 +6,8 @@ import dash_table
 import dash
 from dash.exceptions import PreventUpdate
 
-from utils.constant import FIGURE_OPTION, FIGURE_PARAM
+from utils.constant import FIGURE_OPTION, FIGURE_PARAM, CREATE_BTN_ID, SM_PARAM, SG_PARAM, D_PARAM, CA_PARAM, CH_PARAM, \
+    BC_PARAM, SCATTER_MAP, SCATTER_GEO, DENSITY, CHOROPLETH, CAROUSEL, BAR_CHART_RACE
 from utils import  collection
 from utils.method import unpack_parameter
 import base64
@@ -47,21 +48,15 @@ modal = html.Div(
     ]
 )
 
-def parameter_option(name, id, multi = False):
-    return  \
-        dbc.FormGroup(
-                    [
-                        dbc.Label(name, className="mr-2"),
-                        dcc.Dropdown(
-                            style={'width': '100%'},
-                            id=id,
-                            options=[{"label": i, "value": i} for i in collection.temp.columns],
-                            multi = multi
-                        ),
-                    ],
-                    # className="mr-3",
-                    style={'width': '50%'}
-        )
+def after_upload_markup(filename):
+    return html.Div([
+        html.Div(id='data-snapshot',children=snapshot_markup(filename)),
+        html.Div(id='output-form'),
+    ])
+
+
+
+
 
 def snapshot_markup (filename):
     return html.Div([
@@ -84,14 +79,25 @@ def snapshot_markup (filename):
     ])
 
 
+
+
 def output_form_markup(type):
     parameter={}
     for p_id, p_info in FIGURE_PARAM[type].items():
+        print(p_id)
         parameter[p_id] = p_info['value']
     return html.Div([
         # dcc.Store(id='uuid', data=None),
         dcc.Store(id='parameter', data = parameter),
-        dcc.Store(id='is-filled', data = False),
+        # dcc.Store(id='is-filled', data = False),
+        # dcc.Store(id=CREATE_BTN_ID[type], data={'filled': False, 'parameter': parameter}),
+        dcc.Store(id=SM_PARAM, data={'is_filled': False, 'parameter': parameter if type == SCATTER_MAP else None}),
+        dcc.Store(id=SG_PARAM, data={'is_filled': False, 'parameter': parameter if type == SCATTER_GEO else None}),
+        dcc.Store(id=D_PARAM, data={'is_filled': False, 'parameter': parameter if type == DENSITY else None}),
+        dcc.Store(id=CH_PARAM, data={'is_filled': False, 'parameter': parameter if type == CHOROPLETH else None}),
+        dcc.Store(id=CA_PARAM, data={'is_filled': False, 'parameter': parameter if type == CAROUSEL else None}),
+        dcc.Store(id=BC_PARAM, data={'is_filled': False, 'parameter': parameter if type == BAR_CHART_RACE else None}),
+
         dbc.Form(
             [
                 parameter_option(i, j, k) for i,j,k in unpack_parameter(FIGURE_PARAM[type])
@@ -101,8 +107,21 @@ def output_form_markup(type):
         )
     ])
 
-def after_upload_markup(filename):
-    return html.Div([
-        html.Div(id='data-snapshot',children=snapshot_markup(filename)),
-        html.Div(id='output-form'),
-    ])
+
+
+
+def parameter_option(name, id, multi = False):
+    return  \
+        dbc.FormGroup(
+                    [
+                        dbc.Label(name, className="mr-2"),
+                        dcc.Dropdown(
+                            style={'width': '100%'},
+                            id=id,
+                            options=[{"label": i, "value": i} for i in collection.temp.columns],
+                            multi = multi
+                        ),
+                    ],
+                    # className="mr-3",
+                    style={'width': '50%'}
+        )

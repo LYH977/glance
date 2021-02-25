@@ -8,6 +8,7 @@ import tkinter as tk
 
 from components import visualization, upload_modal
 from utils import collection
+from utils.constant import FRAME_NAME
 from utils.method import  set_slider_calendar
 
 root = tk.Tk()
@@ -15,9 +16,8 @@ screen_width = root.winfo_screenwidth()
 
 def render_container(create_clicks, param, ftype):
     data = collection.temp.dropna()
-    df_date = data[param['frame']].unique()
+    df_date = data[param[FRAME_NAME[ftype]]].unique()
     maxValue = df_date.shape[0] - 1
-    print('create_clicks',create_clicks)
     return html.Div(
                     style={'width': screen_width/2.2, 'display': 'inline-block', 'outline': 'thin lightgrey solid', 'padding': 10, 'position':'relative'},
                     children=html.Div([

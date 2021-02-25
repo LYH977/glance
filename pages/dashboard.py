@@ -20,11 +20,11 @@ import pandas as pd
 from raceplotly.plots import barplot
 
 
-df = px.data.gapminder()
-fig = px.choropleth(df, locations="iso_alpha",
-                    color="lifeExp", # lifeExp is a column of gapminder
-                    hover_name="country", # column to add to hover information
-                    color_continuous_scale=px.colors.sequential.Plasma, animation_frame='year')
+# df = px.data.gapminder()
+# fig = px.choropleth(df, locations="iso_alpha",
+#                     color="lifeExp", # lifeExp is a column of gapminder
+#                     hover_name="country", # column to add to hover information
+#                     color_continuous_scale=px.colors.sequential.Plasma, animation_frame='year')
 
 # print(fig)
 layout = html.Div([
@@ -33,7 +33,7 @@ layout = html.Div([
         dbc.Col(upload_modal.modal,style={'background':'yellow'}),
 
     ])
-    ,dcc.Graph(id='temporary',    figure=fig)
+    # ,dcc.Graph(id='temporary',    figure=fig)
 , ])
 
 
