@@ -1,6 +1,8 @@
 import dash
 import dash_bootstrap_components as dbc
 
+from callback.carousel_callback import register_display_image, register_ca_update_slider, register_update_ca_play_btn, \
+    register_update_ca_playing_status
 from callback.upload_modal_callback import \
     register_update_after_upload, \
     register_enable_create_btn, \
@@ -40,5 +42,9 @@ register_update_playing_status(app)
 register_update_play_btn(app)
 register_toggle_modal(app)
 
+register_display_image(app)
+register_ca_update_slider(app)
+register_update_ca_play_btn(app)
+register_update_ca_playing_status(app)
 
 server = app.server

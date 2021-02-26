@@ -28,8 +28,6 @@ def register_update_visual_container(app):
             # input_type = get_ctx_type(ctx)
 
         if input_type == 'create': # input from add button
-            print('data', collection.data)
-
             new_child = container.render_container(create_clicks, param['parameter'], param['vtype'])
             div_children.append(new_child)
             visual_container.append(create_clicks)

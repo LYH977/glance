@@ -30,6 +30,7 @@ def validate_create(data):
         input_value = get_ctx_value(ctx)
     data['parameter'][input_type] = input_value
     is_filled = False if None in data['parameter'].values() else True
+    # print(data['parameter'])
     return {'is_filled': is_filled, 'parameter': data['parameter']}
 
 #############################################################################################################################################
@@ -161,6 +162,7 @@ def register_toggle_modal(app):
             input_id = ctx.triggered[0]['prop_id'].split('.')[0]
         if input_id == 'create':
             collection.data[create] = collection.temp.dropna()
+            # print(collection.data[create]['year'])
         return not is_open
 #############################################################################################################################################
 
@@ -319,13 +321,12 @@ def register_validate_ca_create(app):
         Output(CA_PARAM, 'data') ,
         [
             Input("ca_item", "value"),
-            Input("ca_value", "value"),
             Input("ca_frame", "value"),
         ],
         State(CA_PARAM, 'data'),
         prevent_initial_call=True
     )
-    def validate_ca_create (item, value, frame, data):
+    def validate_ca_create (item, frame, data):
         return validate_create(data)
 
 

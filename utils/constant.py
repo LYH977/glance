@@ -97,7 +97,6 @@ CHOROPLETH_CONSTANT = {
 
 CAROUSEL_CONSTANT = {
     ITEM : 'ca_item',
-    VALUE: 'ca_value',
     FRAME: FRAME_NAME[CAROUSEL],
 }
 
@@ -148,7 +147,6 @@ CHOROPLETH_PARAM = {
 
 CAROUSEL_PARAM = {
     CAROUSEL_CONSTANT[ITEM] : { 'label':'Item*', 'value': None , 'multi': False},
-    CAROUSEL_CONSTANT[VALUE] : { 'label':'Value*', 'value': None , 'multi': False},
     CAROUSEL_CONSTANT[FRAME] : { 'label':'Time*', 'value': None, 'multi': False },
 
 }
