@@ -6,7 +6,9 @@ import dash_table
 import dash
 from dash.exceptions import PreventUpdate
 
-from utils.constant import FIGURE_OPTION, SCATTER_MAP_PARAM, SM_PARAM, CA_PARAM, CH_PARAM, D_PARAM, BC_PARAM, SG_PARAM
+from components.carousel import create_ca_img
+from utils.constant import FIGURE_OPTION, SCATTER_MAP_PARAM, SM_PARAM, CA_PARAM, CH_PARAM, D_PARAM, BC_PARAM, SG_PARAM, \
+    CAROUSEL, CAROUSEL_CONSTANT, ITEM
 from utils import collection
 from utils.method import get_ctx_type,get_ctx_property,get_ctx_value,get_ctx_index
 from components.upload_modal import output_form_markup,after_upload_markup, after_upload_markup
@@ -151,10 +153,11 @@ def register_toggle_modal(app):
     @app.callback(
         Output("modal", "is_open"),
         [Input("open", "n_clicks"), Input("close", "n_clicks"),Input("create", "n_clicks")],
-        State("modal", "is_open"),
+        [State("modal", "is_open"), State('last-param', 'data')],
         prevent_initial_call=True
     )
-    def toggle_modal (open, close, create, is_open):
+    def toggle_modal (open, close, create, is_open, param):
+        print(param)
         ctx = dash.callback_context
         if not ctx.triggered:
             input_id = 'No input yet'
@@ -162,6 +165,12 @@ def register_toggle_modal(app):
             input_id = ctx.triggered[0]['prop_id'].split('.')[0]
         if input_id == 'create':
             collection.data[create] = collection.temp.dropna()
+            # collection.last_create_click = create
+            if param['vtype'] == CAROUSEL:
+                temp = []
+                for row in collection.temp.index:
+                    temp.append( create_ca_img(collection.temp.loc[row, param['parameter'][CAROUSEL_CONSTANT[ITEM]]]) )
+                collection.img_container[create] = temp
             # print(collection.data[create]['year'])
         return not is_open
 #############################################################################################################################################

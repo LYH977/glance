@@ -1,11 +1,17 @@
 import pandas as pd                  # for DataFrames
 import plotly.express as px
 import dash_core_components as dcc
+import dash_html_components as html
+
 import os
+
+from utils import collection
 from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CAROUSEL, CHOROPLETH, BAR_CHART_RACE, \
     SCATTER_MAP_CONSTANT, LATITUDE, LONGITUDE, SIZE, COLOR, NAME, FRAME, MESSAGE, SCATTER_GEO_CONSTANT, \
     BAR_CHART_RACE_CONSTANT, ITEM, VALUE, DENSITY_CONSTANT, Z, CHOROPLETH_CONSTANT, LOCATIONS
 from raceplotly.plots import barplot
+
+from utils.method import set_slider_calendar
 
 access_token = os.environ['MAP_TOKEN']
 px.set_mapbox_access_token(access_token)
@@ -13,7 +19,7 @@ px.set_mapbox_access_token(access_token)
 # data_url = 'https://shahinrostami.com/datasets/time-series-19-covid-combined.csv'
 # data = pd.read_csv(data_url)
 
-def create_visualization(dataframe, parameter, ftype):
+def create_figure(dataframe, parameter, ftype):
     if ftype == SCATTER_MAP:
         return create_scattermap(dataframe,parameter)
     elif ftype == SCATTER_GEO:
@@ -128,3 +134,36 @@ def create_choropleth(dataframe,parameter):
     )
     configure_fig(fig)
     return fig
+
+def create_visualization(screen_width, create_clicks, ftype, param, maxValue, df_date):
+    return html.Div(
+                    style={'width': screen_width/2.2, 'display': 'inline-block', 'outline': 'thin lightgrey solid', 'padding': 10, 'position':'relative'},
+                    children=html.Div([
+                        dcc.Store(id={'type': 'is-animating', 'index': create_clicks}, data = False),
+                        dcc.Store(id='uuid', data = create_clicks),
+                        dcc.Store(id={'type': 'figure-type', 'index': create_clicks}, data = ftype),
+                        dcc.Store(id={'type': 'my_param', 'index': create_clicks}, data=param),
+                        dcc.Interval(
+                            id={'type': 'interval', 'index': create_clicks},
+                            interval=200,
+                            n_intervals=0,
+                            max_intervals=maxValue,
+                            disabled=True
+                        ),
+                        dcc.Graph(id={'type': 'visualization', 'index': create_clicks}, figure=create_figure(collection.temp, param, ftype)),
+                        dcc.Slider(
+                            id={'type': 'anim-slider', 'index': create_clicks},
+                            updatemode='drag',
+                            min=0,
+                            max=maxValue,
+                            value=0,
+                            marks={str(i): str(des) for i, des in
+                                   zip(range(0, df_date.shape[0]), set_slider_calendar(df_date))},
+                        ),
+                        html.Div([
+                            html.Button('play', id={'type': 'play-btn', 'index': create_clicks}),
+                            html.Label(df_date[0], id={'type': 'slider-label', 'index': create_clicks})
+                        ]),
+                        html.Button('Delete', id={'type': 'dlt-btn', 'index': create_clicks}, style={'position':'absolute', 'top':0}),
+                    ]),
+                )

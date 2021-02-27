@@ -30,14 +30,15 @@ def register_display_image(app):
             input_type = get_ctx_type(ctx)
             input_index = get_ctx_index(ctx)
 
-        # print(collection.data[input_index].loc[value,'link'])
-        # print(interval, 'inside 1')
-        # img = html.Img(src="http://placeimg.com/625/225/arch")
-        # img = image[interval]
-        imgsrc =  collection.data[input_index].loc[value,'link']
-        img = html.Img(src=imgsrc, style={ 'height':300, 'width':300 })
+        # imgsrc =  collection.data[input_index].loc[value,'link']
+        # return imgsrc
+
+
+
+        imgsrc =  collection.img_container[input_index][value]
+        # img = html.Img(src=imgsrc, style={ 'height':300, 'width':300 })
         # img = html.Img(src="https://firebasestorage.googleapis.com/v0/b/glance-4685b.appspot.com/o/images%2Ftest.jpg?alt=media")
-        return img
+        return imgsrc
         # , {'position': 'absolute', 'top': 0,'opacity':1.0, 'transition':'opacity 1s'}, {'position': 'absolute', 'top': 0,'opacity':0.0, 'transition':'opacity 1s'}
 
 
