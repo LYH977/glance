@@ -5,8 +5,8 @@ navbar = dbc.NavbarSimple(
     children=[
         dcc.Location(id='url', refresh=False),
         dbc.NavItem(dbc.NavLink("Home", href="/pages/home"),active=True),
-        dbc.NavItem(dbc.NavLink("SingleView", href="/pages/singleView"), active=True),
-        dbc.NavItem(dbc.NavLink("Multiview", href="/pages/carousel"), active=True),
+        dbc.NavItem(dbc.NavLink("Visualization", href="/pages/singleView"), active=True),
+        dbc.NavItem(dbc.NavLink("Upload", href="/pages/upload"), active=True),
 
         # dbc.DropdownMenu(
         #     children=[

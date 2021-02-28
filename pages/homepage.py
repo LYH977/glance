@@ -17,6 +17,8 @@ import io
 import os
 import pandas as pd
 import redis
+import datetime
+
 
 # pport = 'redis-12571.c1.ap-southeast-1-1.ec2.cloud.redislabs.com:12571'
 # redis_instance = redis.StrictRedis(
@@ -24,6 +26,17 @@ import redis
 #     port=12571,
 #     password='EGXMBmAkHnhFTLYKGAUEGPdYwf0cZpDC'
 # )
+from datetime import datetime
+
+# dt_obj = datetime.strptime('20.12.2016 09:38:42,76', '%d.%m.%Y %H:%M:%S,%f')
+# # dt_obj = datetime.strptime('2016', '%Y')
+# millisec = dt_obj.timestamp() * 1000
+# print(millisec)
+
+# s= 1611918340073422000/  1000000000.0
+# dt = datetime.fromtimestamp(s).strftime('%Y-%m-%d %H:%M:%S.%f')
+# print(dt)
+
 redis_instance = redis.StrictRedis.from_url(os.environ['REDIS_URL'])
 task.update_data()
 layout = dbc.Jumbotron(

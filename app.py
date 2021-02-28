@@ -19,6 +19,10 @@ from callback.container_callback import \
     register_update_play_btn
 
 # meta_tags are required for the app layout to be mobile responsive
+from callback.upload_page_callback import register_update_preview, register_update_datetime_modifier, \
+    register_update_datetime_filled, register_update_datetime_upload_btn, register_update_datetime_format, \
+    register_update_form_complete, register_handle_upload_click
+
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True, update_title=None,
                 meta_tags=[{'name': 'viewport',
                             'content': 'width=device-width, initial-scale=1.0'}]
@@ -46,5 +50,14 @@ register_display_image(app)
 register_ca_update_slider(app)
 register_update_ca_play_btn(app)
 register_update_ca_playing_status(app)
+
+register_update_preview(app)
+register_update_datetime_modifier(app)
+register_update_datetime_filled(app)
+register_update_datetime_upload_btn(app)
+register_update_datetime_format(app)
+register_update_form_complete(app)
+register_handle_upload_click(app)
+
 
 server = app.server

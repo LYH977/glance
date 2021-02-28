@@ -37,7 +37,8 @@ def validate_create(data):
 
 #############################################################################################################################################
 
-def parse_contents(contents, filename, date):
+def parse_contents(contents, filename):
+    print('contents', contents)
     content_type, content_string = contents.split(',')
     decoded = base64.b64decode(content_string)
     try:
@@ -55,47 +56,7 @@ def parse_contents(contents, filename, date):
         ])
     return after_upload_markup(filename)
 
-#############################################################################################################################################
 
-# def register_update_option(app):
-#     @app.callback( [ Output("parameter", "data"), Output('is-filled', 'data')],
-#                 [
-#                     # Input("latitude", "value"),
-#                     # Input("longitude", "value"),
-#                     # Input("size", "value"),
-#                     Input("color", "value"),
-#                     Input("name", "value"),
-#                     Input("frame", "value"),
-#                     Input("message", "value"),
-#                     # Input("item", "value"),
-#                     # Input("value", "value"),
-#                     # Input("z", "value"),
-#                     Input("locations", "value"),
-#                     Input('visual-type','value')
-#                 ],
-#                     State("parameter", "data"),
-#                     prevent_initial_call=True
-#     )
-#     def update_option(
-#             # lat, long,size
-#              color, name,
-#             frame,msg, locations,
-#             # msg,item,value
-#              visual, param):
-#         ctx = dash.callback_context
-#         input_value = None
-#         if not ctx.triggered:
-#             input_id = 'No input yet'
-#             raise PreventUpdate
-#         else:
-#             input_type = get_ctx_type(ctx)
-#             input_value = get_ctx_value(ctx)
-#
-#
-#         param[input_type] = input_value
-#         is_filled = False if None in param.values() or visual is None else True
-#         # print(param)
-#         return  param, is_filled
 
 
 #############################################################################################################################################
@@ -116,8 +77,8 @@ def register_update_after_upload(app):
         if input_id == 'upload-data':
             if list_of_contents is not None:
                 children = [
-                    parse_contents(c, n, d) for c, n, d in
-                    zip(list_of_contents, list_of_names, list_of_dates)]
+                    parse_contents(c, n) for c, n in
+                    zip(list_of_contents, list_of_names)]
                 return children
         elif input_id == 'open' or 'close' :
             return dash.no_update if is_open is True else []

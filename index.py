@@ -4,7 +4,7 @@ from dash.dependencies import Input, Output
 # Connect to main app.py file
 from app import app
 
-from pages import homepage, dashboard
+from pages import homepage, dashboard, upload_page
 from components import carousel
 from layout.navbar import navbar
 
@@ -22,8 +22,8 @@ def display_page(pathname):
         return homepage.layout
     if pathname == '/pages/singleView':
         return dashboard.layout
-    if pathname == '/pages/carousel':
-        return carousel.layout
+    if pathname == '/pages/upload':
+        return upload_page.layout
     else:
         return pathname
 
