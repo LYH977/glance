@@ -6,6 +6,7 @@ import dash_table
 import dash
 from dash.exceptions import PreventUpdate
 
+from database.dbConfig import client
 from utils.constant import FIGURE_OPTION, FIGURE_PARAM, CREATE_BTN_ID, SM_PARAM, SG_PARAM, D_PARAM, CA_PARAM, CH_PARAM, \
     BC_PARAM, SCATTER_MAP, SCATTER_GEO, DENSITY, CHOROPLETH, CAROUSEL, BAR_CHART_RACE
 from utils import  collection
@@ -23,6 +24,19 @@ modal = html.Div(
             [
                 dbc.ModalHeader("Create New Visualization"),
                 dbc.ModalBody(html.Div([
+                    dbc.FormGroup(
+                        [
+                            dbc.Label('Choose a dataset', className="mr-2"),
+                            dcc.Dropdown(
+                                style={'width': '100%'},
+                                id='dataset-dropdown',
+                                options=[{"label": i['name'], "value": i['name']} for i in client.get_list_measurements()],
+                                multi=False
+                            ),
+                        ],
+                        # className="mr-3",
+                        style={'width': '50%'}
+                    ),
                     dcc.Upload(
                         id='upload-data',
                         children=html.Button('Upload File'),

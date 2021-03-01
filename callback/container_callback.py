@@ -5,7 +5,7 @@ import dash_daq as daq
 from dash.dependencies import Input, Output, ALL, State, MATCH, ALLSMALLER
 from dash.exceptions import PreventUpdate
 
-from components import visualization, upload_modal, container
+from components import visualization, select_dataset_modal, container
 from utils import collection
 from utils.collection import visual_container
 from utils.method import  get_ctx_type, get_ctx_property, get_ctx_value, get_ctx_index

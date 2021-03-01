@@ -3,7 +3,7 @@ import dash_bootstrap_components as dbc
 
 from callback.carousel_callback import register_display_image, register_ca_update_slider, register_update_ca_play_btn, \
     register_update_ca_playing_status
-from callback.upload_modal_callback import \
+from callback.select_dataset_modal_callback import \
     register_update_after_upload, \
     register_enable_create_btn, \
     register_clear_upload, \
@@ -21,7 +21,7 @@ from callback.container_callback import \
 # meta_tags are required for the app layout to be mobile responsive
 from callback.upload_page_callback import register_update_preview, register_update_datetime_modifier, \
     register_update_datetime_filled, register_update_datetime_upload_btn, register_update_datetime_format, \
-    register_update_form_complete, register_handle_upload_click
+    register_update_form_complete, register_handle_upload_click, register_clear_dropdown
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True, update_title=None,
                 meta_tags=[{'name': 'viewport',
@@ -58,6 +58,6 @@ register_update_datetime_upload_btn(app)
 register_update_datetime_format(app)
 register_update_form_complete(app)
 register_handle_upload_click(app)
-
+register_clear_dropdown(app)
 
 server = app.server

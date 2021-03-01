@@ -6,7 +6,7 @@ from dash.dependencies import Input, Output, ALL, State, MATCH, ALLSMALLER
 from dash.exceptions import PreventUpdate
 import tkinter as tk
 
-from components import visualization, upload_modal
+from components import visualization, select_dataset_modal
 from components.carousel import create_carousel
 from components.visualization import create_visualization
 from utils import collection

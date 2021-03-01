@@ -15,6 +15,11 @@ import io
 import pandas as pd
 from database.dbConfig import client
 
+
+# q = "select * from heatmap1 "
+# df = client.query(q, epoch='ns')
+# print(len(df['heatmap1']))
+
 layout = html.Div([
     dcc.Store(id='form-complete', data = False),
     dcc.Upload(
@@ -51,17 +56,38 @@ def preview_markup(filename):
     ])
 
 
-def dt_modifier_markup(dt):
+def dt_modifier_markup(value):
+    dt = collection.temp.loc[0, value]
+    # print(list(collection.temp.columns))
+    newCol = list(collection.temp.columns)
+    newCol.remove(value)
+    print('val', newCol)
+
+    options = [{"label": i, "value": i} for i in newCol]
     return dbc.FormGroup(
         [
             dcc.Store(id='dt-filled', data = False),
             dcc.Store(id='dt-format', data= False),
+
             dbc.Label('Measurement Name'),
             dbc.Input(id='name-input', placeholder="e.g. Coronavirus", type="text"),
+
+            dbc.FormGroup(
+                [
+                    dbc.Label("Tags*", html_for="dropdown"),
+                    dcc.Dropdown(
+                        id="dt-tags",
+                        multi = True,
+                        options = options
+                    ),
+                ]
+            ),
+
             dbc.Label('Specify datetime format of "{}"'.format(dt)),
             dbc.Input(id='dt-input', placeholder="Input goes here...", type="text"),
             dbc.FormText("20.12.2016 09:38:42,76  ->  %d.%m.%Y %H:%M:%S,%f"),
             dbc.FormText("DAY=%d, MONTH=%m, YEAR=%Y, HOUR=%H, MINUTE=%M, SECOND=%S, MILLISEC=%f"),
+
             dbc.Button("Check format", id="check-dt-format", className="ml-auto", color="secondary")
         ]
     )

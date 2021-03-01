@@ -8,7 +8,7 @@ from dash.dependencies import Input, Output, ALL, State, MATCH, ALLSMALLER
 from dash.exceptions import PreventUpdate
 
 from app import app
-from components import visualization, upload_modal
+from components import visualization, select_dataset_modal
 from utils import collection
 from utils.method import  set_slider_calendar
 
@@ -30,7 +30,7 @@ from raceplotly.plots import barplot
 layout = html.Div([
     dbc.Row([
         dbc.Col(html.Div(id='visual-container', children=[]), width="auto", style={'background':'green'})  ,
-        dbc.Col(upload_modal.modal,style={'background':'yellow'}),
+        dbc.Col(select_dataset_modal.modal, style={'background': 'yellow'}),
 
     ])
     # ,dcc.Graph(id='temporary',    figure=fig)

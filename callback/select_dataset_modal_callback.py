@@ -11,7 +11,7 @@ from utils.constant import FIGURE_OPTION, SCATTER_MAP_PARAM, SM_PARAM, CA_PARAM,
     CAROUSEL, CAROUSEL_CONSTANT, ITEM
 from utils import collection
 from utils.method import get_ctx_type,get_ctx_property,get_ctx_value,get_ctx_index
-from components.upload_modal import output_form_markup,after_upload_markup, after_upload_markup
+from components.select_dataset_modal import output_form_markup,after_upload_markup, after_upload_markup
 import base64
 import io
 import json
@@ -38,7 +38,7 @@ def validate_create(data):
 #############################################################################################################################################
 
 def parse_contents(contents, filename):
-    print('contents', contents)
+    # print('contents', contents)
     content_type, content_string = contents.split(',')
     decoded = base64.b64decode(content_string)
     try:
@@ -118,7 +118,7 @@ def register_toggle_modal(app):
         prevent_initial_call=True
     )
     def toggle_modal (open, close, create, is_open, param):
-        print(param)
+        # print(param)
         ctx = dash.callback_context
         if not ctx.triggered:
             input_id = 'No input yet'

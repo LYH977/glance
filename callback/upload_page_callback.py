@@ -15,7 +15,7 @@ from utils.constant import FIGURE_OPTION, SCATTER_MAP_PARAM, SM_PARAM, CA_PARAM,
     CAROUSEL, CAROUSEL_CONSTANT, ITEM
 from utils import collection
 from utils.method import get_ctx_type,get_ctx_property,get_ctx_value,get_ctx_index
-from components.upload_modal import output_form_markup,after_upload_markup, after_upload_markup
+from components.select_dataset_modal import output_form_markup,after_upload_markup, after_upload_markup
 import base64
 import io
 import json
@@ -78,8 +78,8 @@ def register_update_datetime_modifier(app):
             input_type = get_ctx_type(ctx)
 
         if input_type == 'dt-dropdown':
-            dt = collection.temp.loc[0, value]
-            text_input = dt_modifier_markup(dt)
+            # dt = collection.temp.loc[0, value]
+            text_input = dt_modifier_markup(value)
             return text_input
         elif input_type == 'upload-dataset':
             return None
@@ -164,20 +164,32 @@ def register_update_form_complete(app):
 
 #############################################################################################################################################
 
+def register_clear_dropdown(app):
+    @app.callback(Output('dt-dropdown', 'value'),
+                  Input('upload-dataset', 'contents'),
+                  prevent_initial_call=True
+    )
+    def clear_dropdown(content):
+        return None
+
+#############################################################################################################################################
+
 def register_handle_upload_click(app):
     @app.callback(Output('upload-toast', 'children'),
                   Input('dt-upload', 'n_clicks'),
-                  State('dt-dropdown', 'value'),
+                  [State('dt-dropdown', 'value'), State('dt-input', 'value'), State('name-input', 'value')],
                   prevent_initial_call=True
     )
-    def uupdate_handle_upload_click(click, value):
-        dataset = collection.temp.head(5)
-        tags= []
+    def uupdate_handle_upload_click(click, value, input, name):
+        dataset = collection.temp
+        tags= ['Country/Region','Lat', 'Long' ]
         # for col in dataset.columns:
         #     if dataset.loc[0, col].str.isnumeric() is False:
         #         tags.append(col)
+        # print(dataset)
+        pd.options.mode.chained_assignment = None
+        dataset[value] = dataset[value].map(lambda x : datetime.strptime(str(x), input).strftime('%Y-%m-%d %H:%M:%S.%f'))
         dataset.set_index(value, inplace= True)
         dataset.index = pd.to_datetime(dataset.index)
-        print(dataset.index)
-        client.write_points(dataset, 'testing', tag_columns=tags, protocol= 'line', database='dummy')
+        client.write_points(dataset, name, tag_columns=tags, protocol= 'line')
         return 1

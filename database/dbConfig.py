@@ -6,8 +6,9 @@ from influxdb import DataFrameClient
 
 dbhost = 'localhost'
 dbport = '8086'
+dbname = 'glance'
 protocol = 'line'
-client = DataFrameClient(dbhost, dbport)
+client = DataFrameClient(host = dbhost, port = dbport, database=dbname)
 
 # import "influxdata/influxdb/schema"
 
