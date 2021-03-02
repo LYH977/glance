@@ -6,10 +6,10 @@ from callback.carousel_callback import register_display_image, register_ca_updat
 from callback.select_dataset_modal_callback import \
     register_update_after_upload, \
     register_enable_create_btn, \
-    register_clear_upload, \
     register_toggle_modal, \
     register_update_output_form, register_validate_sm_create, register_validate_sg_create, register_validate_bc_create, \
-    register_validate_d_create, register_validate_ch_create, register_validate_ca_create
+    register_validate_d_create, register_validate_ch_create, register_validate_ca_create, register_update_dt_dropdown, \
+    register_update_chosen_dropdown
 
 from callback.container_callback import \
     register_update_visual_container, \
@@ -29,7 +29,7 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_
                 )
 register_update_after_upload(app)
 register_enable_create_btn(app)
-register_clear_upload(app)
+# register_clear_upload(app)
 register_update_output_form(app)
 register_validate_sm_create(app)
 register_validate_sg_create(app)
@@ -37,7 +37,8 @@ register_validate_bc_create(app)
 register_validate_d_create(app)
 register_validate_ch_create(app)
 register_validate_ca_create(app)
-
+register_update_dt_dropdown(app)
+register_update_chosen_dropdown(app)
 
 register_update_visual_container(app)
 register_update_figure(app)

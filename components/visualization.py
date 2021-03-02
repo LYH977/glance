@@ -19,17 +19,17 @@ px.set_mapbox_access_token(access_token)
 # data_url = 'https://shahinrostami.com/datasets/time-series-19-covid-combined.csv'
 # data = pd.read_csv(data_url)
 
-def create_figure(dataframe, parameter, ftype):
+def create_figure(create_clicks, parameter, ftype):
     if ftype == SCATTER_MAP:
-        return create_scattermap(dataframe,parameter)
+        return create_scattermap(create_clicks,parameter)
     elif ftype == SCATTER_GEO:
-        return create_scatter_geo(dataframe,parameter)
+        return create_scatter_geo(create_clicks,parameter)
     elif ftype == BAR_CHART_RACE:
-        return create_bar_chart_race(dataframe, parameter)
+        return create_bar_chart_race(create_clicks, parameter)
     elif ftype == DENSITY:
-        return create_density(dataframe, parameter)
+        return create_density(create_clicks, parameter)
     elif ftype == CHOROPLETH:
-        return create_choropleth(dataframe, parameter)
+        return create_choropleth(create_clicks, parameter)
 
 
 
@@ -44,9 +44,16 @@ def configure_fig(fig):
     fig.layout.updatemenus[0].showactive = True
 
 
+def convert_to_float(data, parameter, list):
+    for i in list:
+        data[parameter[i]] = data[parameter[i]].astype(float)
 
-def create_scattermap(dataframe,parameter):
-    data = dataframe.dropna()
+def create_scattermap(create_clicks, parameter):
+    data = collection.data[create_clicks]
+    convert_to_float(data, parameter, [
+        SCATTER_MAP_CONSTANT[LATITUDE],
+        SCATTER_MAP_CONSTANT[LONGITUDE]
+    ])
     fig = px.scatter_mapbox(
         data, lat = parameter[SCATTER_MAP_CONSTANT[LATITUDE]],
         lon = parameter[SCATTER_MAP_CONSTANT[LONGITUDE]],
@@ -65,8 +72,12 @@ def create_scattermap(dataframe,parameter):
     return fig
 
 
-def create_scatter_geo(dataframe,parameter):
-    data = dataframe.dropna()
+def create_scatter_geo(create_clicks, parameter):
+    data = collection.data[create_clicks]
+    convert_to_float(data, parameter, [
+        SCATTER_GEO_CONSTANT[LATITUDE],
+        SCATTER_GEO_CONSTANT[LONGITUDE]
+    ])
     fig = px.scatter_geo(
         data, lat = parameter[ SCATTER_GEO_CONSTANT[LATITUDE] ] ,
         lon = parameter[SCATTER_GEO_CONSTANT[LONGITUDE]],
@@ -85,8 +96,9 @@ def create_scatter_geo(dataframe,parameter):
     return fig
 
 
-def create_bar_chart_race(dataframe,parameter):
-    data = dataframe.dropna()
+def create_bar_chart_race(create_clicks, parameter):
+    data = collection.data[create_clicks]
+
     race_plot = barplot(
         data,
         item_column = parameter[BAR_CHART_RACE_CONSTANT[ITEM]],
@@ -101,8 +113,14 @@ def create_bar_chart_race(dataframe,parameter):
     return fig
 
 
-def create_density(dataframe,parameter):
-    data = dataframe.dropna()
+def create_density(create_clicks, parameter):
+    data = collection.data[create_clicks]
+    convert_to_float(data, parameter, [
+        DENSITY_CONSTANT[LATITUDE],
+        DENSITY_CONSTANT[LONGITUDE],
+        DENSITY_CONSTANT[Z]
+
+    ])
     fig = px.density_mapbox(
         data,
         lat = parameter[DENSITY_CONSTANT[LATITUDE]],
@@ -118,8 +136,8 @@ def create_density(dataframe,parameter):
     return fig
 
 
-def create_choropleth(dataframe,parameter):
-    data = dataframe.dropna()
+def create_choropleth(create_clicks,parameter):
+    data = collection.data[create_clicks]
     fig = px.choropleth(
         data, locations = parameter[CHOROPLETH_CONSTANT[LOCATIONS]],
         color = parameter[CHOROPLETH_CONSTANT[COLOR]],
@@ -150,7 +168,7 @@ def create_visualization(screen_width, create_clicks, ftype, param, maxValue, df
                             max_intervals=maxValue,
                             disabled=True
                         ),
-                        dcc.Graph(id={'type': 'visualization', 'index': create_clicks}, figure=create_figure(collection.temp, param, ftype)),
+                        dcc.Graph(id={'type': 'visualization', 'index': create_clicks}, figure=create_figure(create_clicks, param, ftype)),
                         dcc.Slider(
                             id={'type': 'anim-slider', 'index': create_clicks},
                             updatemode='drag',

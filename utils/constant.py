@@ -6,8 +6,7 @@ HOUR = '%H'
 MINUTE = '%M'
 SECOND = '%S'
 MILLISEC = '%f'
-
-'20.12.2016 09:38:42,76', '%d.%m.%Y %H:%M:%S,%f'
+TIME = 'time'
 
 SCATTER_MAP = 'Scatter Map'
 SCATTER_GEO = 'Scatter Geo'

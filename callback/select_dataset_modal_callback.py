@@ -7,11 +7,13 @@ import dash
 from dash.exceptions import PreventUpdate
 
 from components.carousel import create_ca_img
+from database.dbConfig import client
 from utils.constant import FIGURE_OPTION, SCATTER_MAP_PARAM, SM_PARAM, CA_PARAM, CH_PARAM, D_PARAM, BC_PARAM, SG_PARAM, \
     CAROUSEL, CAROUSEL_CONSTANT, ITEM
 from utils import collection
 from utils.method import get_ctx_type,get_ctx_property,get_ctx_value,get_ctx_index
-from components.select_dataset_modal import output_form_markup,after_upload_markup, after_upload_markup
+from components.select_dataset_modal import output_form_markup, dataset_portal_markup, dataset_portal_markup, \
+    dropdown_markup
 import base64
 import io
 import json
@@ -37,24 +39,24 @@ def validate_create(data):
 
 #############################################################################################################################################
 
-def parse_contents(contents, filename):
-    # print('contents', contents)
-    content_type, content_string = contents.split(',')
-    decoded = base64.b64decode(content_string)
-    try:
-        if 'csv' in filename:
-            # Assume that the user uploaded a CSV file
-            collection.temp = pd.read_csv(
-                io.StringIO(decoded.decode('utf-8')))
-        elif 'xls' in filename:
-            # Assume that the user uploaded an data file
-            collection.temp = pd.read_data(io.BytesIO(decoded))
-    except Exception as e:
-        print(e)
-        return html.Div([
-            'There was an error processing this file.'
-        ])
-    return after_upload_markup(filename)
+# def parse_contents(contents, filename):
+#     # print('contents', contents)
+#     content_type, content_string = contents.split(',')
+#     decoded = base64.b64decode(content_string)
+#     try:
+#         if 'csv' in filename:
+#             # Assume that the user uploaded a CSV file
+#             collection.temp = pd.read_csv(
+#                 io.StringIO(decoded.decode('utf-8')))
+#         elif 'xls' in filename:
+#             # Assume that the user uploaded an data file
+#             collection.temp = pd.read_data(io.BytesIO(decoded))
+#     except Exception as e:
+#         print(e)
+#         return html.Div([
+#             'There was an error processing this file.'
+#         ])
+#     return dataset_portal_markup(filename)
 
 
 
@@ -63,23 +65,29 @@ def parse_contents(contents, filename):
 
 
 def register_update_after_upload(app):
-    @app.callback(Output('after-upload', 'children'),
-                  [Input("open", "n_clicks"), Input("close", "n_clicks"),Input("create", "n_clicks"), Input('upload-data', 'contents')],
-                  [State('upload-data', 'filename'), State('upload-data', 'last_modified'),State("modal", "is_open")],
+    @app.callback(Output('dataset-portal', 'children'),
+                  [Input("open", "n_clicks"), Input("close", "n_clicks"),Input("create", "n_clicks"), Input('chosen-dropdown', 'data')],
+                  [State("modal", "is_open")],
                   prevent_initial_call=True
     )
-    def update_after_upload(n1, n2,n3,list_of_contents, list_of_names, list_of_dates,is_open):
+    def update_after_upload(open, close, create, value, is_open):
         ctx = dash.callback_context
         if not ctx.triggered:
             input_id = 'No input yet'
         else:
             input_id = ctx.triggered[0]['prop_id'].split('.')[0]
-        if input_id == 'upload-data':
-            if list_of_contents is not None:
-                children = [
-                    parse_contents(c, n) for c, n in
-                    zip(list_of_contents, list_of_names)]
-                return children
+        if input_id == 'chosen-dropdown':
+            if value is not None:
+                q = "select * from " + value
+                result = client.query(q, epoch='ns')
+                collection.temp = pd.DataFrame(result[value])
+                print('size: ', len(collection.temp.index))
+                collection.temp['time'] = collection.temp.index.map(lambda x: str(x))
+                collection.temp.reset_index(drop=True, inplace=True)
+
+                return dataset_portal_markup(value)
+
+
         elif input_id == 'open' or 'close' :
             return dash.no_update if is_open is True else []
         elif input_id ==  'create':
@@ -125,7 +133,8 @@ def register_toggle_modal(app):
         else:
             input_id = ctx.triggered[0]['prop_id'].split('.')[0]
         if input_id == 'create':
-            collection.data[create] = collection.temp.dropna()
+
+
             # collection.last_create_click = create
             if param['vtype'] == CAROUSEL:
                 temp = []
@@ -171,14 +180,47 @@ def register_enable_create_btn(app):
 #############################################################################################################################################
 
 
-def register_clear_upload(app):
+# def register_clear_upload(app):
+#     @app.callback(
+#         Output('upload-data', 'contents') ,
+#         [Input('close','n_clicks'), Input('create','n_clicks')],
+#         prevent_initial_call=True
+#     )
+#     def clear_upload (close,create):
+#         return None
+
+def register_update_dt_dropdown(app):
     @app.callback(
-        Output('upload-data', 'contents') ,
-        [Input('close','n_clicks'), Input('create','n_clicks')],
+        Output('dataset-window', 'children') ,
+        [Input('open','n_clicks'), Input('close','n_clicks'), Input('create','n_clicks')],
         prevent_initial_call=True
     )
-    def clear_upload (close,create):
-        return None
+    def update_dt_dropdown (open, close,create):
+        ctx = dash.callback_context
+        if not ctx.triggered:
+            input_type = 'No input yet'
+            input_value=None
+        else:
+            input_type = get_ctx_type(ctx)
+            input_value = get_ctx_value(ctx)
+        if input_type == 'open':
+            return dropdown_markup(client.get_list_measurements())
+        elif input_type == 'close' or 'create':
+            return None
+        else:
+            raise PreventUpdate
+
+#############################################################################################################################################
+
+
+def register_update_chosen_dropdown(app):
+    @app.callback(
+        Output('chosen-dropdown', 'data') ,
+        [Input('dataset-dropdown','value')],
+        prevent_initial_call=True
+    )
+    def update_chosen_dropdown (value):
+        return value
 
 #############################################################################################################################################
 

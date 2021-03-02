@@ -9,6 +9,7 @@ dbport = '8086'
 dbname = 'glance'
 protocol = 'line'
 client = DataFrameClient(host = dbhost, port = dbport, database=dbname)
+new_client = InfluxDBClient(host = dbhost, port = dbport, database=dbname)
 
 # import "influxdata/influxdb/schema"
 

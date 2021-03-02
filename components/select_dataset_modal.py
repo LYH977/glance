@@ -15,34 +15,40 @@ import base64
 import io
 import pandas as pd
 
+
+
+# print(client.get_list_measurements())
+# measurements = client.get_list_measurements()
 modal = html.Div(
     [
         # dbc.Button("Select File", id="open"),
         html.Div('add',id="open", style={'width':200, 'height':200, 'background':'red'}),
         dcc.Store(id='last-param', data={}),
+        dcc.Store(id='chosen-dropdown', data= None),
         dbc.Modal(
             [
                 dbc.ModalHeader("Create New Visualization"),
                 dbc.ModalBody(html.Div([
-                    dbc.FormGroup(
-                        [
-                            dbc.Label('Choose a dataset', className="mr-2"),
-                            dcc.Dropdown(
-                                style={'width': '100%'},
-                                id='dataset-dropdown',
-                                options=[{"label": i['name'], "value": i['name']} for i in client.get_list_measurements()],
-                                multi=False
-                            ),
-                        ],
-                        # className="mr-3",
-                        style={'width': '50%'}
-                    ),
-                    dcc.Upload(
-                        id='upload-data',
-                        children=html.Button('Upload File'),
-                        multiple=True
-                    ),
-                    html.Div(id='after-upload'),
+                    # dbc.FormGroup(
+                    #     [
+                    #         dbc.Label('Choose a dataset', className="mr-2"),
+                    #         dcc.Dropdown(
+                    #             style={'width': '100%'},
+                    #             id='dataset-dropdown',
+                    #             options=[{"label": i['name'], "value": i['name']} for i in measurements],
+                    #             multi=False
+                    #         ),
+                    #     ],
+                    #     # className="mr-3",
+                    #     style={'width': '50%'}
+                    # ),
+                    html.Div(id='dataset-window'),
+                    # dcc.Upload(
+                    #     id='upload-data',
+                    #     children=html.Button('Upload File'),
+                    #     multiple=True
+                    # ),
+                    html.Div(id='dataset-portal'),
                     # html.Div(id='data-snapshot'),
                     # html.Div(id='output-form'),
                 ])),
@@ -63,7 +69,7 @@ modal = html.Div(
     ]
 )
 
-def after_upload_markup(filename):
+def dataset_portal_markup(filename):
     return html.Div([
         html.Div(id='data-snapshot',children=snapshot_markup(filename)),
         html.Div(id='output-form'),
@@ -138,3 +144,19 @@ def parameter_option(name, id, multi = False):
                     # className="mr-3",
                     style={'width': '50%'}
         )
+
+
+def dropdown_markup(measurements):
+    return dbc.FormGroup(
+        [
+            dbc.Label('Choose a dataset', className="mr-2"),
+            dcc.Dropdown(
+                style={'width': '100%'},
+                id='dataset-dropdown',
+                options=[{"label": i['name'], "value": i['name']} for i in measurements],
+                multi=False
+            ),
+        ],
+        # className="mr-3",
+        style={'width': '50%'}
+    )

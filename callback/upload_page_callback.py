@@ -8,14 +8,14 @@ import dash_table
 import dash
 from dash.exceptions import PreventUpdate
 
-from database.dbConfig import client
+from database.dbConfig import client, new_client
 from pages.upload_page import preview_markup, dt_modifier_markup
 from components.carousel import create_ca_img
 from utils.constant import FIGURE_OPTION, SCATTER_MAP_PARAM, SM_PARAM, CA_PARAM, CH_PARAM, D_PARAM, BC_PARAM, SG_PARAM, \
     CAROUSEL, CAROUSEL_CONSTANT, ITEM
 from utils import collection
 from utils.method import get_ctx_type,get_ctx_property,get_ctx_value,get_ctx_index
-from components.select_dataset_modal import output_form_markup,after_upload_markup, after_upload_markup
+from components.select_dataset_modal import output_form_markup,dataset_portal_markup, dataset_portal_markup
 import base64
 import io
 import json
@@ -57,6 +57,12 @@ def register_update_preview(app):
                 zip(list_of_contents, list_of_names)
             ]
             options = [{"label": i, "value": i} for i in collection.temp.columns]
+            print('b', len( collection.temp.index))
+            collection.temp = collection.temp.dropna()
+            collection.temp = collection.temp.reset_index(drop=True)
+
+            print('a',len( collection.temp.index))
+
             return children, options, False
         else:
             raise PreventUpdate
@@ -177,19 +183,40 @@ def register_clear_dropdown(app):
 def register_handle_upload_click(app):
     @app.callback(Output('upload-toast', 'children'),
                   Input('dt-upload', 'n_clicks'),
-                  [State('dt-dropdown', 'value'), State('dt-input', 'value'), State('name-input', 'value')],
+                  [State('dt-dropdown', 'value'), State('dt-input', 'value'), State('name-input', 'value'), State('dt-tags', 'value')],
                   prevent_initial_call=True
     )
-    def uupdate_handle_upload_click(click, value, input, name):
+    def update_handle_upload_click(click, dt, input, name, tags):
         dataset = collection.temp
-        tags= ['Country/Region','Lat', 'Long' ]
-        # for col in dataset.columns:
-        #     if dataset.loc[0, col].str.isnumeric() is False:
-        #         tags.append(col)
-        # print(dataset)
         pd.options.mode.chained_assignment = None
-        dataset[value] = dataset[value].map(lambda x : datetime.strptime(str(x), input).strftime('%Y-%m-%d %H:%M:%S.%f'))
-        dataset.set_index(value, inplace= True)
-        dataset.index = pd.to_datetime(dataset.index)
-        client.write_points(dataset, name, tag_columns=tags, protocol= 'line')
+        dataset[dt] = dataset[dt].map(lambda x : datetime.strptime(str(x), input).strftime('%Y-%m-%d %H:%M:%S.%f'))
+
+        json_body = []
+        fields = list(dataset)
+        for t in tags:
+            fields.remove(t)
+        fields.remove(dt)
+
+        for count in range(len(dataset.index)):
+            print(count,' ',  dataset.loc[count, 'Item'], ' ',  dataset.loc[count, 'Year Code'])
+            tag_obj = {}
+            field_obj = {}
+            for t in tags:
+                tag_obj[t] = dataset.loc[count, t]
+            for f in fields:
+                data =  dataset.loc[count, f]
+                field_obj[f] = data
+            json_body.append({
+                "measurement":name,
+                "tags": tag_obj,
+                "time": dataset.loc[count, dt],
+                "fields" : field_obj
+            })
+        # print(json_body)
+        new_client.write_points(json_body)
+
+        # dataset.set_index(dt, inplace= True)
+        # dataset.index = pd.to_datetime(dataset.index)
+        # print(dataset)
+        # client.write_points(dataset, name, tag_columns=tags, protocol= 'line', numeric_precision= 'full')
         return 1
