@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -8,8 +10,9 @@ from dash.exceptions import PreventUpdate
 from components import visualization, select_dataset_modal, container
 from utils import collection
 from utils.collection import visual_container
-from utils.method import  get_ctx_type, get_ctx_property, get_ctx_value, get_ctx_index
-from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CAROUSEL, CHOROPLETH, BAR_CHART_RACE, FRAME_NAME
+from utils.method import get_ctx_type, get_ctx_property, get_ctx_value, get_ctx_index, formatted_time_value
+from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CAROUSEL, CHOROPLETH, BAR_CHART_RACE, \
+    STANDARD_T_FORMAT, FRAME, TIME
 
 
 # update visualization container by appending or removing item from array
@@ -17,9 +20,9 @@ def register_update_visual_container(app):
     @app.callback(
          Output('visual-container', 'children') ,
         [ Input('create', 'n_clicks'), Input({'type':'dlt-btn', 'index': ALL},'n_clicks') ],
-        [ State('visual-container', 'children') , State('last-param', 'data')   ],
+        [ State('visual-container', 'children') , State('last-param', 'data'),  State('time-format', 'value')    ],
         prevent_initial_call=True)
-    def update_visual_container(create_clicks, deletable, div_children, param):
+    def update_visual_container(create_clicks, deletable, div_children, param, tformat):
         ctx = dash.callback_context
         if not ctx.triggered:
             input_type = 'No input yet'
@@ -29,8 +32,15 @@ def register_update_visual_container(app):
 
         if input_type == 'create': # input from add button
             collection.temp = collection.temp.dropna()
-            collection.data[create_clicks] = collection.temp.dropna()
-            new_child = container.render_container(create_clicks, param['parameter'], param['vtype'])
+            collection.temp.reset_index(drop=True, inplace=True)
+
+            # collection.temp[TIME] = collection.temp.index.map(lambda x: str(x).split('+')[0])
+            # print(collection.temp[TIME] )
+            collection.temp[FRAME] = collection.temp[TIME].map(lambda x: formatted_time_value(x, tformat))
+
+            collection.data[create_clicks] = collection.temp
+
+            new_child = container.render_container(create_clicks, param['parameter'], param['vtype'], tformat)
 
             div_children.append(new_child)
             visual_container.append(create_clicks)
@@ -105,7 +115,13 @@ def register_update_playing_status(app):
     @app.callback(
         [Output({'type':'is-animating', 'index': MATCH}, 'data'), Output({'type':'interval', 'index': MATCH}, 'n_intervals'), Output({'type':'slider-label', 'index': MATCH}, 'children')],
         [Input({'type':'play-btn', 'index': MATCH}, 'n_clicks'), Input({'type':'anim-slider', 'index': MATCH}, 'value')],
-        [State({'type':'is-animating', 'index': MATCH}, 'data'), State({'type':'interval', 'index': MATCH}, 'n_intervals'), State({'type':'my_param', 'index': MATCH}, 'data'), State({'type':'figure-type', 'index': MATCH}, 'data')],
+        [
+            State({'type':'is-animating', 'index': MATCH}, 'data'),
+            State({'type':'interval', 'index': MATCH}, 'n_intervals'),
+            State({'type':'my_param', 'index': MATCH}, 'data'),
+            State({'type':'figure-type', 'index': MATCH}, 'data'),
+            # State({'type': 'my_tformat', 'index': MATCH}, 'data')
+        ],
         prevent_initial_call=True
     )
     def update_playing_status(play_clicked, s_value, playing, interval, param, ftype):
@@ -116,15 +132,15 @@ def register_update_playing_status(app):
         else:
             input_type = get_ctx_type(ctx)
             input_index=get_ctx_index(ctx)
-
-        df_date = collection.data[input_index][param[FRAME_NAME[ftype]]].unique()
-        maxValue = df_date.shape[0] - 1
+        # print('param', param)
+        df_frame = collection.data[input_index][FRAME].unique()
+        maxValue = df_frame.shape[0] - 1
         if input_type== 'anim-slider': #input from slider
-
+            label = df_frame[s_value]
             return \
                 False if playing is True and s_value != interval or s_value == maxValue else dash.no_update,\
                 dash.no_update, \
-                df_date[s_value]
+                label
 
         elif  input_type== 'play-btn':#input from play btn
             return \

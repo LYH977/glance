@@ -10,18 +10,20 @@ from components import visualization, select_dataset_modal
 from components.carousel import create_carousel
 from components.visualization import create_visualization
 from utils import collection
-from utils.constant import FRAME_NAME, CAROUSEL
+from utils.constant import CAROUSEL, FRAME
 from utils.method import  set_slider_calendar
 
 root = tk.Tk()
 screen_width = root.winfo_screenwidth()
 
-def render_container(create_clicks, param, ftype):
+def render_container(create_clicks, param, ftype, tformat):
     data = collection.temp.dropna()
-    df_date = data[param[FRAME_NAME[ftype]]].unique()
-    maxValue = df_date.shape[0] - 1
+    # df_date = data[param[FRAME_NAME[ftype]]].unique()
+    df_frame = data[FRAME].unique()
+
+    maxValue = df_frame.shape[0] - 1
     if(ftype != CAROUSEL):
-        return create_visualization(screen_width, create_clicks, ftype, param, maxValue, df_date)
+        return create_visualization(screen_width, create_clicks, ftype, param, maxValue, df_frame)
     else:
         # print(collection.temp)
-        return create_carousel(screen_width, create_clicks, param, maxValue, df_date)
+        return create_carousel(screen_width, create_clicks, param, maxValue, df_frame)

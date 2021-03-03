@@ -8,7 +8,7 @@ from dash.exceptions import PreventUpdate
 
 from database.dbConfig import client
 from utils.constant import FIGURE_OPTION, FIGURE_PARAM, CREATE_BTN_ID, SM_PARAM, SG_PARAM, D_PARAM, CA_PARAM, CH_PARAM, \
-    BC_PARAM, SCATTER_MAP, SCATTER_GEO, DENSITY, CHOROPLETH, CAROUSEL, BAR_CHART_RACE
+    BC_PARAM, SCATTER_MAP, SCATTER_GEO, DENSITY, CHOROPLETH, CAROUSEL, BAR_CHART_RACE, TIME_FORMAT
 from utils import  collection
 from utils.method import unpack_parameter
 import base64
@@ -106,6 +106,8 @@ def output_form_markup(type):
     parameter={}
     for p_id, p_info in FIGURE_PARAM[type].items():
         parameter[p_id] = p_info['value']
+    options = [ parameter_option(i, j, k) for i,j,k in unpack_parameter(FIGURE_PARAM[type]) ]
+    options.append(time_format_option())
     return html.Div([
         # dcc.Store(id='uuid', data=None),
         # dcc.Store(id='is-filled', data = False),
@@ -118,9 +120,7 @@ def output_form_markup(type):
         dcc.Store(id=BC_PARAM, data={'is_filled': False, 'parameter': parameter if type == BAR_CHART_RACE else None}),
 
         dbc.Form(
-            [
-                parameter_option(i, j, k) for i,j,k in unpack_parameter(FIGURE_PARAM[type])
-            ],
+            options,
             inline=True,
             # style={'background':'red'}
         )
@@ -139,6 +139,23 @@ def parameter_option(name, id, multi = False):
                             id=id,
                             options=[{"label": i, "value": i} for i in collection.temp.columns],
                             multi = multi
+                        ),
+                    ],
+                    # className="mr-3",
+                    style={'width': '50%'}
+        )
+
+def time_format_option():
+    return  \
+        dbc.FormGroup(
+                    [
+                        dbc.Label('Choose Time Format', className="mr-2"),
+                        dcc.Dropdown(
+                            style={'width': '100%'},
+                            id='time-format',
+                            options=[{"label": i, "value": j} for i,j in zip(TIME_FORMAT.keys(), TIME_FORMAT.values())],
+                            clearable= False,
+                            value = '%Y'
                         ),
                     ],
                     # className="mr-3",

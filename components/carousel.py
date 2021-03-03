@@ -8,7 +8,7 @@ from utils.constant import CAROUSEL_CONSTANT, ITEM
 from utils.method import set_slider_calendar
 
 
-def create_carousel(screen_width, create_clicks, param, maxValue, df_date):
+def create_carousel(screen_width, create_clicks, param, maxValue, df_frame):
     return html.Div(
                     style={'width': screen_width/2.2, 'display': 'inline-block', 'outline': 'thin lightgrey solid', 'padding': 10, 'position':'relative'},
                     children=html.Div([
@@ -35,11 +35,11 @@ def create_carousel(screen_width, create_clicks, param, maxValue, df_date):
                             max=maxValue,
                             value=0,
                             marks={str(i): str(des) for i, des in
-                                   zip(range(0, df_date.shape[0]), set_slider_calendar(df_date))},
+                                   zip(range(0, df_frame.shape[0]), set_slider_calendar(df_frame))},
                         ),
                         html.Div([
                             html.Button('play', id={'type': 'ca-play-btn', 'index': create_clicks}),
-                            html.Label(df_date[0], id={'type': 'ca-slider-label', 'index': create_clicks})
+                            html.Label(df_frame[0], id={'type': 'ca-slider-label', 'index': create_clicks})
                         ]),
                         html.Button('Delete', id={'type': 'dlt-btn', 'index': create_clicks}, style={'position':'absolute', 'top':0}),
                     ]),

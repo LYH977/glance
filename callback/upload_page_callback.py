@@ -193,16 +193,17 @@ def register_handle_upload_click(app):
 
         json_body = []
         fields = list(dataset)
-        for t in tags:
-            fields.remove(t)
+        if tags:
+            for t in tags:
+                fields.remove(t)
         fields.remove(dt)
 
         for count in range(len(dataset.index)):
-            print(count,' ',  dataset.loc[count, 'Item'], ' ',  dataset.loc[count, 'Year Code'])
             tag_obj = {}
             field_obj = {}
-            for t in tags:
-                tag_obj[t] = dataset.loc[count, t]
+            if tags:
+                for t in tags:
+                    tag_obj[t] = dataset.loc[count, t]
             for f in fields:
                 data =  dataset.loc[count, f]
                 field_obj[f] = data
@@ -213,7 +214,7 @@ def register_handle_upload_click(app):
                 "fields" : field_obj
             })
         # print(json_body)
-        new_client.write_points(json_body)
+        new_client.write_points(json_body, time_precision='ms')
 
         # dataset.set_index(dt, inplace= True)
         # dataset.index = pd.to_datetime(dataset.index)

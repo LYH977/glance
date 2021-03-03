@@ -6,7 +6,27 @@ HOUR = '%H'
 MINUTE = '%M'
 SECOND = '%S'
 MILLISEC = '%f'
+STANDARD_T_FORMAT = '%Y-%m-%d %H:%M:%S'
+TIME_FORMAT = {
+    'YEAR': YEAR,
+    'MONTH': MONTH,
+    'DAY': DAY,
+    'HOUR': HOUR,
+    'MINUTE': MINUTE,
+    'SECOND': SECOND,
+    'YEAR-MONTH': '{}-{}'.format(YEAR, MONTH),
+    'YEAR-MONTH-DAY': '{}-{}-{}'.format(YEAR, MONTH,DAY),
+    'HOUR:MINUTE:SECOND': '{}:{}:{}'.format(HOUR, MINUTE, SECOND),
+    'YEAR-MONTH-DAY, HOUR:MINUTE:SECOND': '{}-{}-{}, {}:{}:{}'.format(YEAR, MONTH, DAY, HOUR, MINUTE, SECOND),
+    # 'YYYY': YEAR,
+    # 'YYYY-MM': '{YEAR}-{MONTH}'.format(YEAR, MONTH),
+    # 'YYYY-MM-DD': '{YEAR}-{MONTH}-{DAY}'.format(YEAR, MONTH, DAY),
+    # 'YYYY-MM-DD, HH:mm:ss:MILLISEC': '{YEAR}-{MONTH}-{DAY}, {HOUR}:{MINUTE}:{SECOND}:{MILLISEC}'.format(
+    #     YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, MILLISEC),
+
+}
 TIME = 'time'
+# DISPLAY = 'frame'
 
 SCATTER_MAP = 'Scatter Map'
 SCATTER_GEO = 'Scatter Geo'
@@ -52,15 +72,15 @@ FIGURE_OPTION = [
     CAROUSEL
 ]
 
-FRAME_NAME = {
-    SCATTER_MAP :'sm_frame',
-    SCATTER_GEO: 'sg_frame',
-    BAR_CHART_RACE: 'bc_frame',
-    DENSITY: 'd_frame',
-    CHOROPLETH: 'ch_frame',
-    CAROUSEL: 'ca_frame',
-
-}
+# FRAME_NAME = {
+#     SCATTER_MAP :'sm_frame',
+#     SCATTER_GEO: 'sg_frame',
+#     BAR_CHART_RACE: 'bc_frame',
+#     DENSITY: 'd_frame',
+#     CHOROPLETH: 'ch_frame',
+#     CAROUSEL: 'ca_frame',
+#
+# }
 
 SCATTER_MAP_CONSTANT = {
     LATITUDE : 'sm_latitude',
@@ -68,7 +88,7 @@ SCATTER_MAP_CONSTANT = {
     SIZE: 'sm_size',
     COLOR: 'sm_color',
     NAME: 'sm_name',
-    FRAME: FRAME_NAME[SCATTER_MAP],
+    # FRAME: FRAME_NAME[SCATTER_MAP],
     MESSAGE: 'sm_message',
 }
 
@@ -78,21 +98,21 @@ SCATTER_GEO_CONSTANT = {
     SIZE: 'sg_size',
     COLOR: 'sg_color',
     NAME: 'sg_name',
-    FRAME: FRAME_NAME[SCATTER_GEO],
+    # FRAME: FRAME_NAME[SCATTER_GEO],
     MESSAGE: 'sg_message',
 }
 
 BAR_CHART_RACE_CONSTANT = {
     ITEM : 'bc_item',
     VALUE : 'bc_value',
-    FRAME : FRAME_NAME[BAR_CHART_RACE],
+    # FRAME : FRAME_NAME[BAR_CHART_RACE],
 }
 
 DENSITY_CONSTANT = {
     LATITUDE : 'd_latitude',
     LONGITUDE: 'd_longitude',
     Z: 'd_z',
-    FRAME: FRAME_NAME[DENSITY],
+    # FRAME: FRAME_NAME[DENSITY],
     MESSAGE: 'd_message',
 }
 
@@ -100,13 +120,13 @@ CHOROPLETH_CONSTANT = {
     LOCATIONS : 'ch_locations',
     COLOR: 'ch_color',
     NAME: 'ch_name',
-    FRAME: FRAME_NAME[CHOROPLETH],
+    # FRAME: FRAME_NAME[CHOROPLETH],
     MESSAGE: 'ch_message',
 }
 
 CAROUSEL_CONSTANT = {
     ITEM : 'ca_item',
-    FRAME: FRAME_NAME[CAROUSEL],
+    # FRAME: FRAME_NAME[CAROUSEL],
 }
 
 SCATTER_MAP_PARAM = {
@@ -115,7 +135,7 @@ SCATTER_MAP_PARAM = {
     SCATTER_MAP_CONSTANT[SIZE]: { 'label':'Size*', 'value': None, 'multi': False },
     SCATTER_MAP_CONSTANT[COLOR]: { 'label':'Color*', 'value': None, 'multi': False },
     SCATTER_MAP_CONSTANT[NAME]: { 'label':'Name*', 'value': None , 'multi': False},
-    SCATTER_MAP_CONSTANT[FRAME] : { 'label':'Animation Frame*', 'value': None, 'multi': False },
+    # SCATTER_MAP_CONSTANT[FRAME] : { 'label':'Animation Frame*', 'value': None, 'multi': False },
     SCATTER_MAP_CONSTANT[MESSAGE]: { 'label':'Additional Message', 'value': [] , 'multi': True},
 }
 
@@ -125,14 +145,14 @@ SCATTER_GEO_PARAM = {
     SCATTER_GEO_CONSTANT[SIZE]: { 'label':'Size*', 'value': None, 'multi': False },
     SCATTER_GEO_CONSTANT[COLOR]: { 'label':'Color*', 'value': None, 'multi': False },
     SCATTER_GEO_CONSTANT[NAME]: { 'label':'Name*', 'value': None , 'multi': False},
-    SCATTER_GEO_CONSTANT[FRAME] : { 'label':'Animation Frame*', 'value': None, 'multi': False },
+    # SCATTER_GEO_CONSTANT[FRAME] : { 'label':'Animation Frame*', 'value': None, 'multi': False },
     SCATTER_GEO_CONSTANT[MESSAGE]: { 'label':'Additional Message', 'value': [] , 'multi': True},
 }
 
 BAR_CHART_RACE_PARAM = {
     BAR_CHART_RACE_CONSTANT[ITEM] : { 'label':'Item*', 'value': None , 'multi': False},
     BAR_CHART_RACE_CONSTANT[VALUE] : { 'label':'Value*', 'value': None , 'multi': False},
-    BAR_CHART_RACE_CONSTANT[FRAME] : { 'label':'Time*', 'value': None, 'multi': False },
+    # BAR_CHART_RACE_CONSTANT[FRAME] : { 'label':'Time*', 'value': None, 'multi': False },
 
 }
 
@@ -140,7 +160,7 @@ DENSITY_PARAM = {
     DENSITY_CONSTANT[LATITUDE] : { 'label':'Latitude*', 'value': None , 'multi': False},
     DENSITY_CONSTANT[LONGITUDE] : { 'label':'Longitude*', 'value': None , 'multi': False},
     DENSITY_CONSTANT[Z] : {'label': 'Magnitude*', 'value': None, 'multi': False},
-    DENSITY_CONSTANT[FRAME] : {'label': 'Time*', 'value': None, 'multi': False},
+    # DENSITY_CONSTANT[FRAME] : {'label': 'Time*', 'value': None, 'multi': False},
     DENSITY_CONSTANT[MESSAGE] : { 'label':'Additional Message', 'value': [] , 'multi': True},
 
 }
@@ -149,14 +169,14 @@ CHOROPLETH_PARAM = {
     CHOROPLETH_CONSTANT[LOCATIONS] : { 'label':'Locations*', 'value': None , 'multi': False},
     CHOROPLETH_CONSTANT[COLOR] : { 'label':'Color*', 'value': None , 'multi': False},
     CHOROPLETH_CONSTANT[NAME] : {'label': 'Name*', 'value': None, 'multi': False},
-    CHOROPLETH_CONSTANT[FRAME] : { 'label':'Frame*', 'value': None, 'multi': False },
+    # CHOROPLETH_CONSTANT[FRAME] : { 'label':'Frame*', 'value': None, 'multi': False },
     CHOROPLETH_CONSTANT[MESSAGE] : {'label': 'Additional Message', 'value': [], 'multi': True},
 
 }
 
 CAROUSEL_PARAM = {
     CAROUSEL_CONSTANT[ITEM] : { 'label':'Item*', 'value': None , 'multi': False},
-    CAROUSEL_CONSTANT[FRAME] : { 'label':'Time*', 'value': None, 'multi': False },
+    # CAROUSEL_CONSTANT[FRAME] : { 'label':'Time*', 'value': None, 'multi': False },
 
 }
 

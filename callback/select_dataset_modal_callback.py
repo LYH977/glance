@@ -27,7 +27,7 @@ def validate_create(data):
     ctx = dash.callback_context
     input_value = None
     if not ctx.triggered:
-        input_id = 'No input yet'
+        input_type = 'No input yet'
         raise PreventUpdate
     else:
         input_type = get_ctx_type(ctx)
@@ -73,24 +73,24 @@ def register_update_after_upload(app):
     def update_after_upload(open, close, create, value, is_open):
         ctx = dash.callback_context
         if not ctx.triggered:
-            input_id = 'No input yet'
+            input_type = 'No input yet'
         else:
-            input_id = ctx.triggered[0]['prop_id'].split('.')[0]
-        if input_id == 'chosen-dropdown':
+            input_type = ctx.triggered[0]['prop_id'].split('.')[0]
+        if input_type == 'chosen-dropdown':
             if value is not None:
                 q = "select * from " + value
                 result = client.query(q, epoch='ns')
                 collection.temp = pd.DataFrame(result[value])
-                print('size: ', len(collection.temp.index))
-                collection.temp['time'] = collection.temp.index.map(lambda x: str(x))
-                collection.temp.reset_index(drop=True, inplace=True)
+                collection.temp['time'] = collection.temp.index.map(lambda x: str(x).split('+')[0])
+                # print(collection.temp['time'])
+                # collection.temp.reset_index(drop=True, inplace=True)
 
                 return dataset_portal_markup(value)
 
 
-        elif input_id == 'open' or 'close' :
+        elif input_type == 'open' or 'close' :
             return dash.no_update if is_open is True else []
-        elif input_id ==  'create':
+        elif input_type ==  'create':
             return  []
         else:
             raise PreventUpdate
@@ -105,12 +105,12 @@ def register_update_output_form(app):
     def update_output_form(type):
         ctx = dash.callback_context
         if not ctx.triggered:
-            input_id = 'No input yet'
+            input_type = 'No input yet'
         else:
-            input_id = ctx.triggered[0]['prop_id'].split('.')[0]
-        if input_id == 'visual-type' and type is not None:
+            input_type = ctx.triggered[0]['prop_id'].split('.')[0]
+        if input_type == 'visual-type' and type is not None:
             return output_form_markup(type)
-        # elif input_id == 'close' or input_id == 'create':
+        # elif input_type == 'close' or input_type == 'create':
         #     return None
         else:
             raise PreventUpdate
@@ -129,19 +129,15 @@ def register_toggle_modal(app):
         # print(param)
         ctx = dash.callback_context
         if not ctx.triggered:
-            input_id = 'No input yet'
+            input_type = 'No input yet'
         else:
-            input_id = ctx.triggered[0]['prop_id'].split('.')[0]
-        if input_id == 'create':
-
-
-            # collection.last_create_click = create
+            input_type = ctx.triggered[0]['prop_id'].split('.')[0]
+        if input_type == 'create':
             if param['vtype'] == CAROUSEL:
                 temp = []
                 for row in collection.temp.index:
                     temp.append( create_ca_img(collection.temp.loc[row, param['parameter'][CAROUSEL_CONSTANT[ITEM]]]) )
                 collection.img_container[create] = temp
-            # print(collection.data[create]['year'])
         return not is_open
 #############################################################################################################################################
 
@@ -164,13 +160,13 @@ def register_enable_create_btn(app):
     def enable_create_btn (sm, sg, d, ch, ca, bc, create, vtype):
         ctx = dash.callback_context
         if not ctx.triggered:
-            input_id = 'No input yet'
+            input_type = 'No input yet'
             input_value=None
         else:
-            input_id = get_ctx_type(ctx)
+            input_type = get_ctx_type(ctx)
             input_value = get_ctx_value(ctx)
 
-        if input_id == 'create':
+        if input_type == 'create':
             return True, dash.no_update
         if input_value['parameter'] is not None and input_value['is_filled'] is True:
             data = {'vtype': vtype, 'parameter':input_value['parameter'] }
@@ -234,13 +230,13 @@ def register_validate_sm_create(app):
             Input("sm_size", "value"),
             Input("sm_color", "value"),
             Input("sm_name", "value"),
-            Input("sm_frame", "value"),
+            # Input("sm_frame", "value"),
             Input("sm_message", "value"),
         ],
         State(SM_PARAM, 'data'),
         prevent_initial_call=True
     )
-    def validate_sm_create (lat, long, size, color, name, frame, msg, data):
+    def validate_sm_create (lat, long, size, color, name, msg, data):
         # print(data)
         return validate_create(data)
 
@@ -257,13 +253,13 @@ def register_validate_sg_create(app):
             Input("sg_size", "value"),
             Input("sg_color", "value"),
             Input("sg_name", "value"),
-            Input("sg_frame", "value"),
+            # Input("sg_frame", "value"),
             Input("sg_message", "value"),
         ],
         State(SG_PARAM, 'data'),
         prevent_initial_call=True
     )
-    def validate_sg_create (lat, long, size, color, name, frame, msg, data):
+    def validate_sg_create (lat, long, size, color, name, msg, data):
         return validate_create(data)
 
 
@@ -276,12 +272,12 @@ def register_validate_bc_create(app):
         [
             Input("bc_item", "value"),
             Input("bc_value", "value"),
-            Input("bc_frame", "value"),
+            # Input("bc_frame", "value"),
         ],
         State(BC_PARAM, 'data'),
         prevent_initial_call=True
     )
-    def validate_bc_create (item, value, frame, data):
+    def validate_bc_create (item, value, data):
         return validate_create(data)
 
 
@@ -295,13 +291,13 @@ def register_validate_d_create(app):
             Input("d_latitude", "value"),
             Input("d_longitude", "value"),
             Input("d_z", "value"),
-            Input("d_frame", "value"),
+            # Input("d_frame", "value"),
             Input("d_message", "value"),
         ],
         State(D_PARAM, 'data'),
         prevent_initial_call=True
     )
-    def validate_d_create (lat, long, z, frame, msg, data):
+    def validate_d_create (lat, long, z, msg, data):
         return validate_create(data)
 
 
@@ -315,13 +311,13 @@ def register_validate_ch_create(app):
             Input("ch_locations", "value"),
             Input("ch_color", "value"),
             Input("ch_name", "value"),
-            Input("ch_frame", "value"),
+            # Input("ch_frame", "value"),
             Input("ch_message", "value"),
         ],
         State(CH_PARAM, 'data'),
         prevent_initial_call=True
     )
-    def validate_ch_create (loc, color, name, frame, msg, data):
+    def validate_ch_create (loc, color, name, msg, data):
         return validate_create(data)
 
 
@@ -333,12 +329,12 @@ def register_validate_ca_create(app):
         Output(CA_PARAM, 'data') ,
         [
             Input("ca_item", "value"),
-            Input("ca_frame", "value"),
+            # Input("ca_frame", "value"),
         ],
         State(CA_PARAM, 'data'),
         prevent_initial_call=True
     )
-    def validate_ca_create (item, frame, data):
+    def validate_ca_create (item, data):
         return validate_create(data)
 
 

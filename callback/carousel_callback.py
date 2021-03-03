@@ -8,8 +8,7 @@ from dash.exceptions import PreventUpdate
 from components import visualization, select_dataset_modal, container
 from utils import collection
 from utils.method import  get_ctx_type, get_ctx_property, get_ctx_value, get_ctx_index
-from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CAROUSEL, CHOROPLETH, BAR_CHART_RACE, FRAME_NAME
-
+from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CAROUSEL, CHOROPLETH, BAR_CHART_RACE, FRAME
 
 
 def register_display_image(app):
@@ -92,7 +91,7 @@ def register_update_ca_playing_status(app):
             input_type = get_ctx_type(ctx)
             input_index = get_ctx_index(ctx)
 
-        df_date = collection.data[input_index][param[FRAME_NAME[CAROUSEL]]].unique()
+        df_date = collection.data[input_index][FRAME].unique()
         maxValue = df_date.shape[0] - 1
         if input_type== 'ca-anim-slider': #input from slider
 

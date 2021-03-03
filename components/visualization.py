@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pandas as pd                  # for DataFrames
 import plotly.express as px
 import dash_core_components as dcc
@@ -8,10 +10,10 @@ import os
 from utils import collection
 from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CAROUSEL, CHOROPLETH, BAR_CHART_RACE, \
     SCATTER_MAP_CONSTANT, LATITUDE, LONGITUDE, SIZE, COLOR, NAME, FRAME, MESSAGE, SCATTER_GEO_CONSTANT, \
-    BAR_CHART_RACE_CONSTANT, ITEM, VALUE, DENSITY_CONSTANT, Z, CHOROPLETH_CONSTANT, LOCATIONS
+    BAR_CHART_RACE_CONSTANT, ITEM, VALUE, DENSITY_CONSTANT, Z, CHOROPLETH_CONSTANT, LOCATIONS, STANDARD_T_FORMAT
 from raceplotly.plots import barplot
 
-from utils.method import set_slider_calendar
+from utils.method import set_slider_calendar, formatted_time_value
 
 access_token = os.environ['MAP_TOKEN']
 px.set_mapbox_access_token(access_token)
@@ -54,6 +56,7 @@ def create_scattermap(create_clicks, parameter):
         SCATTER_MAP_CONSTANT[LATITUDE],
         SCATTER_MAP_CONSTANT[LONGITUDE]
     ])
+    print(data.columns)
     fig = px.scatter_mapbox(
         data, lat = parameter[SCATTER_MAP_CONSTANT[LATITUDE]],
         lon = parameter[SCATTER_MAP_CONSTANT[LONGITUDE]],
@@ -61,13 +64,14 @@ def create_scattermap(create_clicks, parameter):
         color = parameter[SCATTER_MAP_CONSTANT[COLOR]], color_continuous_scale = px.colors.sequential.Pinkyl,
         hover_name = parameter[SCATTER_MAP_CONSTANT[NAME]],
         mapbox_style = 'dark', zoom=1,
-        animation_frame = parameter[SCATTER_MAP_CONSTANT[FRAME]],
+        animation_frame = FRAME,
         # animation_group="Province/State",
         height = 600,
         hover_data = parameter[SCATTER_MAP_CONSTANT[MESSAGE]]
         # hover_data=['Active', 'Confirmed']
         # custom_data=['Date']
     )
+    # print(fig)
     configure_fig(fig)
     return fig
 
@@ -84,7 +88,7 @@ def create_scatter_geo(create_clicks, parameter):
         size = parameter[SCATTER_GEO_CONSTANT[SIZE]],
         color = parameter[SCATTER_GEO_CONSTANT[COLOR]],
         hover_name = parameter[SCATTER_GEO_CONSTANT[NAME]],
-        animation_frame = parameter[SCATTER_GEO_CONSTANT[FRAME]],
+        animation_frame = FRAME,
         # animation_group="Province/State",
         height = 600,
         hover_data = parameter[SCATTER_GEO_CONSTANT[MESSAGE]],
@@ -103,7 +107,7 @@ def create_bar_chart_race(create_clicks, parameter):
         data,
         item_column = parameter[BAR_CHART_RACE_CONSTANT[ITEM]],
         value_column = parameter[BAR_CHART_RACE_CONSTANT[VALUE]],
-        time_column = parameter[BAR_CHART_RACE_CONSTANT[FRAME]]
+        time_column = FRAME
     )
     fig = race_plot.plot(title = 'Top 10 Crops from 1961 to 2018',
                              item_label = 'Top 10 crops',
@@ -129,7 +133,7 @@ def create_density(create_clicks, parameter):
         radius = 10,
         center = dict(lat = 0, lon = 180),
         zoom = 0,
-        animation_frame = parameter[DENSITY_CONSTANT[FRAME]],
+        animation_frame = FRAME,
         mapbox_style = "stamen-terrain")
 
     configure_fig(fig)
@@ -142,7 +146,9 @@ def create_choropleth(create_clicks,parameter):
         data, locations = parameter[CHOROPLETH_CONSTANT[LOCATIONS]],
         color = parameter[CHOROPLETH_CONSTANT[COLOR]],
         hover_name = parameter[CHOROPLETH_CONSTANT[NAME]],
-        animation_frame = parameter[CHOROPLETH_CONSTANT[FRAME]],
+        # animation_frame = parameter[CHOROPLETH_CONSTANT[FRAME]],
+        animation_frame = FRAME,
+
         # animation_group="Province/State",
         height = 600,
         hover_data = parameter[CHOROPLETH_CONSTANT[MESSAGE]],
@@ -153,14 +159,15 @@ def create_choropleth(create_clicks,parameter):
     configure_fig(fig)
     return fig
 
-def create_visualization(screen_width, create_clicks, ftype, param, maxValue, df_date):
+def create_visualization(screen_width, create_clicks, ftype, param, maxValue, df_frame):
     return html.Div(
                     style={'width': screen_width/2.2, 'display': 'inline-block', 'outline': 'thin lightgrey solid', 'padding': 10, 'position':'relative'},
                     children=html.Div([
                         dcc.Store(id={'type': 'is-animating', 'index': create_clicks}, data = False),
-                        dcc.Store(id='uuid', data = create_clicks),
+                        # dcc.Store(id='uuid', data = create_clicks),
                         dcc.Store(id={'type': 'figure-type', 'index': create_clicks}, data = ftype),
                         dcc.Store(id={'type': 'my_param', 'index': create_clicks}, data=param),
+                        # dcc.Store(id={'type': 'my_tformat', 'index': create_clicks}, data=tformat),
                         dcc.Interval(
                             id={'type': 'interval', 'index': create_clicks},
                             interval=200,
@@ -176,11 +183,11 @@ def create_visualization(screen_width, create_clicks, ftype, param, maxValue, df
                             max=maxValue,
                             value=0,
                             marks={str(i): str(des) for i, des in
-                                   zip(range(0, df_date.shape[0]), set_slider_calendar(df_date))},
+                                   zip(range(0, df_frame.shape[0]), set_slider_calendar(df_frame))},
                         ),
                         html.Div([
                             html.Button('play', id={'type': 'play-btn', 'index': create_clicks}),
-                            html.Label(df_date[0], id={'type': 'slider-label', 'index': create_clicks})
+                            html.Label( df_frame[0], id={'type': 'slider-label', 'index': create_clicks})
                         ]),
                         html.Button('Delete', id={'type': 'dlt-btn', 'index': create_clicks}, style={'position':'absolute', 'top':0}),
                     ]),

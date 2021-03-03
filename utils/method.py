@@ -1,13 +1,18 @@
 import json
-from utils.constant import FIGURE_PARAM
+from datetime import datetime
+from utils.constant import FIGURE_PARAM, STANDARD_T_FORMAT
+
 
 def set_slider_calendar(dataframe):
     calendar = []
     for i in range(0, dataframe.shape[0]):
+        # value = formatted_time_value(dataframe[i], tformat) if i % 7 == 0 else ''
         value = dataframe[i] if i % 7 == 0 else ''
         calendar.append(value)
     return calendar
 
+def formatted_time_value(time, tformat):
+    return datetime.strptime(time, STANDARD_T_FORMAT).strftime(tformat)
 
 def get_ctx_type(ctx):
     props_id = ctx.triggered[0]['prop_id'].split('.')[0]
