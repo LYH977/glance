@@ -33,13 +33,9 @@ def register_update_visual_container(app):
         if input_type == 'create': # input from add button
             collection.temp = collection.temp.dropna()
             collection.temp.reset_index(drop=True, inplace=True)
-
-            # collection.temp[TIME] = collection.temp.index.map(lambda x: str(x).split('+')[0])
-            # print(collection.temp[TIME] )
             collection.temp[FRAME] = collection.temp[TIME].map(lambda x: formatted_time_value(x, tformat))
-
             collection.data[create_clicks] = collection.temp
-
+            print(param)
             new_child = container.render_container(create_clicks, param['parameter'], param['vtype'], tformat)
 
             div_children.append(new_child)

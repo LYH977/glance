@@ -18,7 +18,6 @@ screen_width = root.winfo_screenwidth()
 
 def render_container(create_clicks, param, ftype, tformat):
     data = collection.temp.dropna()
-    # df_date = data[param[FRAME_NAME[ftype]]].unique()
     df_frame = data[FRAME].unique()
 
     maxValue = df_frame.shape[0] - 1

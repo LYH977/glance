@@ -57,11 +57,11 @@ def register_update_preview(app):
                 zip(list_of_contents, list_of_names)
             ]
             options = [{"label": i, "value": i} for i in collection.temp.columns]
-            print('b', len( collection.temp.index))
+            # print('b', len( collection.temp.index))
             collection.temp = collection.temp.dropna()
             collection.temp = collection.temp.reset_index(drop=True)
 
-            print('a',len( collection.temp.index))
+            # print('a',len( collection.temp.index))
 
             return children, options, False
         else:

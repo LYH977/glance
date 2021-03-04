@@ -1,6 +1,14 @@
 import json
 from datetime import datetime
+
+from utils import collection
 from utils.constant import FIGURE_PARAM, STANDARD_T_FORMAT
+
+def reset_var():
+    collection.data = {}
+    collection.img_container = {}
+    collection.visual_container = []
+    collection.temp = None
 
 
 def set_slider_calendar(dataframe):

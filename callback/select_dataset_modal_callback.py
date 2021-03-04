@@ -9,9 +9,9 @@ from dash.exceptions import PreventUpdate
 from components.carousel import create_ca_img
 from database.dbConfig import client
 from utils.constant import FIGURE_OPTION, SCATTER_MAP_PARAM, SM_PARAM, CA_PARAM, CH_PARAM, D_PARAM, BC_PARAM, SG_PARAM, \
-    CAROUSEL, CAROUSEL_CONSTANT, ITEM
+    CAROUSEL, CAROUSEL_CONSTANT, ITEM, FRAME, TIME, SCATTER_MAP, NOTIFICATION_PARAM, TAG
 from utils import collection
-from utils.method import get_ctx_type,get_ctx_property,get_ctx_value,get_ctx_index
+from utils.method import get_ctx_type, get_ctx_property, get_ctx_value, get_ctx_index, formatted_time_value
 from components.select_dataset_modal import output_form_markup, dataset_portal_markup, dataset_portal_markup, \
     dropdown_markup
 import base64
@@ -82,8 +82,35 @@ def register_update_after_upload(app):
                 result = client.query(q, epoch='ns')
                 collection.temp = pd.DataFrame(result[value])
                 collection.temp['time'] = collection.temp.index.map(lambda x: str(x).split('+')[0])
-                # print(collection.temp['time'])
+
+                # # testing
+                # collection.temp = collection.temp.dropna()
                 # collection.temp.reset_index(drop=True, inplace=True)
+                # collection.temp[FRAME] = collection.temp[TIME].map(lambda x: formatted_time_value(x, '%Y'))
+                # tags = []
+                #
+                # type = SCATTER_MAP
+                # notif = NOTIFICATION_PARAM[type][TAG]
+                # parameter ={
+                #     'sm_latitude': 'Lat',
+                #     'sm_longitude': 'Long',
+                #     'sm_size': 'Confirmed',
+                #     'sm_color': 'Deaths',
+                #     'sm_name': 'Country/Region',
+                #     # 'sm_message': []
+                # }
+                # for n in notif:
+                #     tags.append(parameter[n])
+                # # print(frames)
+                # if tags:
+                #     tag_df = collection.temp[tags]
+                #     tag_df.drop_duplicates()
+                #
+                # obj = {}
+                # frames = collection.temp[FRAME].unique()
+                # for f in frames:
+                #     obj[f]= {}
+
 
                 return dataset_portal_markup(value)
 

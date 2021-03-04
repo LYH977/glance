@@ -7,7 +7,8 @@ from app import app
 from pages import homepage, dashboard, upload_page
 from components import carousel
 from layout.navbar import navbar
-
+from utils import collection
+from utils.method import reset_var
 
 app.layout = html.Div([
     navbar,
@@ -19,10 +20,12 @@ app.layout = html.Div([
               [Input('url', 'pathname')])
 def display_page(pathname):
     if pathname == '/pages/home' or pathname == '/':
+        reset_var()
         return homepage.layout
     if pathname == '/pages/singleView':
         return dashboard.layout
     if pathname == '/pages/upload':
+        reset_var()
         return upload_page.layout
     else:
         return pathname

@@ -1,4 +1,5 @@
 from datetime import datetime
+import tkinter as tk
 
 import pandas as pd                  # for DataFrames
 import plotly.express as px
@@ -17,7 +18,8 @@ from utils.method import set_slider_calendar, formatted_time_value
 
 access_token = os.environ['MAP_TOKEN']
 px.set_mapbox_access_token(access_token)
-
+root = tk.Tk()
+swidth = root.winfo_screenwidth()
 # data_url = 'https://shahinrostami.com/datasets/time-series-19-covid-combined.csv'
 # data = pd.read_csv(data_url)
 
@@ -36,13 +38,16 @@ def create_figure(create_clicks, parameter, ftype):
 
 
 def configure_fig(fig):
+    # print(fig)
     fig.layout.sliders[0].visible = False
     fig.layout.updatemenus[0].visible = False
     fig.layout.updatemenus[0].buttons[0].args[1]["frame"]["duration"] = 200
     fig.layout.updatemenus[0].buttons[0].args[1]["transition"]["duration"] = 200
     fig.layout.coloraxis.showscale = False
-    fig.layout.margin.t = 30
-    fig.layout.margin.b = 30
+    fig.layout.margin.t = 0
+    fig.layout.margin.b = 0
+    fig.layout.margin.r = 0
+    fig.layout.margin.l = 0
     fig.layout.updatemenus[0].showactive = True
 
 
@@ -56,7 +61,7 @@ def create_scattermap(create_clicks, parameter):
         SCATTER_MAP_CONSTANT[LATITUDE],
         SCATTER_MAP_CONSTANT[LONGITUDE]
     ])
-    print(data.columns)
+    # print(data.columns)
     fig = px.scatter_mapbox(
         data, lat = parameter[SCATTER_MAP_CONSTANT[LATITUDE]],
         lon = parameter[SCATTER_MAP_CONSTANT[LONGITUDE]],
@@ -66,7 +71,8 @@ def create_scattermap(create_clicks, parameter):
         mapbox_style = 'dark', zoom=1,
         animation_frame = FRAME,
         # animation_group="Province/State",
-        height = 600,
+        # height = 600,
+        # width=swidth ,
         hover_data = parameter[SCATTER_MAP_CONSTANT[MESSAGE]]
         # hover_data=['Active', 'Confirmed']
         # custom_data=['Date']
@@ -90,7 +96,7 @@ def create_scatter_geo(create_clicks, parameter):
         hover_name = parameter[SCATTER_GEO_CONSTANT[NAME]],
         animation_frame = FRAME,
         # animation_group="Province/State",
-        height = 600,
+        # height = 600,
         hover_data = parameter[SCATTER_GEO_CONSTANT[MESSAGE]],
         projection = "natural earth"
         # hover_data=['Active', 'Confirmed']
@@ -135,7 +141,6 @@ def create_density(create_clicks, parameter):
         zoom = 0,
         animation_frame = FRAME,
         mapbox_style = "stamen-terrain")
-
     configure_fig(fig)
     return fig
 
@@ -148,9 +153,8 @@ def create_choropleth(create_clicks,parameter):
         hover_name = parameter[CHOROPLETH_CONSTANT[NAME]],
         # animation_frame = parameter[CHOROPLETH_CONSTANT[FRAME]],
         animation_frame = FRAME,
-
         # animation_group="Province/State",
-        height = 600,
+        # height = 600,
         hover_data = parameter[CHOROPLETH_CONSTANT[MESSAGE]],
         color_continuous_scale=px.colors.sequential.Plasma,
         # hover_data=['Active', 'Confirmed']
@@ -161,10 +165,9 @@ def create_choropleth(create_clicks,parameter):
 
 def create_visualization(screen_width, create_clicks, ftype, param, maxValue, df_frame):
     return html.Div(
-                    style={'width': screen_width/2.2, 'display': 'inline-block', 'outline': 'thin lightgrey solid', 'padding': 10, 'position':'relative'},
+                    style={'width': screen_width/2.2, 'display': 'inline-block', 'outline': 'thin lightgrey solid', 'padding': 20, 'position':'relative'},
                     children=html.Div([
                         dcc.Store(id={'type': 'is-animating', 'index': create_clicks}, data = False),
-                        # dcc.Store(id='uuid', data = create_clicks),
                         dcc.Store(id={'type': 'figure-type', 'index': create_clicks}, data = ftype),
                         dcc.Store(id={'type': 'my_param', 'index': create_clicks}, data=param),
                         # dcc.Store(id={'type': 'my_tformat', 'index': create_clicks}, data=tformat),
@@ -175,7 +178,16 @@ def create_visualization(screen_width, create_clicks, ftype, param, maxValue, df
                             max_intervals=maxValue,
                             disabled=True
                         ),
-                        dcc.Graph(id={'type': 'visualization', 'index': create_clicks}, figure=create_figure(create_clicks, param, ftype)),
+                        html.Button('Delete', id={'type': 'dlt-btn', 'index': create_clicks} ),
+                        dcc.Graph(
+                            id={'type': 'visualization', 'index': create_clicks},
+                            figure=create_figure(create_clicks, param, ftype),
+                            config={
+                                # 'displayModeBar': False
+                                # "displaylogo": False,
+                                'modeBarButtonsToRemove': ['pan2d','select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox','toggleHover']
+                            }
+                        ),
                         dcc.Slider(
                             id={'type': 'anim-slider', 'index': create_clicks},
                             updatemode='drag',
@@ -189,6 +201,13 @@ def create_visualization(screen_width, create_clicks, ftype, param, maxValue, df
                             html.Button('play', id={'type': 'play-btn', 'index': create_clicks}),
                             html.Label( df_frame[0], id={'type': 'slider-label', 'index': create_clicks})
                         ]),
-                        html.Button('Delete', id={'type': 'dlt-btn', 'index': create_clicks}, style={'position':'absolute', 'top':0}),
+                        dcc.Interval(
+                            id={'type': 'notif-interval', 'index': create_clicks},
+                            interval=200,
+                            n_intervals=0,
+                            max_intervals=maxValue,
+                            disabled=True
+                        ),
+                        html.Div(id={'type': 'notif', 'index': create_clicks})
                     ]),
                 )
