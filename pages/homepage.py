@@ -65,6 +65,8 @@ layout = dbc.Jumbotron(
               Input('testcelery', 'n_clicks'))
 def update_output(click):
     if click is not None:
-        lala = redis_instance.hget(task.REDIS_HASH_NAME, task.REDIS_KEYS["DATE_UPDATED"] ).decode("utf-8")
+        lala = redis_instance.hget(task.REDIS_HASH_NAME, 'last' ).decode("utf-8")
+        # lala = redis_instance.hgetall('new')
         print(lala)
+
         return 'dd'
