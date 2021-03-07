@@ -36,8 +36,13 @@ def register_update_visual_container(app):
             collection.temp.reset_index(drop=True, inplace=True)
             collection.temp[FRAME] = collection.temp[TIME].map(lambda x: formatted_time_value(x, tformat))
             collection.data[create_clicks] = collection.temp
-            # print(param)
-            task.process_dataset(create_clicks, collection.temp, param['vtype'], param['parameter'])
+
+            if param['vtype'] != CAROUSEL:
+                task.process_dataset(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'])
+
+                # result = task.process_dataset.delay(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'])
+                # print('result first', result.status)
+
             new_child = container.render_container(create_clicks, param['parameter'], param['vtype'], tformat)
             print('belum 1')
             div_children.append(new_child)

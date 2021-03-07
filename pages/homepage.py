@@ -1,3 +1,6 @@
+import datetime
+import json
+
 import dash
 
 import dash_bootstrap_components as dbc
@@ -12,12 +15,11 @@ import task
 from celery.result import AsyncResult
 
 import base64
-import datetime
 import io
 import os
 import pandas as pd
 import redis
-import datetime
+import numpy as np
 
 
 # pport = 'redis-12571.c1.ap-southeast-1-1.ec2.cloud.redislabs.com:12571'
@@ -37,9 +39,30 @@ from datetime import datetime
 # print(dt)
 
 redis_instance = redis.StrictRedis.from_url(os.environ['REDIS_URL'])
-task.update_data()
+N = 100
+df = pd.DataFrame(
+    {
+        "time": [
+            i
+            for i in range(N)
+        ],
+        "value": np.random.randn(N),
+    }
+)
+# redis_instance.set( "new", '12' )
+# redis_instance.hdel(
+#     task.REDIS_HASH_NAME, 'last'
+#     )
+
+# task.update_data(df.to_dict())
 layout = dbc.Jumbotron(
     [
+        html.Button('stark', id='test2'),
+        html.P(
+            "avenger assem,ble",
+            className="lead",
+            id='title2'
+        ),
         html.Button('tony', id='testcelery'),
         html.H1("Glance", className="display-3"),
         html.P(
@@ -65,8 +88,20 @@ layout = dbc.Jumbotron(
               Input('testcelery', 'n_clicks'))
 def update_output(click):
     if click is not None:
-        lala = redis_instance.hget(task.REDIS_HASH_NAME, 'last' ).decode("utf-8")
-        # lala = redis_instance.hgetall('new')
-        print(lala)
+        # lala = redis_instance.get( "new" )
+        lala = redis_instance.get('new').decode("utf-8")
+        print('see here:',lala)
 
         return 'dd'
+
+
+@app.callback(Output('title2', 'children'),
+              Input('test2', 'n_clicks'))
+def update_output(click):
+
+    if click is not None:
+        print('clicked test2')
+
+        task.update_data.delay(2)
+
+        return 'spider'

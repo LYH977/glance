@@ -1,18 +1,23 @@
 import datetime
-# import time
+import time
 import os
-# import plotly
+import plotly
 import redis
 from time import sleep
 from celery import Celery
 import json
+import pandas as pd
+import numpy as np
+
 
 from utils.constant import FRAME, TIME, NOTIFICATION_PARAM, TAG, FIELD, SCATTER_MAP, SCATTER_GEO, SCATTER_MAP_CONSTANT, \
-    NAME, LATITUDE, LONGITUDE, MAXIMUM, SCATTER_GEO_CONSTANT, MINIMUM
+    NAME, LATITUDE, LONGITUDE, MAXIMUM, SCATTER_GEO_CONSTANT, MINIMUM, BAR_CHART_RACE, DENSITY, BAR_CHART_RACE_CONSTANT, \
+    ITEM, DENSITY_CONSTANT, CHOROPLETH, CHOROPLETH_CONSTANT, LOCATIONS
 from utils.method import formatted_time_value
 
 app = Celery("Celery App", broker='redis://localhost:6379' ,backend='redis://localhost:6379')
 redis_instance = redis.StrictRedis.from_url('redis://localhost:6379')
+# redis_instance = redis.StrictRedis(db=0)
 
 # pport = 'redis-12571.c1.ap-southeast-1-1.ec2.cloud.redislabs.com:12571'
 # redis_instance = redis.StrictRedis(
@@ -24,76 +29,85 @@ redis_instance = redis.StrictRedis.from_url('redis://localhost:6379')
 
 
 REDIS_HASH_NAME = os.environ.get("DASH_APP_NAME", "app-data")
+# print(REDIS_HASH_NAME)
 REDIS_KEYS = {
     "DATASET": "DATASET",
     "DATE_UPDATED": "DATE_UPDATED"
 }
 
 
-def extract_max(vtype, obj, max_list, df, parameter, col):
+def extract_extrema(vtype,  ma, df, parameter, col, type):
+    msg=''
     if vtype ==  SCATTER_MAP:
-        for ma in max_list:
-            msg = "MAXIMUM '{column}': {field}, by {name} ({lat},{long})".format(
-                name=df.loc[ma, parameter[SCATTER_MAP_CONSTANT[NAME]]],
-                lat=df.loc[ma, parameter[SCATTER_MAP_CONSTANT[LATITUDE]]],
-                long=df.loc[ma, parameter[SCATTER_MAP_CONSTANT[LONGITUDE]]],
-                column=col,
-                field=df.loc[ma, col],
-            )
-            obj[df.loc[ma, FRAME]][MAXIMUM][col].append(msg)
+        msg = "{type} '{column}': {field}, by {name} ({lat},{long})".format(
+            type = type,
+            name=df.loc[ma, parameter[SCATTER_MAP_CONSTANT[NAME]]],
+            lat=df.loc[ma, parameter[SCATTER_MAP_CONSTANT[LATITUDE]]],
+            long=df.loc[ma, parameter[SCATTER_MAP_CONSTANT[LONGITUDE]]],
+            column=col,
+            field=df.loc[ma, col],
+        )
     elif vtype ==  SCATTER_GEO:
-        for ma in max_list:
-            msg = "MAXIMUM '{column}': {field}, by {name} ({lat},{long})".format(
-                name=df.loc[ma, parameter[SCATTER_GEO_CONSTANT[NAME]]],
-                lat=df.loc[ma, parameter[SCATTER_GEO_CONSTANT[LATITUDE]]],
-                long=df.loc[ma, parameter[SCATTER_GEO_CONSTANT[LONGITUDE]]],
-                column=col,
-                field=df.loc[ma, col],
-            )
-            obj[df.loc[ma, FRAME]][MAXIMUM][col].append(msg)
+        msg = "{type} '{column}': {field}, by {name} ({lat},{long})".format(
+            type=type,
+            name=df.loc[ma, parameter[SCATTER_GEO_CONSTANT[NAME]]],
+            lat=df.loc[ma, parameter[SCATTER_GEO_CONSTANT[LATITUDE]]],
+            long=df.loc[ma, parameter[SCATTER_GEO_CONSTANT[LONGITUDE]]],
+            column=col,
+            field=df.loc[ma, col],
+        )
+    elif vtype == BAR_CHART_RACE:
+        msg = "{type} '{column}': {field} by {item}".format(
+            type=type,
+            column=col,
+            field=df.loc[ma, col],
+            item=df.loc[ma, parameter[BAR_CHART_RACE_CONSTANT[ITEM]]],
+        )
+    elif vtype == DENSITY:
+        msg = "{type} '{column}': {field}, by ({lat},{long})".format(
+            type=type,
+            lat=df.loc[ma, parameter[DENSITY_CONSTANT[LATITUDE]]],
+            long=df.loc[ma, parameter[DENSITY_CONSTANT[LONGITUDE]]],
+            column=col,
+            field=df.loc[ma, col],
+        )
 
-def extract_min(vtype, obj, min_list, df, parameter, col):
-    if vtype ==  SCATTER_MAP:
-        for mi in min_list:
-            msg = "MININUM for '{column}': {field}, by {name} ({lat},{long})".format(
-                name=df.loc[mi, parameter[SCATTER_MAP_CONSTANT[NAME]]],
-                lat=df.loc[mi, parameter[SCATTER_MAP_CONSTANT[LATITUDE]]],
-                long=df.loc[mi, parameter[SCATTER_MAP_CONSTANT[LONGITUDE]]],
-                column=col,
-                field=df.loc[mi, col],
-            )
-            obj[df.loc[mi, FRAME]][MINIMUM][col].append(msg)
-    elif vtype ==  SCATTER_GEO:
-        for mi in min_list:
-            msg = "MININUM '{column}': {field}, by {name} ({lat},{long})".formit(
-                name=df.loc[mi, parameter[SCATTER_GEO_CONSTANT[NAME]]],
-                lat=df.loc[mi, parameter[SCATTER_GEO_CONSTANT[LATITUDE]]],
-                long=df.loc[mi, parameter[SCATTER_GEO_CONSTANT[LONGITUDE]]],
-                column=col,
-                field=df.loc[mi, col],
-            )
-            obj[df.loc[mi, FRAME]][MAXIMUM][col].append(msg)
+    elif vtype == CHOROPLETH:
+        msg = "{type} '{column}': {field}, by {name}({location})".format(
+            type=type,
+            name=df.loc[ma, parameter[CHOROPLETH_CONSTANT[NAME]]],
+            location=df.loc[ma, parameter[CHOROPLETH_CONSTANT[LOCATIONS]]],
+            column=col,
+            field=df.loc[ma, col],
+        )
+    return msg
 
 
-@app.task
-def update_data():
-    obj = {
-        "second": {"third":3}
-    }
-    # redis_instance.hset(
-    #     REDIS_HASH_NAME, REDIS_KEYS["DATE_UPDATED"], obj)
 
-    obj = json.dumps(obj)
-    print(obj)
-    redis_instance.hset(
-         REDIS_HASH_NAME, 'new', obj
+
+
+@app.on_after_configure.connect
+def setup_periodic_tasks(sender, **kwargs):
+    print("----> setup_periodic_tasks")
+    sender.add_periodic_task(
+        15,  # seconds
+        # an alternative to the @app.task decorator:
+        # wrap the function in the app.task function
+        update_data.s(),
+        name="Update data",
     )
-
-
+    sender.add_periodic_task(
+        15,  # seconds
+        # an alternative to the @app.task decorator:
+        # wrap the function in the app.task function
+        process_dataset.s(),
+        name="Process Dataset",
+    )
 
 @app.task
 def process_dataset(create_click, dataframe, vtype, parameter):
-
+    dataframe = pd.DataFrame.from_dict(dataframe)
+    print('starting')
     tags = []
     obj = {}
     extract = [MAXIMUM, MINIMUM]
@@ -112,7 +126,9 @@ def process_dataset(create_click, dataframe, vtype, parameter):
     if tags:
         tag_df = dataframe[tags]
         tag_df = tag_df.drop_duplicates()  # Lat, Long, Country
-        for i in range(len(tag_df.index)):  # row of tagged data frame
+        # print('tag_df', tag_df)
+        tag_list = tag_df.index.tolist()
+        for i in tag_list:  # row of tagged data frame
             condition = True
             for col in tags:
                 condition = condition & (dataframe[col] == tag_df.loc[i, col])
@@ -129,15 +145,88 @@ def process_dataset(create_click, dataframe, vtype, parameter):
                 if max_value != min_value:
                     # find max
                     max_list = target_df.index[target_df[col] == max_value].tolist()
-                    extract_max(vtype, obj, max_list, target_df, parameter, col)
+                    for ma in max_list:
+                        msg = extract_extrema(vtype,  ma, target_df, parameter, col, MAXIMUM)
+                        frame = target_df.loc[ma, FRAME]
+                        obj[frame][MAXIMUM][col].append(msg)
+
 
                     # find min
                     min_list = target_df.index[target_df[col] == min_value].tolist()
-                    extract_min(vtype, obj, min_list, target_df, parameter, col)
+                    for mi in min_list:
+                        msg = extract_extrema(vtype,  mi, target_df, parameter, col, MINIMUM)
+                        frame = target_df.loc[mi, FRAME]
+                        obj[frame][MINIMUM][col].append(msg)
 
     print('done obj')
-    obj = json.dumps(obj)
+    obj = json.dumps(obj, cls=plotly.utils.PlotlyJSONEncoder)
     print(obj)
-    redis_instance.hset(
-         REDIS_HASH_NAME, 'last', obj
+    redis_instance.hset(REDIS_HASH_NAME, 'last', obj  )
+    #
+    # @app.task
+    # def update_data():
+    #     print("----> update_data")
+    #     # Create a dataframe with sample data
+    #     # In practice, this function might be making calls to databases,
+    #     # performing computations, etc
+    #     N = 100
+    #     df = pd.DataFrame(
+    #         {
+    #             "time": [
+    #                 datetime.datetime.now() - datetime.timedelta(seconds=i)
+    #                 for i in range(N)
+    #             ],
+    #             "value": np.random.randn(N),
+    #         }
+    #     )
+    #
+    #     # Save the dataframe in redis so that the Dash app, running on a separate
+    #     # process, can read it
+    #     redis_instance.hset(
+    #         REDIS_HASH_NAME,
+    #         REDIS_KEYS["DATASET"],
+    #         json.dumps(
+    #             df.to_dict(),
+    #             # This JSON Encoder will handle things like numpy arrays
+    #             # and datetimes
+    #             cls=plotly.utils.PlotlyJSONEncoder,
+    #         ),
+    #     )
+    #     # Save the timestamp that the dataframe was updated
+    #     redis_instance.hset(
+    #         REDIS_HASH_NAME, REDIS_KEYS["DATE_UPDATED"], str(datetime.datetime.now())
+    #     )
+
+
+@app.task
+def update_data(test):
+    print("----> update_data")
+    N = 100
+    df = pd.DataFrame(
+        {
+            "time": [
+                datetime.datetime.now() - datetime.timedelta(seconds=i)
+                for i in range(N)
+            ],
+            "value": np.random.randn(N),
+        }
     )
+
+
+    # redis_instance.hset(
+    #     REDIS_HASH_NAME,
+    #     # REDIS_KEYS["DATASET"],
+    #     'last',
+    #     json.dumps(
+    #         df.to_dict(),
+    #         cls=plotly.utils.PlotlyJSONEncoder,
+    #     ),
+    # )
+    redis_instance.set( 'new', json.dumps(
+            df.to_dict(),
+            cls=plotly.utils.PlotlyJSONEncoder,
+        )  )
+    # redis_instance.set('new', '100')
+    # redis_instance.hset(
+    #     REDIS_HASH_NAME, REDIS_KEYS["DATE_UPDATED"], str(datetime.datetime.now())
+    # )
