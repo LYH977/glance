@@ -178,6 +178,7 @@ def create_visualization(screen_width, create_clicks, ftype, param, maxValue, df
                             max_intervals=maxValue,
                             disabled=True
                         ),
+                        html.Button('test live', id={'type': 'live-btn', 'index': create_clicks}),
                         html.Button('Delete', id={'type': 'dlt-btn', 'index': create_clicks} ),
                         dcc.Graph(
                             id={'type': 'visualization', 'index': create_clicks},

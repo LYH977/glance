@@ -9,7 +9,7 @@ import dash_html_components as html
 import dash_table
 
 from app import app
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output, State, ClientsideFunction
 
 import task
 from celery.result import AsyncResult
@@ -57,6 +57,12 @@ df = pd.DataFrame(
 # task.update_data(df.to_dict())
 layout = dbc.Jumbotron(
     [
+        html.Button('client', id='client-btn'),
+        html.P(
+            "client",
+            className="lead",
+            id='client-p'
+        ),
         html.Button('stark', id='test2'),
         html.P(
             "avenger assem,ble",
@@ -105,3 +111,13 @@ def update_output(click):
         task.update_data.delay(2)
 
         return 'spider'
+
+
+app.clientside_callback(
+    ClientsideFunction(
+        namespace='clientside',
+        function_name='second_function'
+    ),
+    Output('client-p', 'children'),
+    Input('client-btn', 'n_clicks'),
+)
