@@ -12,7 +12,8 @@ from utils.constant import FIGURE_OPTION, SCATTER_MAP_PARAM, SM_PARAM, CA_PARAM,
     CAROUSEL, CAROUSEL_CONSTANT, ITEM, FRAME, TIME, SCATTER_MAP, NOTIFICATION_PARAM, TAG, FIELD, SCATTER_MAP_CONSTANT, \
     NAME, LATITUDE, LONGITUDE
 from utils import collection
-from utils.method import get_ctx_type, get_ctx_property, get_ctx_value, get_ctx_index, formatted_time_value
+from utils.method import get_ctx_type, get_ctx_property, get_ctx_value, get_ctx_index, formatted_time_value, \
+    select_query
 from components.select_dataset_modal import output_form_markup, dataset_portal_markup, dataset_portal_markup, \
     dropdown_markup
 import base64
@@ -71,101 +72,21 @@ def register_update_after_upload(app):
                   [State("modal", "is_open")],
                   prevent_initial_call=True
     )
-    def update_after_upload(open, close, create, value, is_open):
+    def update_after_upload(open, close, create, measurement, is_open):
         ctx = dash.callback_context
         if not ctx.triggered:
             input_type = 'No input yet'
         else:
             input_type = ctx.triggered[0]['prop_id'].split('.')[0]
         if input_type == 'chosen-dropdown':
-            if value is not None:
-                q = "select * from " + value
-                result = client.query(q, epoch='ns')
-                collection.temp = pd.DataFrame(result[value])
+            if measurement is not None:
+                # q = "select * from " + measurement
+                # result = client.query(q, epoch='ns')
+                # result = select_query(measurement)
+                collection.temp = select_query(measurement)
                 collection.temp['time'] = collection.temp.index.map(lambda x: str(x).split('+')[0])
 
-                # # testing
-                # collection.temp = collection.temp.dropna()
-                # collection.temp.reset_index(drop=True, inplace=True)
-                # collection.temp[FRAME] = collection.temp[TIME].map(lambda x: formatted_time_value(x, '%Y-%m-%d'))
-                # tags = []
-                #
-                # # 1950, 1960, 1970, 1980
-                # obj = {}
-                # MAXIMUM = 'MAXIMUM'
-                # MINIMUM = 'MINIMUM'
-                # extract = [MAXIMUM, MINIMUM]
-                # frames = collection.temp[FRAME].unique()
-                #
-                #
-                #
-                # type = SCATTER_MAP
-                # notif_tags = NOTIFICATION_PARAM[type][TAG]
-                # print('notif_tags', notif_tags)
-                # parameter ={
-                #     'sm_latitude': 'Lat',
-                #     'sm_longitude': 'Long',
-                #     'sm_size': 'Confirmed',
-                #     'sm_color': 'Deaths',
-                #     'sm_name': 'Country/Region',
-                #     # 'sm_message': []
-                # }
-                # for f in frames:
-                #     obj[f] = {}
-                #     for e in extract:
-                #         obj[f][e] = {}
-                #         for v in NOTIFICATION_PARAM[type][FIELD]:
-                #             obj[f][e][parameter[v]] = []
-                # for t in notif_tags:
-                #     tags.append(parameter[t])
-                # print('tags', tags)
-                # if tags:
-                #     tag_df = collection.temp[tags]
-                #     tag_df = tag_df.drop_duplicates() #Lat, Long, Country
-                #     for i in range(len(tag_df.index)): # row of tagged data frame
-                #         condition = True
-                #         for col in tags:
-                #             condition = condition & (collection.temp[col] == tag_df.loc[i,col ])
-                #         # print(collection.temp[condition])
-                #         # i = 0
-                #         target_df = collection.temp[condition]
-                #         notif_fields = NOTIFICATION_PARAM[type][FIELD]
-                #         fields = []
-                #         for f in notif_fields:
-                #             fields.append(parameter[f])
-                #         for col in fields: # Confirmed, Deaths
-                #             column = target_df[col]
-                #             max_value = column.max()
-                #             min_value = column.min()
-                #             # max_index = column.idxmax()
-                #             # min_index = column.idxmin()
-                #             if max_value != min_value:
-                #                 # find max
-                #                 max_list = target_df.index[target_df[col] == max_value].tolist()
-                #                 for ma in max_list:
-                #                     msg = "MAXIMUM '{column}': {field}, by {name} ({lat},{long})".format(
-                #                         name = target_df.loc[ma,parameter[SCATTER_MAP_CONSTANT[NAME]]],
-                #                         lat = target_df.loc[ma, parameter[SCATTER_MAP_CONSTANT[LATITUDE]]],
-                #                         long = target_df.loc[ma, parameter[SCATTER_MAP_CONSTANT[LONGITUDE]]],
-                #                         column = col,
-                #                         field = target_df.loc[ma, col],
-                #                     )
-                #                     obj[target_df.loc[ma, FRAME]][MAXIMUM][col].append(msg)
-                #
-                #                 # find min
-                #                 min_list = target_df.index[target_df[col] == min_value].tolist()
-                #                 for mi in min_list:
-                #                     msg = "MININUM for '{column}': {field}, by {name} ({lat},{long})".format(
-                #                         name = target_df.loc[mi,parameter[SCATTER_MAP_CONSTANT[NAME]]],
-                #                         lat = target_df.loc[mi, parameter[SCATTER_MAP_CONSTANT[LATITUDE]]],
-                #                         long = target_df.loc[mi, parameter[SCATTER_MAP_CONSTANT[LONGITUDE]]],
-                #                         column = col,
-                #                         field = target_df.loc[mi, col],
-                #                     )
-                #                     obj[target_df.loc[mi, FRAME]][MINIMUM][col].append(msg)
-                #
-                # print(obj)
-                return dataset_portal_markup(value)
+                return dataset_portal_markup(measurement)
 
 
         elif input_type == 'open' or 'close' :

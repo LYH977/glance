@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import dash
 import dash_core_components as dcc
@@ -11,10 +11,10 @@ import task
 from components import visualization, select_dataset_modal, container
 from utils import collection
 from utils.collection import visual_container
-from utils.method import get_ctx_type, get_ctx_property, get_ctx_value, get_ctx_index, formatted_time_value
+from utils.method import get_ctx_type, get_ctx_property, get_ctx_value, get_ctx_index, formatted_time_value, \
+    to_nanosecond_epoch, select_query
 from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CAROUSEL, CHOROPLETH, BAR_CHART_RACE, \
     STANDARD_T_FORMAT, FRAME, TIME
-
 
 # update visualization container by appending or removing item from array
 def register_update_visual_container(app):
@@ -156,6 +156,49 @@ def register_update_playing_status(app):
         else:
             raise PreventUpdate
 
+#############################################################################################################################################
+
+# update live interval according to live switch
+def register_update_live_interval(app):
+    @app.callback(
+        Output({'type':'live-interval', 'index': MATCH}, 'disabled'),
+        [Input({'type':'live-mode', 'index': MATCH}, 'on')],
+        prevent_initial_call=True
+    )
+    def update_live_interval(live):
+        ctx = dash.callback_context
+        input_index = None
+        if not ctx.triggered:
+            input_type = 'No input yet'
+        else:
+            input_type = get_ctx_type(ctx)
+            input_index = get_ctx_index(ctx)
+        last_time = collection.data[input_index][TIME].iloc[-1]
+        temp = datetime.strptime(last_time, STANDARD_T_FORMAT)
+        print(temp)
+        last_nano = to_nanosecond_epoch(temp)
+        result = select_query('live', ' where time > 189302400000000000')
+        print(result)
+
+        return not live
 
 
+#############################################################################################################################################
+
+# fetch new data for live mode
+def register_update_live_data(app):
+    @app.callback(
+        Output({'type':'live-test', 'index': MATCH}, 'data'),
+        [Input({'type':'live-interval', 'index': MATCH}, 'n_intervals')],
+        prevent_initial_call=True
+    )
+    def update_live_data(live):
+        ctx = dash.callback_context
+        input_index = None
+        if not ctx.triggered:
+            input_type = 'No input yet'
+        else:
+            input_type = get_ctx_type(ctx)
+            input_index = get_ctx_index(ctx)
+        return not live
 

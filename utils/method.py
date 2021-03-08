@@ -1,5 +1,7 @@
 import json
 from datetime import datetime
+from database.dbConfig import client
+import pandas as pd
 
 from utils import collection
 from utils.constant import FIGURE_PARAM, STANDARD_T_FORMAT
@@ -10,6 +12,14 @@ def reset_var():
     collection.visual_container = []
     collection.temp = None
 
+def select_query (measurement,  where=''):
+    q = "select * from " + measurement + where
+    result = client.query(q, epoch='ns')
+    return pd.DataFrame(result[measurement])
+
+
+def to_nanosecond_epoch(dt):
+    return (dt - datetime(1970,1,1)).total_seconds() * pow(10,9)
 
 def set_slider_calendar(dataframe):
     calendar = []

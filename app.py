@@ -3,6 +3,7 @@ import dash_bootstrap_components as dbc
 
 from callback.carousel_callback import register_display_image, register_ca_update_slider, register_update_ca_play_btn, \
     register_update_ca_playing_status
+
 from callback.select_dataset_modal_callback import \
     register_update_after_upload, \
     register_enable_create_btn, \
@@ -16,7 +17,7 @@ from callback.container_callback import \
     register_update_figure, \
     register_update_slider, \
     register_update_playing_status, \
-    register_update_play_btn
+    register_update_play_btn, register_update_live_interval
 
 # meta_tags are required for the app layout to be mobile responsive
 from callback.upload_page_callback import register_update_preview, register_update_datetime_modifier, \
@@ -27,6 +28,7 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_
                 meta_tags=[{'name': 'viewport',
                             'content': 'width=device-width, initial-scale=1.0'}]
                 )
+# select_dataset_modal_callback
 register_update_after_upload(app)
 register_enable_create_btn(app)
 # register_clear_upload(app)
@@ -40,18 +42,22 @@ register_validate_ca_create(app)
 register_update_dt_dropdown(app)
 register_update_chosen_dropdown(app)
 
+# container_callback
 register_update_visual_container(app)
 register_update_figure(app)
 register_update_slider(app)
 register_update_playing_status(app)
 register_update_play_btn(app)
 register_toggle_modal(app)
+register_update_live_interval(app)
 
+# carousel_callback
 register_display_image(app)
 register_ca_update_slider(app)
 register_update_ca_play_btn(app)
 register_update_ca_playing_status(app)
 
+# upload_page_callback
 register_update_preview(app)
 register_update_datetime_modifier(app)
 register_update_datetime_filled(app)

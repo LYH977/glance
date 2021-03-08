@@ -5,6 +5,7 @@ import pandas as pd                  # for DataFrames
 import plotly.express as px
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_daq as daq
 
 import os
 
@@ -170,7 +171,9 @@ def create_visualization(screen_width, create_clicks, ftype, param, maxValue, df
                         dcc.Store(id={'type': 'is-animating', 'index': create_clicks}, data = False),
                         dcc.Store(id={'type': 'figure-type', 'index': create_clicks}, data = ftype),
                         dcc.Store(id={'type': 'my_param', 'index': create_clicks}, data=param),
-                        # dcc.Store(id={'type': 'my_tformat', 'index': create_clicks}, data=tformat),
+                        dcc.Store(id={'type': 'live-test', 'index': create_clicks}, data=None),
+                        dcc.Store(id={'type': 'lsat_timestamp', 'index': create_clicks}, data=None),
+
                         dcc.Interval(
                             id={'type': 'interval', 'index': create_clicks},
                             interval=200,
@@ -178,7 +181,17 @@ def create_visualization(screen_width, create_clicks, ftype, param, maxValue, df
                             max_intervals=maxValue,
                             disabled=True
                         ),
-                        html.Button('test live', id={'type': 'live-btn', 'index': create_clicks}),
+                        daq.BooleanSwitch(
+                            id={'type': 'live-mode', 'index': create_clicks},
+                            on = False,
+                            color="#9B51E0"
+                        ),
+                        dcc.Interval(
+                            id={'type': 'live-interval', 'index': create_clicks},
+                            interval=5000,
+                            n_intervals=0,
+                            disabled=True
+                        ),
                         html.Button('Delete', id={'type': 'dlt-btn', 'index': create_clicks} ),
                         dcc.Graph(
                             id={'type': 'visualization', 'index': create_clicks},
