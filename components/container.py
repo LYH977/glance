@@ -24,7 +24,7 @@ def render_container(create_clicks, param, ftype, tformat):
 
     maxValue = df_frame.shape[0] - 1
     if(ftype != CAROUSEL):
-        return create_visualization(screen_width, create_clicks, ftype, param, maxValue, df_frame)
+        return create_visualization(screen_width, create_clicks, ftype, param, maxValue, df_frame, tformat)
     else:
         # print(collection.temp)
         return create_carousel(screen_width, create_clicks, param, maxValue, df_frame)

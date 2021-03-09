@@ -4,7 +4,8 @@ from database.dbConfig import client
 import pandas as pd
 
 from utils import collection
-from utils.constant import FIGURE_PARAM, STANDARD_T_FORMAT
+from utils.constant import FIGURE_PARAM, STANDARD_T_FORMAT, FRAME
+
 
 def reset_var():
     collection.data = {}
@@ -12,10 +13,18 @@ def reset_var():
     collection.visual_container = []
     collection.temp = None
 
+def get_last_timestamp(param):
+    last_time = param.iloc[-1]
+    temp = datetime.strptime(last_time, STANDARD_T_FORMAT)
+    return to_nanosecond_epoch(temp)
+
 def select_query (measurement,  where=''):
     q = "select * from " + measurement + where
     result = client.query(q, epoch='ns')
-    return pd.DataFrame(result[measurement])
+    if measurement in result:
+        return pd.DataFrame(result[measurement])
+    else:
+        return None
 
 
 def to_nanosecond_epoch(dt):
@@ -71,3 +80,6 @@ def unpack_parameter(param):
 
     return zip(label, id, multi)
 
+# def calculate_max_value (df):
+#     df_frame = df[FRAME].unique()
+#     return df_frame.shape[0] - 1

@@ -84,7 +84,9 @@ def register_update_after_upload(app):
                 # result = client.query(q, epoch='ns')
                 # result = select_query(measurement)
                 collection.temp = select_query(measurement)
-                collection.temp['time'] = collection.temp.index.map(lambda x: str(x).split('+')[0])
+                # print(collection.temp)
+                if collection.temp is not None:
+                    collection.temp['time'] = collection.temp.index.map(lambda x: str(x).split('+')[0])
 
                 return dataset_portal_markup(measurement)
 

@@ -12,10 +12,10 @@ import os
 from utils import collection
 from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CAROUSEL, CHOROPLETH, BAR_CHART_RACE, \
     SCATTER_MAP_CONSTANT, LATITUDE, LONGITUDE, SIZE, COLOR, NAME, FRAME, MESSAGE, SCATTER_GEO_CONSTANT, \
-    BAR_CHART_RACE_CONSTANT, ITEM, VALUE, DENSITY_CONSTANT, Z, CHOROPLETH_CONSTANT, LOCATIONS, STANDARD_T_FORMAT
+    BAR_CHART_RACE_CONSTANT, ITEM, VALUE, DENSITY_CONSTANT, Z, CHOROPLETH_CONSTANT, LOCATIONS, STANDARD_T_FORMAT, TIME
 from raceplotly.plots import barplot
 
-from utils.method import set_slider_calendar, formatted_time_value
+from utils.method import set_slider_calendar, formatted_time_value, to_nanosecond_epoch, get_last_timestamp
 
 access_token = os.environ['MAP_TOKEN']
 px.set_mapbox_access_token(access_token)
@@ -24,17 +24,17 @@ swidth = root.winfo_screenwidth()
 # data_url = 'https://shahinrostami.com/datasets/time-series-19-covid-combined.csv'
 # data = pd.read_csv(data_url)
 
-def create_figure(create_clicks, parameter, ftype):
+def create_figure(data, parameter, ftype):
     if ftype == SCATTER_MAP:
-        return create_scattermap(create_clicks,parameter)
+        return create_scattermap(data,parameter)
     elif ftype == SCATTER_GEO:
-        return create_scatter_geo(create_clicks,parameter)
+        return create_scatter_geo(data,parameter)
     elif ftype == BAR_CHART_RACE:
-        return create_bar_chart_race(create_clicks, parameter)
+        return create_bar_chart_race(data, parameter)
     elif ftype == DENSITY:
-        return create_density(create_clicks, parameter)
+        return create_density(data, parameter)
     elif ftype == CHOROPLETH:
-        return create_choropleth(create_clicks, parameter)
+        return create_choropleth(data, parameter)
 
 
 
@@ -56,13 +56,12 @@ def convert_to_float(data, parameter, list):
     for i in list:
         data[parameter[i]] = data[parameter[i]].astype(float)
 
-def create_scattermap(create_clicks, parameter):
-    data = collection.data[create_clicks]
+
+def create_scattermap(data, parameter):
     convert_to_float(data, parameter, [
         SCATTER_MAP_CONSTANT[LATITUDE],
         SCATTER_MAP_CONSTANT[LONGITUDE]
     ])
-    # print(data.columns)
     fig = px.scatter_mapbox(
         data, lat = parameter[SCATTER_MAP_CONSTANT[LATITUDE]],
         lon = parameter[SCATTER_MAP_CONSTANT[LONGITUDE]],
@@ -78,13 +77,11 @@ def create_scattermap(create_clicks, parameter):
         # hover_data=['Active', 'Confirmed']
         # custom_data=['Date']
     )
-    # print(fig)
     configure_fig(fig)
     return fig
 
 
-def create_scatter_geo(create_clicks, parameter):
-    data = collection.data[create_clicks]
+def create_scatter_geo(data, parameter):
     convert_to_float(data, parameter, [
         SCATTER_GEO_CONSTANT[LATITUDE],
         SCATTER_GEO_CONSTANT[LONGITUDE]
@@ -107,9 +104,7 @@ def create_scatter_geo(create_clicks, parameter):
     return fig
 
 
-def create_bar_chart_race(create_clicks, parameter):
-    data = collection.data[create_clicks]
-
+def create_bar_chart_race(data, parameter):
     race_plot = barplot(
         data,
         item_column = parameter[BAR_CHART_RACE_CONSTANT[ITEM]],
@@ -124,13 +119,11 @@ def create_bar_chart_race(create_clicks, parameter):
     return fig
 
 
-def create_density(create_clicks, parameter):
-    data = collection.data[create_clicks]
+def create_density(data, parameter):
     convert_to_float(data, parameter, [
         DENSITY_CONSTANT[LATITUDE],
         DENSITY_CONSTANT[LONGITUDE],
         DENSITY_CONSTANT[Z]
-
     ])
     fig = px.density_mapbox(
         data,
@@ -141,13 +134,12 @@ def create_density(create_clicks, parameter):
         center = dict(lat = 0, lon = 180),
         zoom = 0,
         animation_frame = FRAME,
-        mapbox_style = "stamen-terrain")
+        mapbox_style = "dark")
     configure_fig(fig)
     return fig
 
 
-def create_choropleth(create_clicks,parameter):
-    data = collection.data[create_clicks]
+def create_choropleth(data,parameter):
     fig = px.choropleth(
         data, locations = parameter[CHOROPLETH_CONSTANT[LOCATIONS]],
         color = parameter[CHOROPLETH_CONSTANT[COLOR]],
@@ -164,19 +156,23 @@ def create_choropleth(create_clicks,parameter):
     configure_fig(fig)
     return fig
 
-def create_visualization(screen_width, create_clicks, ftype, param, maxValue, df_frame):
+def create_visualization(screen_width, create_clicks, ftype, param, maxValue, df_frame, tformat):
+    last_nano = get_last_timestamp(collection.temp[TIME])
+    print(last_nano)
     return html.Div(
                     style={'width': screen_width/2.2, 'display': 'inline-block', 'outline': 'thin lightgrey solid', 'padding': 20, 'position':'relative'},
                     children=html.Div([
                         dcc.Store(id={'type': 'is-animating', 'index': create_clicks}, data = False),
                         dcc.Store(id={'type': 'figure-type', 'index': create_clicks}, data = ftype),
-                        dcc.Store(id={'type': 'my_param', 'index': create_clicks}, data=param),
-                        dcc.Store(id={'type': 'live-test', 'index': create_clicks}, data=None),
-                        dcc.Store(id={'type': 'lsat_timestamp', 'index': create_clicks}, data=None),
+                        dcc.Store(id={'type': 'my_param', 'index': create_clicks}, data = param),
+                        dcc.Store(id={'type': 'live-temp', 'index': create_clicks}, data = True),
+                        dcc.Store(id={'type': 'frame-format', 'index': create_clicks}, data = tformat),
+                        dcc.Store(id={'type': 'last-timestamp', 'index': create_clicks}, data = last_nano),
+                        dcc.Store(id={'type': 'last-maxValue', 'index': create_clicks}, data=maxValue),
 
                         dcc.Interval(
                             id={'type': 'interval', 'index': create_clicks},
-                            interval=200,
+                            interval=2000,
                             n_intervals=0,
                             max_intervals=maxValue,
                             disabled=True
@@ -188,14 +184,14 @@ def create_visualization(screen_width, create_clicks, ftype, param, maxValue, df
                         ),
                         dcc.Interval(
                             id={'type': 'live-interval', 'index': create_clicks},
-                            interval=5000,
+                            interval=200,
                             n_intervals=0,
                             disabled=True
                         ),
                         html.Button('Delete', id={'type': 'dlt-btn', 'index': create_clicks} ),
                         dcc.Graph(
                             id={'type': 'visualization', 'index': create_clicks},
-                            figure=create_figure(create_clicks, param, ftype),
+                            figure=create_figure(collection.data[create_clicks], param, ftype),
                             config={
                                 # 'displayModeBar': False
                                 # "displaylogo": False,

@@ -9,10 +9,11 @@ from dash.exceptions import PreventUpdate
 
 import task
 from components import visualization, select_dataset_modal, container
+from components.visualization import create_figure
 from utils import collection
 from utils.collection import visual_container
 from utils.method import get_ctx_type, get_ctx_property, get_ctx_value, get_ctx_index, formatted_time_value, \
-    to_nanosecond_epoch, select_query
+    to_nanosecond_epoch, select_query, get_last_timestamp
 from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CAROUSEL, CHOROPLETH, BAR_CHART_RACE, \
     STANDARD_T_FORMAT, FRAME, TIME
 
@@ -28,7 +29,7 @@ def register_update_visual_container(app):
         if not ctx.triggered:
             input_type = 'No input yet'
         else:
-            input_type =get_ctx_type(ctx)
+            input_type = get_ctx_type(ctx)
             # input_type = get_ctx_type(ctx)
 
         if input_type == 'create': # input from add button
@@ -36,6 +37,7 @@ def register_update_visual_container(app):
             collection.temp.reset_index(drop=True, inplace=True)
             collection.temp[FRAME] = collection.temp[TIME].map(lambda x: formatted_time_value(x, tformat))
             collection.data[create_clicks] = collection.temp
+            collection.live_processing[create_clicks] = False
 
             # if param['vtype'] != CAROUSEL:
             #     task.process_dataset(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'])
@@ -44,7 +46,6 @@ def register_update_visual_container(app):
                 # print('result first', result.status)
 
             new_child = container.render_container(create_clicks, param['parameter'], param['vtype'], tformat)
-            print('belum 1')
             div_children.append(new_child)
             visual_container.append(create_clicks)
 
@@ -64,39 +65,84 @@ def register_update_visual_container(app):
 def register_update_figure(app):
     @app.callback(
         Output({'type':'visualization', 'index': MATCH}, 'figure') ,
-        [Input({'type':'anim-slider', 'index': MATCH}, 'value')],
-        [State({'type':'visualization', 'index': MATCH}, 'figure'),State({'type':'figure-type', 'index': MATCH}, 'data') ],
+        [Input({'type':'anim-slider', 'index': MATCH}, 'value'), Input({'type':'last-timestamp', 'index': MATCH}, 'data')],
+        [
+            State({'type':'visualization', 'index': MATCH}, 'figure'),
+            State({'type':'figure-type', 'index': MATCH}, 'data') ,
+            State({'type': 'live-temp', 'index': MATCH}, 'data')
+        ],
         prevent_initial_call = True)
-    def update_figure(value, fig, ftype):
-        fig2 = fig
-        # the code below is not necessary
-        # fig2['layout']['sliders'][0]['active'] = value
-        if ftype == SCATTER_MAP:
-            # print(value)
-            # fig2['layout']['sliders'][0]['active'] = value
-            fig2['data'][0] = fig2['frames'][value]['data'][0]
-        elif ftype== SCATTER_GEO:
-            fig2['data'] = fig2['frames'][value]['data']
-        elif ftype == BAR_CHART_RACE:
-            fig2['data'][0] = fig2['frames'][value]['data'][0]
-        elif ftype == DENSITY:
-            fig2['data'][0] = fig2['frames'][value]['data'][0]
-        elif ftype == CHOROPLETH:
-            fig2['data'][0] = fig2['frames'][value]['data'][0]
-        return fig2
+    def update_figure(value, ts, fig, ftype, new_fig):
+        ctx = dash.callback_context
+        input_index=None
+        if not ctx.triggered:
+            input_type = 'No input yet'
+        else:
+            input_type = get_ctx_type(ctx)
+            input_index=get_ctx_index(ctx)
+        if input_type =='anim-slider':
+            fig2 = fig
+            if ftype == SCATTER_MAP:
+                fig2['data'][0] = fig2['frames'][value]['data'][0]
+            elif ftype== SCATTER_GEO:
+                fig2['data'] = fig2['frames'][value]['data']
+            elif ftype == BAR_CHART_RACE:
+                fig2['data'][0] = fig2['frames'][value]['data'][0]
+            elif ftype == DENSITY:
+                fig2['data'][0] = fig2['frames'][value]['data'][0]
+                # print(fig2)
+
+            elif ftype == CHOROPLETH:
+                fig2['data'][0] = fig2['frames'][value]['data'][0]
+            return fig2
+        elif input_type=='last-timestamp':
+            # collection.live_processing[input_index] = True
+            return  new_fig
+
 
 #############################################################################################################################################
 
 
-# update slider according to interval
+# update smax value in live mode
+def register_update_max(app):
+    @app.callback(
+        [Output({'type':'anim-slider', 'index': MATCH}, 'max'), Output({'type':'interval', 'index': MATCH}, 'max_intervals')],
+        [Input({'type':'last-timestamp', 'index': MATCH}, 'data')],
+        # [
+            # State({'type':'anim-slider', 'index': MATCH}, 'max'),
+            # State({'type':'interval', 'index': MATCH}, 'max_intervals'),
+            # State({'type': 'live-temp', 'index': MATCH}, 'data')
+        # ],
+        prevent_initial_call=True
+    )
+    def update_max(ts):
+        ctx = dash.callback_context
+        input_index = None
+        if not ctx.triggered:
+            input_type = 'No input yet'
+        else:
+            input_type = get_ctx_type(ctx)
+            input_index = get_ctx_index(ctx)
+        df_frame = collection.data[input_index][FRAME].unique()
+        maxValue = df_frame.shape[0] - 1
+        collection.live_processing[input_index] = False
+
+        return maxValue, maxValue
+
+############################################################################################################################################## update slider according to interval
 def register_update_slider(app):
     @app.callback(
         Output({'type':'anim-slider', 'index': MATCH}, 'value'),
         [Input({'type':'interval', 'index': MATCH}, 'n_intervals')],
-        State({'type':'is-animating', 'index': MATCH}, 'data')
+        [
+            State({'type':'is-animating', 'index': MATCH}, 'data'),
+        ]
     )
     def update_slider(value,animate):
-        return value if animate is True else dash.no_update
+        if animate is True:
+            return value
+        else:
+            raise PreventUpdate
 
 #############################################################################################################################################
 
@@ -123,13 +169,14 @@ def register_update_playing_status(app):
         [
             State({'type':'is-animating', 'index': MATCH}, 'data'),
             State({'type':'interval', 'index': MATCH}, 'n_intervals'),
-            State({'type':'my_param', 'index': MATCH}, 'data'),
+            # State({'type':'my_param', 'index': MATCH}, 'data'),
             State({'type':'figure-type', 'index': MATCH}, 'data'),
             # State({'type': 'my_tformat', 'index': MATCH}, 'data')
+
         ],
         prevent_initial_call=True
     )
-    def update_playing_status(play_clicked, s_value, playing, interval, param, ftype):
+    def update_playing_status(play_clicked, s_value, playing, interval, ftype):
         ctx = dash.callback_context
         input_index=None
         if not ctx.triggered:
@@ -163,22 +210,10 @@ def register_update_live_interval(app):
     @app.callback(
         Output({'type':'live-interval', 'index': MATCH}, 'disabled'),
         [Input({'type':'live-mode', 'index': MATCH}, 'on')],
+
         prevent_initial_call=True
     )
     def update_live_interval(live):
-        ctx = dash.callback_context
-        input_index = None
-        if not ctx.triggered:
-            input_type = 'No input yet'
-        else:
-            input_type = get_ctx_type(ctx)
-            input_index = get_ctx_index(ctx)
-        last_time = collection.data[input_index][TIME].iloc[-1]
-        temp = datetime.strptime(last_time, STANDARD_T_FORMAT)
-        print(temp)
-        last_nano = to_nanosecond_epoch(temp)
-        result = select_query('live', ' where time > 189302400000000000')
-        print(result)
 
         return not live
 
@@ -188,11 +223,17 @@ def register_update_live_interval(app):
 # fetch new data for live mode
 def register_update_live_data(app):
     @app.callback(
-        Output({'type':'live-test', 'index': MATCH}, 'data'),
+        [Output({'type':'last-timestamp', 'index': MATCH}, 'data'),Output({'type':'live-temp', 'index': MATCH}, 'data')],
         [Input({'type':'live-interval', 'index': MATCH}, 'n_intervals')],
+        [
+            State({'type':'last-timestamp', 'index': MATCH}, 'data'),
+            State({'type':'frame-format', 'index': MATCH}, 'data'),
+            State({'type': 'figure-type', 'index': MATCH}, 'data'),
+            State({'type': 'my_param', 'index': MATCH}, 'data')
+        ],
         prevent_initial_call=True
     )
-    def update_live_data(live):
+    def update_live_data(live, ts, format, ftype, param):
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
@@ -200,5 +241,25 @@ def register_update_live_data(app):
         else:
             input_type = get_ctx_type(ctx)
             input_index = get_ctx_index(ctx)
-        return not live
+        if collection.live_processing[input_index] is True:
+            raise  PreventUpdate
+        else:
+            collection.live_processing[input_index] = True
+            result = select_query('live', ' where time >{}'.format(ts))
+            # last_nano = get_last_timestamp(collection.data[input_index][TIME])
+            # print(live,',',result)
+            if result is not None:
+
+                result[TIME] = result.index.map(lambda x: str(x).split('+')[0])
+                result[FRAME] = result[TIME].map(lambda x: formatted_time_value(x, format))
+                # result.reset_index(drop=True, inplace=True)
+                last_nano = get_last_timestamp(result[TIME])
+                collection.data[input_index] = collection.data[input_index].append(result, ignore_index=True)
+                fig = create_figure(collection.data[input_index], param, ftype)
+
+                return last_nano,fig
+            else:
+                collection.live_processing[input_index] = False
+
+                raise PreventUpdate
 
