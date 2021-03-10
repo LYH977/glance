@@ -17,6 +17,19 @@ from utils.method import get_ctx_type, get_ctx_property, get_ctx_value, get_ctx_
 from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CAROUSEL, CHOROPLETH, BAR_CHART_RACE, \
     STANDARD_T_FORMAT, FRAME, TIME
 
+def change_frame(ftype,fig2, value ):
+    if ftype == SCATTER_MAP:
+        fig2['data'][0] = fig2['frames'][value]['data'][0]
+    elif ftype == SCATTER_GEO:
+        fig2['data'] = fig2['frames'][value]['data']
+    elif ftype == BAR_CHART_RACE:
+        fig2['data'][0] = fig2['frames'][value]['data'][0]
+    elif ftype == DENSITY:
+        fig2['data'][0] = fig2['frames'][value]['data'][0]
+    elif ftype == CHOROPLETH:
+        fig2['data'][0] = fig2['frames'][value]['data'][0]
+
+
 # update visualization container by appending or removing item from array
 def register_update_visual_container(app):
     @app.callback(
@@ -69,10 +82,12 @@ def register_update_figure(app):
         [
             State({'type':'visualization', 'index': MATCH}, 'figure'),
             State({'type':'figure-type', 'index': MATCH}, 'data') ,
-            State({'type': 'live-temp', 'index': MATCH}, 'data')
+            State({'type': 'live-temp', 'index': MATCH}, 'data'),
+            State({'type': 'anim-slider', 'index': MATCH}, 'max'),
+            State({'type': 'anim-slider', 'index': MATCH}, 'value')
         ],
         prevent_initial_call = True)
-    def update_figure(value, ts, fig, ftype, new_fig):
+    def update_figure(value, ts, fig, ftype, new_fig, smax, svalue):
         ctx = dash.callback_context
         input_index=None
         if not ctx.triggered:
@@ -82,68 +97,48 @@ def register_update_figure(app):
             input_index=get_ctx_index(ctx)
         if input_type =='anim-slider':
             fig2 = fig
-            if ftype == SCATTER_MAP:
-                fig2['data'][0] = fig2['frames'][value]['data'][0]
-            elif ftype== SCATTER_GEO:
-                fig2['data'] = fig2['frames'][value]['data']
-            elif ftype == BAR_CHART_RACE:
-                fig2['data'][0] = fig2['frames'][value]['data'][0]
-            elif ftype == DENSITY:
-                fig2['data'][0] = fig2['frames'][value]['data'][0]
-                # print(fig2)
-
-            elif ftype == CHOROPLETH:
-                fig2['data'][0] = fig2['frames'][value]['data'][0]
+            change_frame(ftype, fig2, value)
             return fig2
         elif input_type=='last-timestamp':
             # collection.live_processing[input_index] = True
+            if smax == svalue:
+                new_max = len(new_fig['frames'])
+                change_frame(ftype, new_fig, new_max-1)
             return  new_fig
 
-
-#############################################################################################################################################
-
-
-# update smax value in live mode
-def register_update_max(app):
-    @app.callback(
-        [Output({'type':'anim-slider', 'index': MATCH}, 'max'), Output({'type':'interval', 'index': MATCH}, 'max_intervals')],
-        [Input({'type':'last-timestamp', 'index': MATCH}, 'data')],
-        # [
-            # State({'type':'anim-slider', 'index': MATCH}, 'max'),
-            # State({'type':'interval', 'index': MATCH}, 'max_intervals'),
-            # State({'type': 'live-temp', 'index': MATCH}, 'data')
-        # ],
-        prevent_initial_call=True
-    )
-    def update_max(ts):
-        ctx = dash.callback_context
-        input_index = None
-        if not ctx.triggered:
-            input_type = 'No input yet'
-        else:
-            input_type = get_ctx_type(ctx)
-            input_index = get_ctx_index(ctx)
-        df_frame = collection.data[input_index][FRAME].unique()
-        maxValue = df_frame.shape[0] - 1
-        collection.live_processing[input_index] = False
-
-        return maxValue, maxValue
 
 ############################################################################################################################################## update slider according to interval
 def register_update_slider(app):
     @app.callback(
-        Output({'type':'anim-slider', 'index': MATCH}, 'value'),
-        [Input({'type':'interval', 'index': MATCH}, 'n_intervals')],
+        [Output({'type':'anim-slider', 'index': MATCH}, 'value'), Output({'type':'anim-slider', 'index': MATCH}, 'max'), Output({'type':'interval', 'index': MATCH}, 'max_intervals')],
+        [Input({'type':'interval', 'index': MATCH}, 'n_intervals'), Input({'type':'last-timestamp', 'index': MATCH}, 'data')],
         [
             State({'type':'is-animating', 'index': MATCH}, 'data'),
+            State({'type': 'anim-slider', 'index': MATCH}, 'max'),
+            State({'type': 'anim-slider', 'index': MATCH}, 'value')
         ]
     )
-    def update_slider(value,animate):
-        if animate is True:
-            return value
+    def update_slider(value,ts, animate, smax, svalue):
+        ctx = dash.callback_context
+        if not ctx.triggered:
+            input_type = 'No input yet'
         else:
-            raise PreventUpdate
+            input_type = get_ctx_type(ctx)
 
+        if input_type == 'interval':
+            if animate is True:
+                return value, dash.no_update
+            else:
+                raise PreventUpdate
+        elif input_type == 'last-timestamp':
+            input_index = get_ctx_index(ctx)
+            df_frame = collection.data[input_index][FRAME].unique()
+            maxValue = df_frame.shape[0] - 1
+            collection.live_processing[input_index] = False
+            return \
+                maxValue if smax == svalue else dash.no_update,\
+                maxValue,\
+                maxValue
 #############################################################################################################################################
 
 # update play button label according to playing status
