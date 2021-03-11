@@ -54,16 +54,16 @@ def register_update_visual_container(app):
 
             # if param['vtype'] != CAROUSEL:
             #     task.process_dataset(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'])
-
-                # result = task.process_dataset.delay(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'])
-                # print('result first', result.status)
+            #     result = task.process_dataset.delay(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'])
+            #     print('result first', result.status)
 
             new_child = container.render_container(create_clicks, param['parameter'], param['vtype'], tformat)
             div_children.append(new_child)
             visual_container.append(create_clicks)
-
             return div_children
+
         else: # input from delete button
+            print('visual_container:', visual_container)
             delete_index = get_ctx_index(ctx)
             temp = visual_container.index(delete_index)
             del div_children[temp]
@@ -77,68 +77,77 @@ def register_update_visual_container(app):
 # update  figure according to slider
 def register_update_figure(app):
     @app.callback(
-        Output({'type':'visualization', 'index': MATCH}, 'figure') ,
-        [Input({'type':'anim-slider', 'index': MATCH}, 'value'), Input({'type':'last-timestamp', 'index': MATCH}, 'data')],
+       # [
+           Output({'type':'visualization', 'index': MATCH}, 'figure'),
+       #     Output({'type': 'anim-slider', 'index': MATCH}, 'max'),
+       #     Output({'type': 'interval', 'index': MATCH}, 'max_intervals')
+       # ] ,
+       #  [
+            Input({'type':'anim-slider', 'index': MATCH}, 'value'),
+        #     Input({'type':'back-buffer', 'index': MATCH}, 'data')
+        # ],
         [
-            State({'type':'visualization', 'index': MATCH}, 'figure'),
             State({'type':'figure-type', 'index': MATCH}, 'data') ,
-            State({'type': 'live-temp', 'index': MATCH}, 'data'),
-            State({'type': 'anim-slider', 'index': MATCH}, 'max'),
-            State({'type': 'anim-slider', 'index': MATCH}, 'value')
+            State({'type': 'at-max', 'index': MATCH}, 'data'),
+            State({'type': 'live-mode', 'index': MATCH}, 'on'),
+            State({'type': 'back-buffer', 'index': MATCH}, 'data')
+
         ],
         prevent_initial_call = True)
-    def update_figure(value, ts, fig, ftype, new_fig, smax, svalue):
-        ctx = dash.callback_context
-        input_index=None
-        if not ctx.triggered:
-            input_type = 'No input yet'
-        else:
-            input_type = get_ctx_type(ctx)
-            input_index=get_ctx_index(ctx)
-        if input_type =='anim-slider':
-            fig2 = fig
-            change_frame(ftype, fig2, value)
-            return fig2
-        elif input_type=='last-timestamp':
-            # collection.live_processing[input_index] = True
-            if smax == svalue:
+    def update_figure(value, ftype, atmax, live, new_fig ):
+        fig2 = new_fig
+        val = value
+        if live:
+            if atmax:
                 new_max = len(new_fig['frames'])
-                change_frame(ftype, new_fig, new_max-1)
-            return  new_fig
+                val = new_max-1
+        change_frame(ftype, new_fig, val)
+        return fig2
+
+
+
 
 
 ############################################################################################################################################## update slider according to interval
 def register_update_slider(app):
     @app.callback(
-        [Output({'type':'anim-slider', 'index': MATCH}, 'value'), Output({'type':'anim-slider', 'index': MATCH}, 'max'), Output({'type':'interval', 'index': MATCH}, 'max_intervals')],
-        [Input({'type':'interval', 'index': MATCH}, 'n_intervals'), Input({'type':'last-timestamp', 'index': MATCH}, 'data')],
+        [
+            Output({'type':'anim-slider', 'index': MATCH}, 'value'),
+            Output({'type': 'anim-slider', 'index': MATCH}, 'max'),
+            Output({'type': 'interval', 'index': MATCH}, 'max_intervals')
+        ],
+        [
+            Input({'type':'interval', 'index': MATCH}, 'n_intervals'),
+            Input({'type': 'last-timestamp', 'index': MATCH}, 'data')
+        ],
         [
             State({'type':'is-animating', 'index': MATCH}, 'data'),
-            State({'type': 'anim-slider', 'index': MATCH}, 'max'),
-            State({'type': 'anim-slider', 'index': MATCH}, 'value')
-        ]
+            State({'type': 'at-max', 'index': MATCH}, 'data'),
+            State({'type': 'figure-type', 'index': MATCH}, 'data'),
+            State({'type': 'back-buffer', 'index': MATCH}, 'data'),
+        ],
+        prevent_initial_call=True
     )
-    def update_slider(value,ts, animate, smax, svalue):
+    def update_slider(value,ts, animate, atmax, ftype, new_fig):
         ctx = dash.callback_context
+        input_index = None
         if not ctx.triggered:
             input_type = 'No input yet'
         else:
             input_type = get_ctx_type(ctx)
+            input_index = get_ctx_index(ctx)
 
         if input_type == 'interval':
             if animate is True:
-                return value, dash.no_update
+                return value, dash.no_update, dash.no_update
             else:
                 raise PreventUpdate
         elif input_type == 'last-timestamp':
-            input_index = get_ctx_index(ctx)
             df_frame = collection.data[input_index][FRAME].unique()
             maxValue = df_frame.shape[0] - 1
             collection.live_processing[input_index] = False
-            return \
-                maxValue if smax == svalue else dash.no_update,\
-                maxValue,\
-                maxValue
+            return maxValue if atmax else dash.no_update, maxValue, maxValue
+
 #############################################################################################################################################
 
 # update play button label according to playing status
@@ -159,19 +168,25 @@ def register_update_play_btn(app):
 # update playing status according to button click
 def register_update_playing_status(app):
     @app.callback(
-        [Output({'type':'is-animating', 'index': MATCH}, 'data'), Output({'type':'interval', 'index': MATCH}, 'n_intervals'), Output({'type':'slider-label', 'index': MATCH}, 'children')],
-        [Input({'type':'play-btn', 'index': MATCH}, 'n_clicks'), Input({'type':'anim-slider', 'index': MATCH}, 'value')],
+        [
+            Output({'type':'is-animating', 'index': MATCH}, 'data'),
+            Output({'type':'interval', 'index': MATCH}, 'n_intervals'),
+            Output({'type':'slider-label', 'index': MATCH}, 'children'),
+            # Output({'type': 'at-max', 'index': MATCH}, 'data')
+        ],
+        [
+            Input({'type':'play-btn', 'index': MATCH}, 'n_clicks'),
+            Input({'type':'anim-slider', 'index': MATCH}, 'value'),
+            Input({'type': 'live-mode', 'index': MATCH}, 'on')
+        ],
         [
             State({'type':'is-animating', 'index': MATCH}, 'data'),
             State({'type':'interval', 'index': MATCH}, 'n_intervals'),
-            # State({'type':'my_param', 'index': MATCH}, 'data'),
-            State({'type':'figure-type', 'index': MATCH}, 'data'),
-            # State({'type': 'my_tformat', 'index': MATCH}, 'data')
 
         ],
         prevent_initial_call=True
     )
-    def update_playing_status(play_clicked, s_value, playing, interval, ftype):
+    def update_playing_status(play_clicked, s_value, live, playing, interval):
         ctx = dash.callback_context
         input_index=None
         if not ctx.triggered:
@@ -194,23 +209,47 @@ def register_update_playing_status(app):
                 not playing, \
                 s_value if s_value != maxValue else 0, \
                 dash.no_update
-
+        elif  input_type== 'live-mode':#input from play btn
+            return \
+                False if live is True else dash.no_update , \
+                dash.no_update, \
+                dash.no_update
         else:
             raise PreventUpdate
-
 #############################################################################################################################################
 
 # update live interval according to live switch
-def register_update_live_interval(app):
+def register_update_atmax(app):
     @app.callback(
-        Output({'type':'live-interval', 'index': MATCH}, 'disabled'),
-        [Input({'type':'live-mode', 'index': MATCH}, 'on')],
+        Output({'type': 'at-max', 'index': MATCH}, 'data'),
+        [Input({'type':'anim-slider', 'index': MATCH}, 'value'),],
+        State({'type': 'anim-slider', 'index': MATCH}, 'max'),
 
         prevent_initial_call=True
     )
-    def update_live_interval(live):
+    def update_atmax(slider, smax):
+        ctx = dash.callback_context
+        input_index = None
+        if not ctx.triggered:
+            input_type = 'No input yet'
+        else:
+            input_type = get_ctx_type(ctx)
+            input_index = get_ctx_index(ctx)
+        return True if slider == smax else False
+#############################################################################################################################################
 
-        return not live
+# update live interval according to live switch
+def register_update_live_mode(app):
+    @app.callback(
+       [ Output({'type':'live-interval', 'index': MATCH}, 'disabled'), Output({'type':'play-btn', 'index': MATCH}, 'disabled')],
+        [Input({'type':'live-mode', 'index': MATCH}, 'on')],
+        prevent_initial_call=True
+    )
+    def update_live_mode(live):
+
+        return not live, live
+
+
 
 
 #############################################################################################################################################
@@ -218,7 +257,7 @@ def register_update_live_interval(app):
 # fetch new data for live mode
 def register_update_live_data(app):
     @app.callback(
-        [Output({'type':'last-timestamp', 'index': MATCH}, 'data'),Output({'type':'live-temp', 'index': MATCH}, 'data')],
+        [Output({'type':'last-timestamp', 'index': MATCH}, 'data'),Output({'type':'back-buffer', 'index': MATCH}, 'data')],
         [Input({'type':'live-interval', 'index': MATCH}, 'n_intervals')],
         [
             State({'type':'last-timestamp', 'index': MATCH}, 'data'),
@@ -236,6 +275,7 @@ def register_update_live_data(app):
         else:
             input_type = get_ctx_type(ctx)
             input_index = get_ctx_index(ctx)
+        print(datetime.now(),' collection.live_processing', collection.live_processing)
         if collection.live_processing[input_index] is True:
             raise  PreventUpdate
         else:
@@ -251,7 +291,7 @@ def register_update_live_data(app):
                 last_nano = get_last_timestamp(result[TIME])
                 collection.data[input_index] = collection.data[input_index].append(result, ignore_index=True)
                 fig = create_figure(collection.data[input_index], param, ftype)
-
+                print('last_nano',last_nano)
                 return last_nano,fig
             else:
                 collection.live_processing[input_index] = False

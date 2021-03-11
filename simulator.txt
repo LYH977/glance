@@ -1,0 +1,121 @@
+const express = require('express')
+const cors = require('cors')
+const Influx = require('influx')
+
+require('dotenv').config()
+
+const app = express()
+const port = process.env.PORT || 3000
+
+app.use(cors())
+app.use(express.json())
+
+const dataRouter = require('./routes/data')
+
+app.use('/data', dataRouter)
+
+app.listen(port, ()=>{
+    console.log(`Server statred onb port ${port}` )
+})
+
+measurement = 'live'
+year = 1977
+const influx = new Influx.InfluxDB({
+    host: 'localhost',
+    database: 'glance',
+    schema: [
+      {
+        measurement,
+        fields: {
+          Magnitude: Influx.FieldType.FLOAT,
+        },
+        tags: ['Latitude', 'Longitude' ]
+      }
+    ]
+   })
+
+function generateRandomNumber(min, max, decimal) {
+  num = Math.random() * (max - min) + min;
+  return Math.round(num * Math.pow(10,decimal)) / Math.pow(10,decimal)
+
+};
+
+function pumpdata(){
+  let d = new Date(year++, 0, 1, 0, 0, 0);
+  let offset = d.getTimezoneOffset() * 60 * 1000;
+  let timestamp = (d - offset)*1000000
+  let Latitude = generateRandomNumber(-85, 85, 3)
+  let Longitude = generateRandomNumber(-180, 180, 3)
+  let Magnitude = generateRandomNumber(0, 10, 2)
+
+
+  influx.writePoints([
+    {
+      measurement,
+      tags: { Latitude,  Longitude },
+      fields: {  Magnitude },
+      timestamp
+    }
+  ]).then(() => {
+    return influx.query(`
+      select * from ${measurement}`)
+  }).then(rows => {
+    rows.forEach(row => console.log(`${row.time} `))
+    console.log('-------------------------------')
+  })
+}
+
+setInterval(pumpdata, 2000)
+
+
+// //connection
+// const {InfluxDB} = require('@influxdata/influxdb-client')
+// const token = process.env.TOKEN
+// const org = 'glanceapp2020@gmail.com'
+// const bucket = "glanceapp2020's Bucket"
+// const client = new InfluxDB({url: 'https://eu-central-1-1.aws.cloud2.influxdata.com', token: token})
+
+// //write api x
+// const {Point} = require('@influxdata/influxdb-client')
+// const writeApi = client.getWriteApi(org, bucket)
+// writeApi.useDefaultTags({host: 'host1'})
+// const point = new Point('testing')
+//   .tag('lat',12)
+//   .tag('long', 34)
+//   .floatField('used_percent', 100)
+//   .booleanField('booo', true)
+// writeApi.writePoint(point)
+// writeApi
+//     .close()
+//     .then(() => {
+//         console.log('FINISHED')
+//     })
+//     .catch(e => {
+//         console.error(e)
+//         console.log('\\nFinished ERROR')
+//     })
+
+// //read api
+// const queryApi = client.getQueryApi(org)
+// const query =
+// `from(bucket: "${bucket}") |>
+// range(start: -1h) |>
+// filter(fn: (r) => r._measurement == "testing")   |>
+// pivot( rowKey:["_time"], columnKey: ["_field"],  valueColumn: "_value")`
+// queryApi.queryRows(query, {
+//   next(row, tableMeta) {
+//     const o = tableMeta.toObject(row)
+//     console.log(o)
+//     console.log('---end--')
+//     // console.log(
+//     //   `${o._time} ${o._measurement} in '${o.location}' (${o.example}): ${o._field}=${o._value}`
+//     // )
+//   },
+//   error(error) {
+//     console.error(error)
+//     console.log('\\nFinished ERROR')
+//   },
+//   complete() {
+//     console.log('\\nFinished SUCCESS')
+//   },
+// })

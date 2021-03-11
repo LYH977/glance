@@ -158,21 +158,22 @@ def create_choropleth(data,parameter):
 
 def create_visualization(screen_width, create_clicks, ftype, param, maxValue, df_frame, tformat):
     last_nano = get_last_timestamp(collection.temp[TIME])
-    print(last_nano)
+    figure = create_figure(collection.data[create_clicks], param, ftype)
+    # print(last_nano)
     return html.Div(
                     style={'width': screen_width/2.2, 'display': 'inline-block', 'outline': 'thin lightgrey solid', 'padding': 20, 'position':'relative'},
                     children=html.Div([
                         dcc.Store(id={'type': 'is-animating', 'index': create_clicks}, data = False),
                         dcc.Store(id={'type': 'figure-type', 'index': create_clicks}, data = ftype),
                         dcc.Store(id={'type': 'my_param', 'index': create_clicks}, data = param),
-                        dcc.Store(id={'type': 'live-temp', 'index': create_clicks}, data = True),
+                        dcc.Store(id={'type': 'back-buffer', 'index': create_clicks}, data = figure),
                         dcc.Store(id={'type': 'frame-format', 'index': create_clicks}, data = tformat),
                         dcc.Store(id={'type': 'last-timestamp', 'index': create_clicks}, data = last_nano),
-                        dcc.Store(id={'type': 'last-maxValue', 'index': create_clicks}, data=maxValue),
-
+                        dcc.Store(id={'type': 'at-max', 'index': create_clicks}, data = False),
+                        html.Label( create_clicks),
                         dcc.Interval(
                             id={'type': 'interval', 'index': create_clicks},
-                            interval=2000,
+                            interval=200,
                             n_intervals=0,
                             max_intervals=maxValue,
                             disabled=True
@@ -184,14 +185,14 @@ def create_visualization(screen_width, create_clicks, ftype, param, maxValue, df
                         ),
                         dcc.Interval(
                             id={'type': 'live-interval', 'index': create_clicks},
-                            interval=200,
+                            interval=2000,
                             n_intervals=0,
                             disabled=True
                         ),
                         html.Button('Delete', id={'type': 'dlt-btn', 'index': create_clicks} ),
                         dcc.Graph(
                             id={'type': 'visualization', 'index': create_clicks},
-                            figure=create_figure(collection.data[create_clicks], param, ftype),
+                            figure = figure,
                             config={
                                 # 'displayModeBar': False
                                 # "displaylogo": False,

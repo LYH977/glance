@@ -7,6 +7,7 @@ import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
+import plotly.express as px
 
 from app import app
 from dash.dependencies import Input, Output, State, ClientsideFunction
@@ -37,6 +38,7 @@ from datetime import datetime
 # s= 1611918340073422000/  1000000000.0
 # dt = datetime.fromtimestamp(s).strftime('%Y-%m-%d %H:%M:%S.%f')
 # print(dt)
+from components.visualization import create_figure
 
 redis_instance = redis.StrictRedis.from_url(os.environ['REDIS_URL'])
 N = 100
@@ -55,11 +57,27 @@ df = pd.DataFrame(
 #     )
 
 # task.update_data(df.to_dict())
+
+jj = pd.read_csv('C:/Users/FORGE-15/PycharmProjects/glance/datasets/test live.csv')
+fig = px.density_mapbox(
+        jj,
+        lat = 'Latitude',
+        lon = 'Longitude',
+        z = 'Magnitude',
+        radius = 10,
+        center = dict(lat = 0, lon = 180),
+        zoom = 0,
+        animation_frame = 'Date',
+        mapbox_style = "dark")
+
 layout = dbc.Jumbotron(
     [
+        dcc.Store(id='testing-js', data=fig),
+        dcc.Store(id='testing-plot', data= fig),
+
         html.Button('client', id='client-btn'),
         html.P(
-            "client",
+            "initial",
             className="lead",
             id='client-p'
         ),
@@ -104,13 +122,14 @@ def update_output(click):
 @app.callback(Output('title2', 'children'),
               Input('test2', 'n_clicks'))
 def update_output(click):
-
     if click is not None:
         print('clicked test2')
-
         task.update_data.delay(2)
-
         return 'spider'
+
+
+
+
 
 
 app.clientside_callback(
@@ -120,4 +139,7 @@ app.clientside_callback(
     ),
     Output('client-p', 'children'),
     Input('client-btn', 'n_clicks'),
+    State('testing-js', 'data'),
+    prevent_initial_call=True
+
 )

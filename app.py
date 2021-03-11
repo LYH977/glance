@@ -17,7 +17,7 @@ from callback.container_callback import \
     register_update_figure, \
     register_update_slider, \
     register_update_playing_status, \
-    register_update_play_btn, register_update_live_interval, register_update_live_data
+    register_update_play_btn, register_update_live_mode, register_update_live_data, register_update_atmax
 
 # meta_tags are required for the app layout to be mobile responsive
 from callback.upload_page_callback import register_update_preview, register_update_datetime_modifier, \
@@ -49,9 +49,9 @@ register_update_slider(app)
 register_update_playing_status(app)
 register_update_play_btn(app)
 register_toggle_modal(app)
-register_update_live_interval(app)
+register_update_live_mode(app)
 register_update_live_data(app)
-# register_update_max(app)
+register_update_atmax(app)
 
 # carousel_callback
 register_display_image(app)
