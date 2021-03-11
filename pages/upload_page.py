@@ -6,8 +6,6 @@ import dash_table
 import dash
 from dash.exceptions import PreventUpdate
 
-from utils.constant import FIGURE_OPTION, FIGURE_PARAM, CREATE_BTN_ID, SM_PARAM, SG_PARAM, D_PARAM, CA_PARAM, CH_PARAM, \
-    BC_PARAM, SCATTER_MAP, SCATTER_GEO, DENSITY, CHOROPLETH, CAROUSEL, BAR_CHART_RACE
 from utils import  collection
 from utils.method import unpack_parameter
 import base64
@@ -15,13 +13,7 @@ import io
 import pandas as pd
 from database.dbConfig import client, new_client
 
-# q = "select * from heatmap1 "
-# df = new_client.query(q, epoch='ns')
-# print(df.raw)
-# df = pd.DataFrame(df['heatmap1'])
-# df['time'] = df.index
-# print(df.dtypes)
-# print(len(df))
+
 
 layout = html.Div([
     dcc.Store(id='form-complete', data = False),
@@ -42,7 +34,6 @@ layout = html.Div([
     ),
     html.Div(id = 'dt-modifier'),
     dbc.Button("Upload", id="dt-upload", className="ml-auto",color="success", disabled=True),
-    html.Div(id='upload-toast')
 ])
 
 

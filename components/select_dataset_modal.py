@@ -17,8 +17,6 @@ import pandas as pd
 
 
 
-# print(client.get_list_measurements())
-# measurements = client.get_list_measurements()
 modal = html.Div(
     [
         # dbc.Button("Select File", id="open"),
@@ -29,28 +27,8 @@ modal = html.Div(
             [
                 dbc.ModalHeader("Create New Visualization"),
                 dbc.ModalBody(html.Div([
-                    # dbc.FormGroup(
-                    #     [
-                    #         dbc.Label('Choose a dataset', className="mr-2"),
-                    #         dcc.Dropdown(
-                    #             style={'width': '100%'},
-                    #             id='dataset-dropdown',
-                    #             options=[{"label": i['name'], "value": i['name']} for i in measurements],
-                    #             multi=False
-                    #         ),
-                    #     ],
-                    #     # className="mr-3",
-                    #     style={'width': '50%'}
-                    # ),
                     html.Div(id='dataset-window'),
-                    # dcc.Upload(
-                    #     id='upload-data',
-                    #     children=html.Button('Upload File'),
-                    #     multiple=True
-                    # ),
                     html.Div(id='dataset-portal'),
-                    # html.Div(id='data-snapshot'),
-                    # html.Div(id='output-form'),
                 ])),
                 dbc.ModalFooter(
                     html.Div([
