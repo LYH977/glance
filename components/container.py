@@ -17,7 +17,6 @@ root = tk.Tk()
 screen_width = root.winfo_screenwidth()
 
 def render_container(create_clicks, param, ftype, tformat):
-    # print('belum 2')
 
     data = collection.temp.dropna()
     df_frame = data[FRAME].unique()

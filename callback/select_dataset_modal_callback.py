@@ -68,7 +68,7 @@ def validate_create(data):
 
 def register_update_after_upload(app):
     @app.callback(Output('dataset-portal', 'children'),
-                  [Input("open", "n_clicks"), Input("close", "n_clicks"),Input("create", "n_clicks"), Input('chosen-dropdown', 'data')],
+                  [Input("open", "n_clicks"), Input("cancel-create-visual", "n_clicks"),Input("create-visual", "n_clicks"), Input('chosen-dropdown', 'data')],
                   [State("modal", "is_open")],
                   prevent_initial_call=True
     )
@@ -91,9 +91,9 @@ def register_update_after_upload(app):
                 return dataset_portal_markup(measurement)
 
 
-        elif input_type == 'open' or 'close' :
+        elif input_type == 'create-visual' or 'cancel-create-visual' :
             return dash.no_update if is_open is True else []
-        elif input_type ==  'create':
+        elif input_type ==  'create-visual':
             return  []
         else:
             raise PreventUpdate
@@ -124,7 +124,7 @@ def register_update_output_form(app):
 def register_toggle_modal(app):
     @app.callback(
         Output("modal", "is_open"),
-        [Input("open", "n_clicks"), Input("close", "n_clicks"),Input("create", "n_clicks")],
+        [Input("open", "n_clicks"), Input("cancel-create-visual", "n_clicks"),Input("create-visual", "n_clicks")],
         [State("modal", "is_open"), State('last-param', 'data')],
         prevent_initial_call=True
     )
@@ -135,7 +135,7 @@ def register_toggle_modal(app):
             input_type = 'No input yet'
         else:
             input_type = ctx.triggered[0]['prop_id'].split('.')[0]
-        if input_type == 'create':
+        if input_type == 'create-visual':
             if param['vtype'] == CAROUSEL:
                 temp = []
                 for row in collection.temp.index:
@@ -147,7 +147,7 @@ def register_toggle_modal(app):
 
 def register_enable_create_btn(app):
     @app.callback(
-        [Output('create', 'disabled'),  Output('last-param', 'data')] ,
+        [Output('create-visual', 'disabled'),  Output('last-param', 'data')] ,
         [
             Input(SM_PARAM,'data'),
             Input(SG_PARAM, 'data'),
@@ -155,7 +155,7 @@ def register_enable_create_btn(app):
             Input(CH_PARAM, 'data'),
             Input(CA_PARAM, 'data'),
             Input(BC_PARAM, 'data'),
-            Input('create', 'n_clicks'),
+            Input('create-visual', 'n_clicks'),
         ],
         State('visual-type', 'value'),
         prevent_initial_call=True
@@ -169,7 +169,7 @@ def register_enable_create_btn(app):
             input_type = get_ctx_type(ctx)
             input_value = get_ctx_value(ctx)
 
-        if input_type == 'create':
+        if input_type == 'create-visual':
             return True, dash.no_update
         if input_value['parameter'] is not None and input_value['is_filled'] is True:
             data = {'vtype': vtype, 'parameter':input_value['parameter'] }
@@ -191,7 +191,7 @@ def register_enable_create_btn(app):
 def register_update_dt_dropdown(app):
     @app.callback(
         Output('dataset-window', 'children') ,
-        [Input('open','n_clicks'), Input('close','n_clicks'), Input('create','n_clicks')],
+        [Input('open','n_clicks'), Input('cancel-create-visual','n_clicks'), Input('create-visual','n_clicks')],
         prevent_initial_call=True
     )
     def update_dt_dropdown (open, close,create):
@@ -204,7 +204,7 @@ def register_update_dt_dropdown(app):
             input_value = get_ctx_value(ctx)
         if input_type == 'open':
             return dropdown_markup(client.get_list_measurements())
-        elif input_type == 'close' or 'create':
+        elif input_type == 'cancel-create-visual' or 'create-visual':
             return None
         else:
             raise PreventUpdate

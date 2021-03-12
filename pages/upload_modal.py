@@ -16,24 +16,36 @@ from database.dbConfig import client, new_client
 
 
 layout = html.Div([
-    dcc.Store(id='form-complete', data = False),
-    dcc.Upload(
-        id='upload-dataset',
-        children=html.Button('Upload File'),
-        multiple=True
-    ),
-    html.Div(id = 'preview'),
-    dbc.FormGroup(
-        [
-            dbc.Label("Choose Datetime column*", html_for="dropdown"),
-            dcc.Dropdown(
-                id="dt-dropdown",
-                disabled= True,
+    dbc.Modal(
+                [
+                    dbc.ModalHeader("Create New Visualization"),
+                    dbc.ModalBody(html.Div([
+                        dcc.Store(id='form-complete', data = False),
+                        dcc.Store(id='datetime-value', data = None),
+                        dcc.Upload(
+                            id='upload-dataset',
+                            children=html.Button('Upload File'),
+                            multiple=True
+                        ),
+                        html.Div(id='preview', style={'overflow':'auto'} ),
+                        html.Div(id='dt-dropdown-area'),
+                        html.Div(id='dt-modifier'),
+                    ])),
+                    dbc.ModalFooter(
+                        html.Div([
+                            dbc.Button("Confirm", id="confirm-upload", className="ml-auto", color="success", disabled=True),
+                            dbc.Button("Cancel", id="cancel-upload", className="ml-auto", color="danger", ),
+                        ])
+                    ),
+                ],
+                id="upload-modal",
+                size="xl",
+                backdrop='static',
+                is_open=False,
+                autoFocus=False,
+
             ),
-        ]
-    ),
-    html.Div(id = 'dt-modifier'),
-    dbc.Button("Upload", id="dt-upload", className="ml-auto",color="success", disabled=True),
+    html.Div(id='upload-toast')
 ])
 
 
@@ -80,3 +92,15 @@ def dt_modifier_markup(value):
             dbc.Button("Check format", id="check-dt-format", className="ml-auto", color="secondary")
         ]
     )
+
+def dt_dropdown_markup(options):
+    return dbc.FormGroup(
+        [
+            dbc.Label("Choose Datetime column*", html_for="dropdown"),
+            dcc.Dropdown(
+                id="dt-dropdown",
+                options = options
+                # disabled=True,
+            ),
+        ]
+    ),

@@ -9,7 +9,7 @@ import dash
 from dash.exceptions import PreventUpdate
 
 from database.dbConfig import client, new_client
-from pages.upload_page import preview_markup, dt_modifier_markup
+from pages.upload_modal import preview_markup, dt_modifier_markup, dt_dropdown_markup
 from components.carousel import create_ca_img
 from utils.constant import FIGURE_OPTION, SCATTER_MAP_PARAM, SM_PARAM, CA_PARAM, CH_PARAM, D_PARAM, BC_PARAM, SG_PARAM, \
     CAROUSEL, CAROUSEL_CONSTANT, ITEM
@@ -45,49 +45,64 @@ def parse_contents(contents, filename):
 
 
 def register_update_preview(app):
-    @app.callback([Output('preview', 'children'), Output('dt-dropdown', 'options'),  Output('dt-dropdown', 'disabled')],
-                  Input('upload-dataset', 'contents'),
+    @app.callback([Output('preview', 'children'), Output('dt-dropdown-area', 'children')],
+                  [Input('upload-dataset', 'contents'), Input('upload-button', 'n_clicks')],
                   [State('upload-dataset', 'filename'), State('upload-dataset', 'last_modified')],
                   prevent_initial_call=True
     )
-    def update_preview(list_of_contents,list_of_names, list_of_dates):
-        if list_of_contents is not None:
-            children = [
-                parse_contents(c, n) for c, n in
-                zip(list_of_contents, list_of_names)
-            ]
-            options = [{"label": i, "value": i} for i in collection.temp.columns]
-            # print('b', len( collection.temp.index))
-            collection.temp = collection.temp.dropna()
-            collection.temp = collection.temp.reset_index(drop=True)
-
-            # print('a',len( collection.temp.index))
-
-            return children, options, False
-        else:
-            raise PreventUpdate
-
-
-#############################################################################################################################################
-
-
-def register_update_datetime_modifier(app):
-    @app.callback(Output('dt-modifier', 'children'),
-                 [ Input('dt-dropdown', 'value'), Input('upload-dataset', 'contents')],
-                  prevent_initial_call=True
-    )
-    def update_datetime_modifier(value, contents):
+    def update_preview(list_of_contents,close, list_of_names, list_of_dates):
         ctx = dash.callback_context
         if not ctx.triggered:
             input_type = 'No input yet'
         else:
             input_type = get_ctx_type(ctx)
 
-        if input_type == 'dt-dropdown':
+        if input_type=='upload-dataset' and list_of_contents is not None:
+            children = [
+                parse_contents(c, n) for c, n in
+                zip(list_of_contents, list_of_names)
+            ]
+            options = [{"label": i, "value": i} for i in collection.temp.columns]
+            collection.temp = collection.temp.dropna()
+            collection.temp = collection.temp.reset_index(drop=True)
+            return children, dt_dropdown_markup(options)
+        elif input_type =='upload-button':
+            return None, None
+        else:
+            raise PreventUpdate
+#############################################################################################################################################
+
+
+def register_update_datetime_value(app):
+    @app.callback(Output('datetime-value', 'data'),
+                  Input('dt-dropdown', 'value'),
+                  prevent_initial_call=True
+    )
+    def update_datetime_modifier(value):
+        return value
+
+#############################################################################################################################################
+
+
+def register_update_datetime_modifier(app):
+    @app.callback(Output('dt-modifier', 'children'),
+                 [ Input('datetime-value', 'data'), Input('upload-dataset', 'contents'), Input('upload-button', 'n_clicks')],
+                  prevent_initial_call=True
+    )
+    def update_datetime_modifier(value, contents, close):
+        ctx = dash.callback_context
+        if not ctx.triggered:
+            input_type = 'No input yet'
+        else:
+            input_type = get_ctx_type(ctx)
+
+        if input_type == 'datetime-value' and value is not None:
             # dt = collection.temp.loc[0, value]
             text_input = dt_modifier_markup(value)
             return text_input
         elif input_type == 'upload-dataset':
+            return None
+        elif input_type == 'upload-button':
             return None
         else:
             raise PreventUpdate
@@ -102,25 +117,14 @@ def register_update_datetime_filled(app):
                   prevent_initial_call=True
     )
     def update_datetime_filled(format, name, sformat, sname):
-        # ctx = dash.callback_context
-        # if not ctx.triggered:
-        #     input_type = 'No input yet'
-        # else:
-        #     input_type = get_ctx_type(ctx)
-        #
-        # if input_type == 'dt-format':
-        #
-        # elif input_type == 'upload-dataset':
-        #     return False
-        # else:
-        #     raise PreventUpdate
         return True if sformat is True and len(sname) > 0  else False
+
 
 #############################################################################################################################################
 
 
 def register_update_datetime_upload_btn(app):
-    @app.callback(Output('dt-upload', 'disabled'),
+    @app.callback(Output('confirm-upload', 'disabled'),
                   [Input('form-complete', 'data'), Input('upload-dataset', 'contents')],
                   prevent_initial_call=True
     )
@@ -143,7 +147,7 @@ def register_update_datetime_upload_btn(app):
 def register_update_datetime_format(app):
     @app.callback(Output('dt-format', 'data'),
                   Input('check-dt-format', 'n_clicks'),
-                  [State('dt-input', 'value'), State('dt-dropdown', 'value')],
+                  [State('dt-input', 'value'), State('datetime-value', 'data')],
                   prevent_initial_call=True
     )
     def update_datetime_format(click, input, value):
@@ -180,10 +184,28 @@ def register_clear_dropdown(app):
 
 #############################################################################################################################################
 
+def register_clear_upload_content(app):
+    @app.callback(Output('upload-dataset', 'contents'),
+                  Input('cancel-upload', 'n_clicks'),
+                  prevent_initial_call=True
+    )
+    def clear_upload_upload_content(content):
+        return None
+#############################################################################################################################################
+
+def register_update_upload_modal(app):
+    @app.callback(Output('upload-modal', 'is_open'),
+              [Input('upload-button', 'n_clicks'), Input('cancel-upload', 'n_clicks')],
+              State('upload-modal', 'is_open'),
+              prevent_initial_call = True)
+    def update_output(open, close, is_open):
+        return not is_open
+#############################################################################################################################################
+
 def register_handle_upload_click(app):
     @app.callback(Output('upload-toast', 'children'),
-                  Input('dt-upload', 'n_clicks'),
-                  [State('dt-dropdown', 'value'), State('dt-input', 'value'), State('name-input', 'value'), State('dt-tags', 'value')],
+                  Input('confirm-upload', 'n_clicks'),
+                  [State('datetime-value', 'data'), State('dt-input', 'value'), State('name-input', 'value'), State('dt-tags', 'value')],
                   prevent_initial_call=True
     )
     def update_handle_upload_click(click, dt, input, name, tags):

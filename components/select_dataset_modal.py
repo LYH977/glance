@@ -32,8 +32,8 @@ modal = html.Div(
                 ])),
                 dbc.ModalFooter(
                     html.Div([
-                        dbc.Button("Create", id="create", className="ml-auto",color="success", disabled=True),
-                        dbc.Button("Close", id="close", className="ml-auto",color="danger"),
+                        dbc.Button("Create", id="create-visual", className="ml-auto",color="success", disabled=True),
+                        dbc.Button("Close", id="cancel-create-visual", className="ml-auto",color="danger"),
                     ])
                 ),
             ],
@@ -59,12 +59,16 @@ def dataset_portal_markup(filename):
 
 def snapshot_markup (filename):
     return html.Div([
-        html.H6(f'Filename: {filename}'),
-        html.H6('Below are the first 5 rows.'),
-        dash_table.DataTable(
-            data=collection.temp.head(5).to_dict('records'),
-            columns=[{'name': i, 'id': i} for i in collection.temp.columns]
-        ),
+        html.Div([
+            html.H6(f'Filename: {filename}'),
+            html.H6('Below are the first 5 rows.'),
+            dash_table.DataTable(
+                data=collection.temp.head(5).to_dict('records'),
+                columns=[{'name': i, 'id': i} for i in collection.temp.columns]
+            ),
+        ]
+        , style={'overflow':'auto'}),
+
         html.Br(),
         dbc.FormGroup(
             [
