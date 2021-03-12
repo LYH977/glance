@@ -93,6 +93,7 @@ def register_update_after_upload(app):
 
         elif input_type == 'create-visual' or 'cancel-create-visual' :
             return dash.no_update if is_open is True else []
+
         elif input_type ==  'create-visual':
             return  []
         else:
@@ -141,6 +142,8 @@ def register_toggle_modal(app):
                 for row in collection.temp.index:
                     temp.append( create_ca_img(collection.temp.loc[row, param['parameter'][CAROUSEL_CONSTANT[ITEM]]]) )
                 collection.img_container[create] = temp
+        # if open is  None:
+        #     return dash.no_update
         return not is_open
 #############################################################################################################################################
 
@@ -341,3 +344,14 @@ def register_validate_ca_create(app):
         return validate_create(data)
 
 
+#############################################################################################################################################
+
+
+def register_update_chosen_tformat(app):
+    @app.callback(
+        Output('chosen-tformat', 'data') ,
+        Input("time-format", "value"),
+        prevent_initial_call=True
+    )
+    def update_chosen_tformat (value):
+        return value

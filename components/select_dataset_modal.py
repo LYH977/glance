@@ -8,7 +8,7 @@ from dash.exceptions import PreventUpdate
 
 from database.dbConfig import client
 from utils.constant import FIGURE_OPTION, FIGURE_PARAM, CREATE_BTN_ID, SM_PARAM, SG_PARAM, D_PARAM, CA_PARAM, CH_PARAM, \
-    BC_PARAM, SCATTER_MAP, SCATTER_GEO, DENSITY, CHOROPLETH, CAROUSEL, BAR_CHART_RACE, TIME_FORMAT
+    BC_PARAM, SCATTER_MAP, SCATTER_GEO, DENSITY, CHOROPLETH, CAROUSEL, BAR_CHART_RACE, TIME_FORMAT, YEAR
 from utils import  collection
 from utils.method import unpack_parameter
 import base64
@@ -20,8 +20,12 @@ import pandas as pd
 modal = html.Div(
     [
         # dbc.Button("Select File", id="open"),
-        html.Div('add',id="open", style={'width':200, 'height':200, 'background':'red'}),
+        html.Div('add',id="open", style={'width':200, 'height':200, 'background': 'yellow',
+                                         'left':'100px','bottom':'100px', 'position':'fixed'
+                                         }),
         dcc.Store(id='last-param', data={}),
+        dcc.Store(id='chosen-tformat', data= YEAR),
+
         dcc.Store(id='chosen-dropdown', data= None),
         dbc.Modal(
             [
@@ -44,7 +48,8 @@ modal = html.Div(
             autoFocus=False,
 
         ),
-    ]
+    ],
+    # style={    'position':'relative', 'width':'inherit', 'height':'inherit'}
 )
 
 def dataset_portal_markup(filename):
@@ -137,7 +142,7 @@ def time_format_option():
                             id='time-format',
                             options=[{"label": i, "value": j} for i,j in zip(TIME_FORMAT.keys(), TIME_FORMAT.values())],
                             clearable= False,
-                            value = '%Y'
+                            value = YEAR
                         ),
                     ],
                     # className="mr-3",

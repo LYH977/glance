@@ -34,8 +34,8 @@ def change_frame(ftype,fig2, value ):
 def register_update_visual_container(app):
     @app.callback(
          Output('visual-container', 'children') ,
-        [ Input('create', 'n_clicks'), Input({'type':'dlt-btn', 'index': ALL},'n_clicks') ],
-        [ State('visual-container', 'children') , State('last-param', 'data'),  State('time-format', 'value')    ],
+        [ Input('create-visual', 'n_clicks'), Input({'type':'dlt-btn', 'index': ALL},'n_clicks') ],
+        [ State('visual-container', 'children') , State('last-param', 'data'),  State('chosen-tformat', 'data')    ],
         prevent_initial_call=True)
     def update_visual_container(create_clicks, deletable, div_children, param, tformat):
         ctx = dash.callback_context
@@ -45,7 +45,7 @@ def register_update_visual_container(app):
             input_type = get_ctx_type(ctx)
             # input_type = get_ctx_type(ctx)
 
-        if input_type == 'create': # input from add button
+        if input_type == 'create-visual': # input from add button
             collection.temp = collection.temp.dropna()
             collection.temp.reset_index(drop=True, inplace=True)
             collection.temp[FRAME] = collection.temp[TIME].map(lambda x: formatted_time_value(x, tformat))

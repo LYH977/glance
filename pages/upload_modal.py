@@ -18,7 +18,7 @@ from database.dbConfig import client, new_client
 layout = html.Div([
     dbc.Modal(
                 [
-                    dbc.ModalHeader("Create New Visualization"),
+                    dbc.ModalHeader("Upload Dataset"),
                     dbc.ModalBody(html.Div([
                         dcc.Store(id='form-complete', data = False),
                         dcc.Store(id='datetime-value', data = None),
