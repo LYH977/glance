@@ -28,16 +28,10 @@ from raceplotly.plots import barplot
 
 # print(fig)
 layout = html.Div([
-    dbc.Row([
-        dbc.Col(html.Div(id='visual-container', children=[]), width="auto", style={'background':'green'})  ,
-        # dbc.Col(select_dataset_modal.modal, style={'background': 'yellow'}),
-
-    ]),
+    html.Div(id='visual-container', children=[], style={'background':'green'}),
     select_dataset_modal.modal
-    # ,dcc.Graph(id='temporary',    figure=fig)
 , ], style={
-    'overflow':'auto', 'height':'auto',
-    # 'position':'relative', 'background':'lightgrey', 'width':'100vw', 'height':'100vh'
+    # 'overflow':'auto', 'height':'auto',
     }
 )
 
