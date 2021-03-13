@@ -3,6 +3,7 @@ import dash_bootstrap_components as dbc
 
 from callback.carousel_callback import register_display_image, register_ca_update_slider, register_update_ca_play_btn, \
     register_update_ca_playing_status
+from callback.dashboard_callback import register_update_dashboard
 
 from callback.select_dataset_modal_callback import \
     register_update_after_upload, \
@@ -73,4 +74,7 @@ register_update_datetime_value(app)
 register_update_upload_modal(app)
 register_clear_upload_content(app)
 
+
+#  dashboard callback
+register_update_dashboard(app)
 server = app.server

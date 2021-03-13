@@ -20,18 +20,13 @@ import pandas as pd
 from raceplotly.plots import barplot
 
 
-# df = px.data.gapminder()
-# fig = px.choropleth(df, locations="iso_alpha",
-#                     color="lifeExp", # lifeExp is a column of gapminder
-#                     hover_name="country", # column to add to hover information
-#                     color_continuous_scale=px.colors.sequential.Plasma, animation_frame='year')
-
-# print(fig)
 layout = html.Div([
-    html.Div(id='visual-container', children=[], style={'background':'green'}),
+    html.Div('it is empty', id='empty-scene', className='empty-scene'),
+    html.Div(id = 'visual-container', children=[], style={'background':'green'}),
     select_dataset_modal.modal
 , ], style={
-    # 'overflow':'auto', 'height':'auto',
+    'position':'relative',
+    # 'overflow-x':'auto ',
     }
 )
 

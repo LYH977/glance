@@ -20,7 +20,11 @@ import pandas as pd
 modal = html.Div(
     [
         # dbc.Button("Select File", id="open"),
-        html.Button('\uFF0B',id="open", className='float_add_btn'  ),
+        html.Button(
+            html.P('+',className='add_btn' ),
+            id="open",
+            className='floating_area'
+        ),
         dcc.Store(id='last-param', data={}),
         dcc.Store(id='chosen-tformat', data= YEAR),
 
