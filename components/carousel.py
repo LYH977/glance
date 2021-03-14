@@ -1,6 +1,8 @@
 
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_bootstrap_components as dbc
+import dash_daq as daq
 
 
 from utils import collection
@@ -22,6 +24,16 @@ def create_carousel(screen_width, create_clicks, param, maxValue, df_frame):
                             max_intervals=maxValue,
                             disabled=True
                         ),
+                        dbc.Row([
+                            dbc.Col(html.Label(create_clicks)),
+                            dbc.Col(daq.BooleanSwitch(
+                                id={'type': 'live-mode', 'index': create_clicks},
+                                on=False,
+                                color="#9B51E0"
+                            )),
+                            dbc.Col(html.Button('Delete', id={'type': 'dlt-btn', 'index': create_clicks})),
+
+                        ]),
                         html.Div(
                             create_ca_img(collection.temp.loc[0,param[CAROUSEL_CONSTANT[ITEM]]]),
                             id={'type': 'fade1', 'index': create_clicks},
@@ -41,7 +53,6 @@ def create_carousel(screen_width, create_clicks, param, maxValue, df_frame):
                             html.Button('play', id={'type': 'ca-play-btn', 'index': create_clicks}),
                             html.Label(df_frame[0], id={'type': 'ca-slider-label', 'index': create_clicks})
                         ]),
-                        html.Button('Delete', id={'type': 'dlt-btn', 'index': create_clicks}, style={'position':'absolute', 'top':0}),
                     ]),
                 )
 

@@ -81,13 +81,13 @@ layout = dbc.Jumbotron(
             className="lead",
             id='client-p'
         ),
-        html.Button('stark', id='test2'),
+        html.Button('test2', id='test2'),
         html.P(
             "avenger assem,ble",
             className="lead",
             id='title2'
         ),
-        html.Button('tony', id='testcelery'),
+        html.Button('testcelery', id='testcelery'),
         html.H1("Glance", className="display-3"),
         html.P(
             "Watch the world with a glance",

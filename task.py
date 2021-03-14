@@ -161,7 +161,9 @@ def process_dataset(create_click, dataframe, vtype, parameter):
     print('done obj')
     obj = json.dumps(obj, cls=plotly.utils.PlotlyJSONEncoder)
     print(obj)
-    redis_instance.hset(REDIS_HASH_NAME, 'last', obj  )
+    # redis_instance.hset(REDIS_HASH_NAME, 'new', obj  )
+    redis_instance.set( 'new', obj  )
+
     #
     # @app.task
     # def update_data():

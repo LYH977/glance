@@ -1,3 +1,4 @@
+import json
 from datetime import datetime, timedelta
 
 import dash
@@ -11,7 +12,7 @@ import task
 from components import visualization, select_dataset_modal, container
 from components.visualization import create_figure
 from utils import collection
-from utils.collection import visual_container
+from utils.collection import visual_container, redis_instance
 from utils.method import get_ctx_type, get_ctx_property, get_ctx_value, get_ctx_index, formatted_time_value, \
     to_nanosecond_epoch, select_query, get_last_timestamp
 from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CAROUSEL, CHOROPLETH, BAR_CHART_RACE, \
@@ -52,10 +53,10 @@ def register_update_visual_container(app):
             collection.data[create_clicks] = collection.temp
             collection.live_processing[create_clicks] = False
 
-            # if param['vtype'] != CAROUSEL:
-            #     task.process_dataset(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'])
-            #     result = task.process_dataset.delay(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'])
-            #     print('result first', result.status)
+            if param['vtype'] != CAROUSEL:
+                # task.process_dataset(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'])
+                result = task.process_dataset.delay(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'])
+                # print('result first', result.status)
 
             new_child = container.render_container(create_clicks, param['parameter'], param['vtype'], tformat)
             div_children.append(new_child)
@@ -320,3 +321,54 @@ def register_toggle_collapse(app):
             toggle = False if state == input_type else dash.no_update
 
         return  input_type, toggle
+
+#############################################################################################################################################
+
+# update lcelery data according to interval
+def register_update_celery_data(app):
+    @app.callback(
+        [Output({'type':'celery-data', 'index': MATCH}, 'data'), Output({'type':'celery-interval', 'index': MATCH}, 'disabled')],
+        [Input({'type':'celery-interval', 'index': MATCH}, 'n_intervals')],
+        prevent_initial_call=True
+    )
+    def update_celery_data(interval):
+        try:
+            result = redis_instance.get('new').decode("utf-8")
+            result = json.loads(result)
+            print(result)
+            return result, True
+        except Exception as e:
+            print(e)
+            return dash.no_update, False
+
+#############################################################################################################################################
+
+# update lcelery data according to interval
+def register_update_notif_body(app):
+    @app.callback(
+        Output({'type':'notif-body', 'index': MATCH}, 'children'),
+        [Input({'type':'celery-data', 'index': MATCH}, 'data'), Input({'type': 'anim-slider', 'index': MATCH}, 'value')],
+        [State({'type': 'anim-slider', 'index': MATCH}, 'value'), State({'type': 'last-notif-click', 'index': MATCH}, 'data'), State({'type':'celery-data', 'index': MATCH}, 'data'),],
+
+        prevent_initial_call=True
+    )
+    def update_notif_body(cdata,svalue, cvalue, type, sdata):
+        ctx = dash.callback_context
+        input_index= None
+        if not ctx.triggered:
+            input_type = 'No input yet'
+        else:
+            input_type = get_ctx_type(ctx)
+            input_index = get_ctx_index(ctx)
+        df_frame = collection.data[input_index][FRAME].unique()
+        if input_type == 'celery-data':
+            frame = df_frame[cvalue]
+            obj = cdata[frame]["MAXIMUM"]
+            return json.dumps(obj)
+        elif input_type =='anim-slider' and sdata is not None:
+            frame = df_frame[svalue]
+            obj = sdata[frame]["MAXIMUM"]
+            return json.dumps(obj)
+        else:
+            raise PreventUpdate
+

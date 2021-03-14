@@ -172,6 +172,8 @@ def create_visualization(screen_height, screen_width, create_clicks, ftype, para
             dcc.Store(id={'type': 'last-timestamp', 'index': create_clicks}, data = last_nano),
             dcc.Store(id={'type': 'at-max', 'index': create_clicks}, data = False),
             dcc.Store(id={'type': 'last-notif-click', 'index': create_clicks}, data= None),
+            dcc.Store(id={'type': 'celery-data', 'index': create_clicks}, data = None),
+            dcc.Store(id={'type': 'current-frame', 'index': create_clicks}, data=df_frame[0]),
 
             dcc.Interval(
                 id={'type': 'interval', 'index': create_clicks},
@@ -186,6 +188,11 @@ def create_visualization(screen_height, screen_width, create_clicks, ftype, para
                 interval=2000,
                 n_intervals=0,
                 disabled=True
+            ),
+            dcc.Interval(
+                id={'type': 'celery-interval', 'index': create_clicks},
+                interval=2000,
+                n_intervals=0,
             ),
             dbc.Row([
                 dbc.Col(html.Label(create_clicks)),
@@ -216,13 +223,7 @@ def create_visualization(screen_height, screen_width, create_clicks, ftype, para
                 html.Button('play', id={'type': 'play-btn', 'index': create_clicks}),
                 html.Label( df_frame[0], id={'type': 'slider-label', 'index': create_clicks})
             ]),
-            dcc.Interval(
-                id={'type': 'notif-interval', 'index': create_clicks},
-                interval=200,
-                n_intervals=0,
-                max_intervals=maxValue,
-                disabled=True
-            ),
+
             # html.Div(id={'type': 'notif', 'index': create_clicks}),
             html.Div(
                 dbc.Row(
@@ -237,9 +238,11 @@ def create_visualization(screen_height, screen_width, create_clicks, ftype, para
 
             ),
             dbc.Collapse(
-                dbc.Card([dbc.CardBody("This content is hidden in the collapse"), ]),
+                dbc.Card([
+                    dbc.CardBody("This content is hidden in the collapse", id={'type': 'notif-body', 'index': create_clicks},),
+                ]),
                 id={'type': 'notif-collapse', 'index': create_clicks},
-                is_open= False
+                is_open= False,
             )
         ]),
                 )
@@ -249,7 +252,8 @@ def notif_badge_markup(name, number, id, create_clicks):
         dbc.Button(
             [name, dbc.Badge(number, color="info", className="ml-1", pill=True)],
             color="dark",
-            id={'type': id, 'index': create_clicks}
+            id={'type': id, 'index': create_clicks},
         ),
         width='auto',
-        style={'margin': '0 10px'})
+        className= 'notif-badge'
+    )

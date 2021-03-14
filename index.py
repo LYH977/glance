@@ -28,10 +28,10 @@ app.layout = html.Div([
 @app.callback(Output('page-content', 'children'),
               [Input('url', 'pathname')])
 def display_page(pathname):
-    if pathname == '/pages/home' or pathname == '/':
+    if pathname == '/pages/home':
         reset_var()
         return homepage.layout
-    if pathname == '/pages/visualization':
+    if pathname == '/pages/visualization'  or pathname == '/':
         return dashboard.layout
     else:
         return pathname
