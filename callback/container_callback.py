@@ -298,3 +298,25 @@ def register_update_live_data(app):
 
                 raise PreventUpdate
 
+#############################################################################################################################################
+
+# update live interval according to live switch
+def register_toggle_collapse(app):
+    @app.callback(
+       [ Output({'type':'last-notif-click', 'index': MATCH}, 'data'), Output({'type':'notif-collapse', 'index': MATCH}, 'is_open')],
+        [Input({'type':'test-max', 'index': MATCH}, 'n_clicks'),Input({'type':'test-min', 'index': MATCH}, 'n_clicks')],
+        [State({'type':'last-notif-click', 'index': MATCH}, 'data'), State({'type':'notif-collapse', 'index': MATCH}, 'is_open')],
+        prevent_initial_call=True
+    )
+    def toggle_collapse(max, min, state, is_open):
+        ctx = dash.callback_context
+        if not ctx.triggered:
+            input_type = 'No input yet'
+        else:
+            input_type = get_ctx_type(ctx)
+        if not is_open :
+            toggle = True
+        else:
+            toggle = False if state == input_type else dash.no_update
+
+        return  input_type, toggle

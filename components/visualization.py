@@ -6,6 +6,7 @@ import plotly.express as px
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_daq as daq
+import dash_bootstrap_components as dbc
 
 import os
 
@@ -39,7 +40,6 @@ def create_figure(data, parameter, ftype):
 
 
 def configure_fig(fig):
-    # print(fig)
     fig.layout.sliders[0].visible = False
     fig.layout.updatemenus[0].visible = False
     fig.layout.updatemenus[0].buttons[0].args[1]["frame"]["duration"] = 200
@@ -156,69 +156,100 @@ def create_choropleth(data,parameter):
     configure_fig(fig)
     return fig
 
-def create_visualization(screen_width, create_clicks, ftype, param, maxValue, df_frame, tformat):
+def create_visualization(screen_height, screen_width, create_clicks, ftype, param, maxValue, df_frame, tformat):
     last_nano = get_last_timestamp(collection.temp[TIME])
     figure = create_figure(collection.data[create_clicks], param, ftype)
     # print(last_nano)
     return html.Div(
-                    style={'width': screen_width/2.2, 'display': 'inline-block', 'outline': 'thin lightgrey solid', 'padding': 20, 'position':'relative'},
-                    children=html.Div([
-                        dcc.Store(id={'type': 'is-animating', 'index': create_clicks}, data = False),
-                        dcc.Store(id={'type': 'figure-type', 'index': create_clicks}, data = ftype),
-                        dcc.Store(id={'type': 'my_param', 'index': create_clicks}, data = param),
-                        dcc.Store(id={'type': 'back-buffer', 'index': create_clicks}, data = figure),
-                        dcc.Store(id={'type': 'frame-format', 'index': create_clicks}, data = tformat),
-                        dcc.Store(id={'type': 'last-timestamp', 'index': create_clicks}, data = last_nano),
-                        dcc.Store(id={'type': 'at-max', 'index': create_clicks}, data = False),
-                        html.Label( create_clicks),
-                        dcc.Interval(
-                            id={'type': 'interval', 'index': create_clicks},
-                            interval=200,
-                            n_intervals=0,
-                            max_intervals=maxValue,
-                            disabled=True
-                        ),
-                        daq.BooleanSwitch(
-                            id={'type': 'live-mode', 'index': create_clicks},
-                            on = False,
-                            color="#9B51E0"
-                        ),
-                        dcc.Interval(
-                            id={'type': 'live-interval', 'index': create_clicks},
-                            interval=2000,
-                            n_intervals=0,
-                            disabled=True
-                        ),
-                        html.Button('Delete', id={'type': 'dlt-btn', 'index': create_clicks} ),
-                        dcc.Graph(
-                            id={'type': 'visualization', 'index': create_clicks},
-                            figure = figure,
-                            config={
-                                # 'displayModeBar': False
-                                # "displaylogo": False,
-                                'modeBarButtonsToRemove': ['pan2d','select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox','toggleHover']
-                            }
-                        ),
-                        dcc.Slider(
-                            id={'type': 'anim-slider', 'index': create_clicks},
-                            updatemode='drag',
-                            min=0,
-                            max=maxValue,
-                            value=0,
-                            marks={str(i): str(des) for i, des in
-                                   zip(range(0, df_frame.shape[0]), set_slider_calendar(df_frame))},
-                        ),
-                        html.Div([
-                            html.Button('play', id={'type': 'play-btn', 'index': create_clicks}),
-                            html.Label( df_frame[0], id={'type': 'slider-label', 'index': create_clicks})
-                        ]),
-                        dcc.Interval(
-                            id={'type': 'notif-interval', 'index': create_clicks},
-                            interval=200,
-                            n_intervals=0,
-                            max_intervals=maxValue,
-                            disabled=True
-                        ),
-                        html.Div(id={'type': 'notif', 'index': create_clicks})
-                    ]),
+        className='visualization',
+        style={'height': screen_height* 0.75,'width': screen_width/2.2, },
+        children=html.Div([
+            dcc.Store(id={'type': 'is-animating', 'index': create_clicks}, data = False),
+            dcc.Store(id={'type': 'figure-type', 'index': create_clicks}, data = ftype),
+            dcc.Store(id={'type': 'my_param', 'index': create_clicks}, data = param),
+            dcc.Store(id={'type': 'back-buffer', 'index': create_clicks}, data = figure),
+            dcc.Store(id={'type': 'frame-format', 'index': create_clicks}, data = tformat),
+            dcc.Store(id={'type': 'last-timestamp', 'index': create_clicks}, data = last_nano),
+            dcc.Store(id={'type': 'at-max', 'index': create_clicks}, data = False),
+            dcc.Store(id={'type': 'last-notif-click', 'index': create_clicks}, data= None),
+
+            dcc.Interval(
+                id={'type': 'interval', 'index': create_clicks},
+                interval=200,
+                n_intervals=0,
+                max_intervals=maxValue,
+                disabled=True
+            ),
+
+            dcc.Interval(
+                id={'type': 'live-interval', 'index': create_clicks},
+                interval=2000,
+                n_intervals=0,
+                disabled=True
+            ),
+            dbc.Row([
+                dbc.Col(html.Label(create_clicks)),
+                dbc.Col(daq.BooleanSwitch(
+                    id={'type': 'live-mode', 'index': create_clicks},
+                    on=False,
+                    color="#9B51E0"
+                )),
+                dbc.Col(html.Button('Delete', id={'type': 'dlt-btn', 'index': create_clicks})),
+
+            ]),
+            dcc.Graph(
+                id={'type': 'visualization', 'index': create_clicks},
+                figure = figure,
+                style={'height': 300},
+                config={'modeBarButtonsToRemove': ['pan2d','select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox','toggleHover']  }
+            ),
+            dcc.Slider(
+                id={'type': 'anim-slider', 'index': create_clicks},
+                updatemode='drag',
+                min=0,
+                max=maxValue,
+                value=0,
+                marks={str(i): str(des) for i, des in
+                       zip(range(0, df_frame.shape[0]), set_slider_calendar(df_frame))},
+            ),
+            html.Div([
+                html.Button('play', id={'type': 'play-btn', 'index': create_clicks}),
+                html.Label( df_frame[0], id={'type': 'slider-label', 'index': create_clicks})
+            ]),
+            dcc.Interval(
+                id={'type': 'notif-interval', 'index': create_clicks},
+                interval=200,
+                n_intervals=0,
+                max_intervals=maxValue,
+                disabled=True
+            ),
+            # html.Div(id={'type': 'notif', 'index': create_clicks}),
+            html.Div(
+                dbc.Row(
+                    [
+                        notif_badge_markup('Max', 4, 'test-max', create_clicks),
+                        notif_badge_markup('Min', 1, 'test-min', create_clicks),
+                    ],
+                    no_gutters=True,
+                    align='start',
+                ),
+                style={'overflow-x': 'auto'}
+
+            ),
+            dbc.Collapse(
+                dbc.Card([dbc.CardBody("This content is hidden in the collapse"), ]),
+                id={'type': 'notif-collapse', 'index': create_clicks},
+                is_open= False
+            )
+        ]),
                 )
+
+def notif_badge_markup(name, number, id, create_clicks):
+    return dbc.Col(
+        dbc.Button(
+            [name, dbc.Badge(number, color="info", className="ml-1", pill=True)],
+            color="dark",
+            id={'type': id, 'index': create_clicks}
+        ),
+        width='auto',
+        style={'margin': '0 10px'})

@@ -15,6 +15,7 @@ from utils.method import  set_slider_calendar
 
 root = tk.Tk()
 screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
 
 def render_container(create_clicks, param, ftype, tformat):
 
@@ -23,7 +24,7 @@ def render_container(create_clicks, param, ftype, tformat):
 
     maxValue = df_frame.shape[0] - 1
     if(ftype != CAROUSEL):
-        return create_visualization(screen_width, create_clicks, ftype, param, maxValue, df_frame, tformat)
+        return create_visualization(screen_height, screen_width, create_clicks, ftype, param, maxValue, df_frame, tformat)
     else:
         # print(collection.temp)
         return create_carousel(screen_width, create_clicks, param, maxValue, df_frame)
