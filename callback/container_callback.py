@@ -169,6 +169,8 @@ def register_update_slider(app):
 #############################################################################################################################################
 
 # update play button label according to playing status
+############################################################################################################################################## update slider according to interval
+
 def register_update_play_btn(app):
     @app.callback(
         [Output({'type':'play-btn', 'index': MATCH}, 'children'), Output({'type':'interval', 'index': MATCH}, 'disabled')],
@@ -368,7 +370,11 @@ def register_update_notif_body(app):
             Output({'type':f'{MAXIMUM}-badge', 'index': MATCH}, 'children'),
             Output({'type': f'{MINIMUM}-badge', 'index': MATCH}, 'children')
         ],
-        [Input({'type':'celery-data', 'index': MATCH}, 'data'), Input({'type': 'anim-slider', 'index': MATCH}, 'value')],
+        [
+            Input({'type':'celery-data', 'index': MATCH}, 'data'),
+            Input({'type': 'anim-slider', 'index': MATCH}, 'value'),
+            Input({'type': 'last-notif-click', 'index': MATCH}, 'data')
+        ],
         [
             State({'type': 'anim-slider', 'index': MATCH}, 'value'),
             State({'type': 'last-notif-click', 'index': MATCH}, 'data'),
@@ -377,8 +383,8 @@ def register_update_notif_body(app):
 
         prevent_initial_call=True
     )
-    def update_notif_body(cdata,svalue, cvalue, ntype, sdata):
-        if ntype is None:
+    def update_notif_body(cdata,slider,itype, cvalue, stype, celery):
+        if stype is None:
             raise PreventUpdate
         ctx = dash.callback_context
         input_index= None
@@ -388,15 +394,19 @@ def register_update_notif_body(app):
             input_type = get_ctx_type(ctx)
             input_index = get_ctx_index(ctx)
         df_frame = collection.data[input_index][FRAME].unique()
-        type = ntype.split('-')[0]
+        type = stype.split('-')[0]
         max= 0
         min = 0
         if input_type == 'celery-data':
             frame = df_frame[cvalue]
             obj = process_notif(cdata[frame], type, [MAXIMUM, MINIMUM])
             return obj['notif'], obj[MAXIMUM], obj[MINIMUM],
-        elif input_type =='anim-slider' and sdata is not None:
-            frame = df_frame[svalue]
+        elif input_type =='anim-slider' and celery is not None:
+            frame = df_frame[slider]
+            obj = process_notif(cdata[frame], type, [MAXIMUM, MINIMUM])
+            return obj['notif'], obj[MAXIMUM], obj[MINIMUM],
+        elif input_type == 'last-notif-click' :
+            frame = df_frame[slider]
             obj = process_notif(cdata[frame], type, [MAXIMUM, MINIMUM])
             return obj['notif'], obj[MAXIMUM], obj[MINIMUM],
         else:

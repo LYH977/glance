@@ -35,7 +35,7 @@ REDIS_KEYS = {
 }
 
 def parse_number(value):
-    print(type(value))
+    # print(type(value))
     if value.is_integer():
         return int(value)
 
@@ -114,15 +114,26 @@ def process_dataset(create_click, dataframe, vtype, parameter):
     tags = []
     obj = {}
     extract = [MAXIMUM, MINIMUM]
-    frames = dataframe[FRAME].unique()
-
+    frames = dataframe[FRAME].unique().tolist()
+    # print(frames)
+    # print(frames.index('2020-01-22'))
     notif_tags = NOTIFICATION_PARAM[vtype][TAG]
-    for f in frames:
-        obj[f] = {}
+    # for t in range(len(frames)):
+    #     print(frames[t])
+
+    for f in range(len(frames)):
+        obj[f] = {'frame': frames[f]}
         for e in extract:
-            obj[f][e] = {}
+            obj[f][e] = {'count':0, 'data':'', 'temp':{}}
             for v in NOTIFICATION_PARAM[vtype][FIELD]:
-                obj[f][e][parameter[v]] = []
+                obj[f][e]['temp'][parameter[v]] = []
+
+    # for f in frames:
+    #     obj[f] = {}
+    #     for e in extract:
+    #         obj[f][e] = {}
+    #         for v in NOTIFICATION_PARAM[vtype][FIELD]:
+    #             obj[f][e][parameter[v]] = []
     for t in notif_tags:
         tags.append(parameter[t])
     print('tags', tags)
@@ -131,15 +142,18 @@ def process_dataset(create_click, dataframe, vtype, parameter):
         tag_df = tag_df.drop_duplicates()  # Lat, Long, Country
         # print('tag_df', tag_df)
         tag_list = tag_df.index.tolist()
+
+        notif_fields = NOTIFICATION_PARAM[vtype][FIELD]
+        fields = []
+        for f in notif_fields:
+            fields.append(parameter[f])
+
         for i in tag_list:  # row of tagged data frame
             condition = True
             for col in tags:
                 condition = condition & (dataframe[col] == tag_df.loc[i, col])
             target_df = dataframe[condition]
-            notif_fields = NOTIFICATION_PARAM[vtype][FIELD]
-            fields = []
-            for f in notif_fields:
-                fields.append(parameter[f])
+
             for col in fields:  # Confirmed, Deaths
                 column = target_df[col]
                 max_value = column.max()
@@ -151,7 +165,8 @@ def process_dataset(create_click, dataframe, vtype, parameter):
                     for ma in max_list:
                         msg = extract_extrema(vtype,  ma, target_df, parameter, col, MAXIMUM)
                         frame = target_df.loc[ma, FRAME]
-                        obj[frame][MAXIMUM][col].append(msg)
+                        index=frames.index(frame)
+                        obj[index][MAXIMUM]['temp'][col].append(msg)
 
 
                     # find min
@@ -159,11 +174,24 @@ def process_dataset(create_click, dataframe, vtype, parameter):
                     for mi in min_list:
                         msg = extract_extrema(vtype,  mi, target_df, parameter, col, MINIMUM)
                         frame = target_df.loc[mi, FRAME]
-                        obj[frame][MINIMUM][col].append(msg)
+                        index = frames.index(frame)
+                        obj[index][MINIMUM]['temp'][col].append(msg)
+    # print(obj)
+        for k in obj.keys(): # index
+            for e in extract: # MAX, MIN
+                for f in fields:
+                    print('k', k)
+                    print('e', e)
+
+                    print('f', f)
+                    for msg in obj[k][e]['temp'][f]:
+                        obj[k][e]['count'] += 1
+                        obj[k][e]['data'] += msg + '\n'
+                obj[k][e].pop('temp', None)
 
     print('done obj')
     obj = json.dumps(obj, cls=plotly.utils.PlotlyJSONEncoder)
-    # print(obj)
+    print(obj)
     # redis_instance.hset(REDIS_HASH_NAME, 'new', obj  )
     redis_instance.set( 'new', obj  )
 
