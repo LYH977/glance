@@ -13,3 +13,9 @@
     margin: 0 10px 0 0;
 
 }
+
+.notif-body{
+    height: 180px;
+    overflow: auto;
+    white-space: pre;
+}

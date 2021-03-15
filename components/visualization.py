@@ -1,6 +1,7 @@
 from datetime import datetime
 import tkinter as tk
 
+import dash
 import pandas as pd                  # for DataFrames
 import plotly.express as px
 import dash_core_components as dcc
@@ -13,7 +14,8 @@ import os
 from utils import collection
 from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CAROUSEL, CHOROPLETH, BAR_CHART_RACE, \
     SCATTER_MAP_CONSTANT, LATITUDE, LONGITUDE, SIZE, COLOR, NAME, FRAME, MESSAGE, SCATTER_GEO_CONSTANT, \
-    BAR_CHART_RACE_CONSTANT, ITEM, VALUE, DENSITY_CONSTANT, Z, CHOROPLETH_CONSTANT, LOCATIONS, STANDARD_T_FORMAT, TIME
+    BAR_CHART_RACE_CONSTANT, ITEM, VALUE, DENSITY_CONSTANT, Z, CHOROPLETH_CONSTANT, LOCATIONS, STANDARD_T_FORMAT, TIME, \
+    MAXIMUM, MINIMUM
 from raceplotly.plots import barplot
 
 from utils.method import set_slider_calendar, formatted_time_value, to_nanosecond_epoch, get_last_timestamp
@@ -228,8 +230,9 @@ def create_visualization(screen_height, screen_width, create_clicks, ftype, para
             html.Div(
                 dbc.Row(
                     [
-                        notif_badge_markup('Max', 4, 'test-max', create_clicks),
-                        notif_badge_markup('Min', 1, 'test-min', create_clicks),
+                        notif_badge_markup(MAXIMUM, 0, create_clicks),
+                        notif_badge_markup(MINIMUM, 0, create_clicks),
+
                     ],
                     no_gutters=True,
                     align='start',
@@ -239,20 +242,25 @@ def create_visualization(screen_height, screen_width, create_clicks, ftype, para
             ),
             dbc.Collapse(
                 dbc.Card([
-                    dbc.CardBody("This content is hidden in the collapse", id={'type': 'notif-body', 'index': create_clicks},),
+                    dbc.CardBody(
+                        "This content is hidden in the collapse",
+                        id={'type': 'notif-body', 'index': create_clicks},
+                        className='notif-body'
+                    ),
                 ]),
+                # html.P('', id={'type': 'notif-body', 'index': create_clicks}, className='notif-body'),
                 id={'type': 'notif-collapse', 'index': create_clicks},
                 is_open= False,
             )
         ]),
                 )
 
-def notif_badge_markup(name, number, id, create_clicks):
+def notif_badge_markup(id, number, create_clicks):
     return dbc.Col(
         dbc.Button(
-            [name, dbc.Badge(number, color="info", className="ml-1", pill=True)],
+            [id, dbc.Badge(number, color="info", className="ml-1", pill=True, id={'type': f'{id}-badge', 'index': create_clicks})],
             color="dark",
-            id={'type': id, 'index': create_clicks},
+            id={'type': f'{id}-notif', 'index': create_clicks},
         ),
         width='auto',
         className= 'notif-badge'

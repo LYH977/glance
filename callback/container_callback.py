@@ -16,7 +16,8 @@ from utils.collection import visual_container, redis_instance
 from utils.method import get_ctx_type, get_ctx_property, get_ctx_value, get_ctx_index, formatted_time_value, \
     to_nanosecond_epoch, select_query, get_last_timestamp
 from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CAROUSEL, CHOROPLETH, BAR_CHART_RACE, \
-    STANDARD_T_FORMAT, FRAME, TIME
+    STANDARD_T_FORMAT, FRAME, TIME, MAXIMUM, MINIMUM
+
 
 def change_frame(ftype,fig2, value ):
     if ftype == SCATTER_MAP:
@@ -29,6 +30,22 @@ def change_frame(ftype,fig2, value ):
         fig2['data'][0] = fig2['frames'][value]['data'][0]
     elif ftype == CHOROPLETH:
         fig2['data'][0] = fig2['frames'][value]['data'][0]
+
+def process_notif(obj, type, badges):
+    temp = {
+        'notif' : ''
+    }
+    for b in badges:
+        temp[b] = 0
+        info = obj[b].values()
+        for i in info:
+            if len(i) > 0:
+                for m in i:
+                    temp[b] += 1
+                    if b == type:
+                        temp['notif'] += m + '\n'
+
+    return temp
 
 
 # update visualization container by appending or removing item from array
@@ -305,7 +322,7 @@ def register_update_live_data(app):
 def register_toggle_collapse(app):
     @app.callback(
        [ Output({'type':'last-notif-click', 'index': MATCH}, 'data'), Output({'type':'notif-collapse', 'index': MATCH}, 'is_open')],
-        [Input({'type':'test-max', 'index': MATCH}, 'n_clicks'),Input({'type':'test-min', 'index': MATCH}, 'n_clicks')],
+        [Input({'type':f'{MAXIMUM}-notif', 'index': MATCH}, 'n_clicks'),Input({'type':f'{MINIMUM}-notif', 'index': MATCH}, 'n_clicks')],
         [State({'type':'last-notif-click', 'index': MATCH}, 'data'), State({'type':'notif-collapse', 'index': MATCH}, 'is_open')],
         prevent_initial_call=True
     )
@@ -335,7 +352,7 @@ def register_update_celery_data(app):
         try:
             result = redis_instance.get('new').decode("utf-8")
             result = json.loads(result)
-            print(result)
+            # print(result)
             return result, True
         except Exception as e:
             print(e)
@@ -346,13 +363,23 @@ def register_update_celery_data(app):
 # update lcelery data according to interval
 def register_update_notif_body(app):
     @app.callback(
-        Output({'type':'notif-body', 'index': MATCH}, 'children'),
+        [
+            Output({'type':'notif-body', 'index': MATCH}, 'children'),
+            Output({'type':f'{MAXIMUM}-badge', 'index': MATCH}, 'children'),
+            Output({'type': f'{MINIMUM}-badge', 'index': MATCH}, 'children')
+        ],
         [Input({'type':'celery-data', 'index': MATCH}, 'data'), Input({'type': 'anim-slider', 'index': MATCH}, 'value')],
-        [State({'type': 'anim-slider', 'index': MATCH}, 'value'), State({'type': 'last-notif-click', 'index': MATCH}, 'data'), State({'type':'celery-data', 'index': MATCH}, 'data'),],
+        [
+            State({'type': 'anim-slider', 'index': MATCH}, 'value'),
+            State({'type': 'last-notif-click', 'index': MATCH}, 'data'),
+            State({'type':'celery-data', 'index': MATCH}, 'data'),
+        ],
 
         prevent_initial_call=True
     )
-    def update_notif_body(cdata,svalue, cvalue, type, sdata):
+    def update_notif_body(cdata,svalue, cvalue, ntype, sdata):
+        if ntype is None:
+            raise PreventUpdate
         ctx = dash.callback_context
         input_index= None
         if not ctx.triggered:
@@ -361,14 +388,17 @@ def register_update_notif_body(app):
             input_type = get_ctx_type(ctx)
             input_index = get_ctx_index(ctx)
         df_frame = collection.data[input_index][FRAME].unique()
+        type = ntype.split('-')[0]
+        max= 0
+        min = 0
         if input_type == 'celery-data':
             frame = df_frame[cvalue]
-            obj = cdata[frame]["MAXIMUM"]
-            return json.dumps(obj)
+            obj = process_notif(cdata[frame], type, [MAXIMUM, MINIMUM])
+            return obj['notif'], obj[MAXIMUM], obj[MINIMUM],
         elif input_type =='anim-slider' and sdata is not None:
             frame = df_frame[svalue]
-            obj = sdata[frame]["MAXIMUM"]
-            return json.dumps(obj)
+            obj = process_notif(cdata[frame], type, [MAXIMUM, MINIMUM])
+            return obj['notif'], obj[MAXIMUM], obj[MINIMUM],
         else:
             raise PreventUpdate
 

@@ -13,7 +13,6 @@ import numpy as np
 from utils.constant import FRAME, TIME, NOTIFICATION_PARAM, TAG, FIELD, SCATTER_MAP, SCATTER_GEO, SCATTER_MAP_CONSTANT, \
     NAME, LATITUDE, LONGITUDE, MAXIMUM, SCATTER_GEO_CONSTANT, MINIMUM, BAR_CHART_RACE, DENSITY, BAR_CHART_RACE_CONSTANT, \
     ITEM, DENSITY_CONSTANT, CHOROPLETH, CHOROPLETH_CONSTANT, LOCATIONS
-from utils.method import formatted_time_value
 
 app = Celery("Celery App", broker='redis://localhost:6379' ,backend='redis://localhost:6379')
 redis_instance = redis.StrictRedis.from_url('redis://localhost:6379')
@@ -35,6 +34,10 @@ REDIS_KEYS = {
     "DATE_UPDATED": "DATE_UPDATED"
 }
 
+def parse_number(value):
+    print(type(value))
+    if value.is_integer():
+        return int(value)
 
 def extract_extrema(vtype,  ma, df, parameter, col, type):
     msg=''
@@ -45,7 +48,7 @@ def extract_extrema(vtype,  ma, df, parameter, col, type):
             lat=df.loc[ma, parameter[SCATTER_MAP_CONSTANT[LATITUDE]]],
             long=df.loc[ma, parameter[SCATTER_MAP_CONSTANT[LONGITUDE]]],
             column=col,
-            field=df.loc[ma, col],
+            field=parse_number(df.loc[ma, col]),
         )
     elif vtype ==  SCATTER_GEO:
         msg = "{type} '{column}': {field}, by {name} ({lat},{long})".format(
@@ -54,13 +57,13 @@ def extract_extrema(vtype,  ma, df, parameter, col, type):
             lat=df.loc[ma, parameter[SCATTER_GEO_CONSTANT[LATITUDE]]],
             long=df.loc[ma, parameter[SCATTER_GEO_CONSTANT[LONGITUDE]]],
             column=col,
-            field=df.loc[ma, col],
+            field=parse_number(df.loc[ma, col]),
         )
     elif vtype == BAR_CHART_RACE:
         msg = "{type} '{column}': {field} by {item}".format(
             type=type,
             column=col,
-            field=df.loc[ma, col],
+            field=parse_number(df.loc[ma, col]),
             item=df.loc[ma, parameter[BAR_CHART_RACE_CONSTANT[ITEM]]],
         )
     elif vtype == DENSITY:
@@ -69,7 +72,7 @@ def extract_extrema(vtype,  ma, df, parameter, col, type):
             lat=df.loc[ma, parameter[DENSITY_CONSTANT[LATITUDE]]],
             long=df.loc[ma, parameter[DENSITY_CONSTANT[LONGITUDE]]],
             column=col,
-            field=df.loc[ma, col],
+            field=parse_number(df.loc[ma, col]),
         )
 
     elif vtype == CHOROPLETH:
@@ -78,7 +81,7 @@ def extract_extrema(vtype,  ma, df, parameter, col, type):
             name=df.loc[ma, parameter[CHOROPLETH_CONSTANT[NAME]]],
             location=df.loc[ma, parameter[CHOROPLETH_CONSTANT[LOCATIONS]]],
             column=col,
-            field=df.loc[ma, col],
+            field=parse_number(df.loc[ma, col]),
         )
     return msg
 
@@ -160,7 +163,7 @@ def process_dataset(create_click, dataframe, vtype, parameter):
 
     print('done obj')
     obj = json.dumps(obj, cls=plotly.utils.PlotlyJSONEncoder)
-    print(obj)
+    # print(obj)
     # redis_instance.hset(REDIS_HASH_NAME, 'new', obj  )
     redis_instance.set( 'new', obj  )
 

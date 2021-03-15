@@ -77,9 +77,10 @@ layout = dbc.Jumbotron(
 
         html.Button('client', id='client-btn'),
         html.P(
-            "initial",
+            "initial\n1",
             className="lead",
-            id='client-p'
+            id='client-p',
+            style={"white-space": "pre"}
         ),
         html.Button('test2', id='test2'),
         html.P(
