@@ -10,7 +10,7 @@ from dash.exceptions import PreventUpdate
 
 import task
 from components import visualization, select_dataset_modal, container
-from components.visualization import create_figure
+from components.visualization import create_figure, collapse_markup
 from utils import collection
 from utils.collection import visual_container, redis_instance
 from utils.method import get_ctx_type, get_ctx_property, get_ctx_value, get_ctx_index, formatted_time_value, \
@@ -323,9 +323,21 @@ def register_update_live_data(app):
 # update live interval according to live switch
 def register_toggle_collapse(app):
     @app.callback(
-       [ Output({'type':'last-notif-click', 'index': MATCH}, 'data'), Output({'type':'notif-collapse', 'index': MATCH}, 'is_open')],
-        [Input({'type':f'{MAXIMUM}-notif', 'index': MATCH}, 'n_clicks'),Input({'type':f'{MINIMUM}-notif', 'index': MATCH}, 'n_clicks')],
-        [State({'type':'last-notif-click', 'index': MATCH}, 'data'), State({'type':'notif-collapse', 'index': MATCH}, 'is_open')],
+        [
+            Output({'type':'last-notif-click', 'index': MATCH}, 'data'),
+            Output({'type':'notif-collapse', 'index': MATCH}, 'is_open'),
+            # Output({'type': f'{MAXIMUM}-badge', 'index': MATCH}, 'color'),
+            # Output({'type': f'{MINIMUM}-badge', 'index': MATCH}, 'color'),
+
+        ],
+        [
+            Input({'type':f'{MAXIMUM}-notif', 'index': MATCH}, 'n_clicks'),
+            Input({'type':f'{MINIMUM}-notif', 'index': MATCH}, 'n_clicks')
+        ],
+        [
+            State({'type':'last-notif-click', 'index': MATCH}, 'data'),
+            State({'type':'notif-collapse', 'index': MATCH}, 'is_open')
+        ],
         prevent_initial_call=True
     )
     def toggle_collapse(max, min, state, is_open):
@@ -334,31 +346,44 @@ def register_toggle_collapse(app):
             input_type = 'No input yet'
         else:
             input_type = get_ctx_type(ctx)
-        if not is_open :
-            toggle = True
+        if input_type == f'{MAXIMUM}-notif' and max is not None or input_type == f'{MINIMUM}-notif' and min is not None:
+            if not is_open :
+                toggle = True
+            else:
+                toggle = False if state == input_type else dash.no_update
+            return  input_type, toggle
         else:
-            toggle = False if state == input_type else dash.no_update
-
-        return  input_type, toggle
+            raise PreventUpdate
 
 #############################################################################################################################################
 
 # update lcelery data according to interval
 def register_update_celery_data(app):
     @app.callback(
-        [Output({'type':'celery-data', 'index': MATCH}, 'data'), Output({'type':'celery-interval', 'index': MATCH}, 'disabled')],
+        [
+            Output({'type':'celery-data', 'index': MATCH}, 'data'),
+            Output({'type':'celery-interval', 'index': MATCH}, 'disabled'),
+            Output({'type': 'loading-notif-output', 'index': MATCH}, 'children')
+        ],
         [Input({'type':'celery-interval', 'index': MATCH}, 'n_intervals')],
-        prevent_initial_call=True
+        [State({'type': 'anim-slider', 'index': MATCH}, 'value')]
+        # prevent_initial_call=True
     )
-    def update_celery_data(interval):
+    def update_celery_data(interval, slider):
         try:
             result = redis_instance.get('new').decode("utf-8")
             result = json.loads(result)
-            # print(result)
-            return result, True
+            ctx = dash.callback_context
+            input_index = get_ctx_index(ctx)
+            count = {
+                MAXIMUM : result[str(slider)][MAXIMUM]['count'],
+                MINIMUM: result[str(slider)][MINIMUM]['count'],
+            }
+            return result, True, collapse_markup(input_index, count)
         except Exception as e:
-            print(e)
-            return dash.no_update, False
+            print('celery', e)
+            return dash.no_update, False, dash.no_update
+        # return dash.no_update, False, dash.no_update
 
 #############################################################################################################################################
 
@@ -395,20 +420,56 @@ def register_update_notif_body(app):
             input_index = get_ctx_index(ctx)
         df_frame = collection.data[input_index][FRAME].unique()
         type = stype.split('-')[0]
-        max= 0
-        min = 0
+
         if input_type == 'celery-data':
-            frame = df_frame[cvalue]
-            obj = process_notif(cdata[frame], type, [MAXIMUM, MINIMUM])
-            return obj['notif'], obj[MAXIMUM], obj[MINIMUM],
+            notif = cdata[str(cvalue)][type]['data'] if type != '' else ''
+            return notif, cdata[str(cvalue)][MAXIMUM]['count'], cdata[str(cvalue)][MINIMUM]['count']
+
         elif input_type =='anim-slider' and celery is not None:
-            frame = df_frame[slider]
-            obj = process_notif(cdata[frame], type, [MAXIMUM, MINIMUM])
-            return obj['notif'], obj[MAXIMUM], obj[MINIMUM],
+            notif = celery[str(slider)][type]['data'] if type != '' else ''
+            return notif, cdata[str(slider)][MAXIMUM]['count'], cdata[str(slider)][MINIMUM]['count']
+
         elif input_type == 'last-notif-click' :
-            frame = df_frame[slider]
-            obj = process_notif(cdata[frame], type, [MAXIMUM, MINIMUM])
-            return obj['notif'], obj[MAXIMUM], obj[MINIMUM],
+            notif = celery[str(slider)][type]['data'] if type != '' else ''
+            return notif, cdata[str(slider)][MAXIMUM]['count'], cdata[str(slider)][MINIMUM]['count']
+
         else:
             raise PreventUpdate
 
+#############################################################################################################################################
+
+# update live interval according to live switch
+def register_toggle_badge_color(app):
+    @app.callback(
+        [
+            Output({'type': f'{MAXIMUM}-badge', 'index': MATCH}, 'color'),
+            Output({'type': f'{MINIMUM}-badge', 'index': MATCH}, 'color'),
+
+        ],
+        [
+            Input({'type':f'{MAXIMUM}-notif', 'index': MATCH}, 'n_clicks'),
+            Input({'type':f'{MINIMUM}-notif', 'index': MATCH}, 'n_clicks')
+        ],
+        [
+            State({'type':'last-notif-click', 'index': MATCH}, 'data'),
+            State({'type':'notif-collapse', 'index': MATCH}, 'is_open')
+        ],
+        prevent_initial_call=True
+    )
+    def toggle_badge_color(max, min, state, is_open):
+        ctx = dash.callback_context
+        if not ctx.triggered:
+            input_type = 'No input yet'
+        else:
+            input_type = get_ctx_type(ctx)
+        if input_type == f'{MAXIMUM}-notif' and max is not None or input_type == f'{MINIMUM}-notif' and min is not None:
+            obj = {
+                MAXIMUM: 'light',
+                MINIMUM: 'light'
+            }
+            type = input_type.split('-')[0]
+            if input_type != state or (input_type == state and not is_open):
+                obj[type] = 'info'
+            return  obj[MAXIMUM], obj[MINIMUM]
+        else:
+            raise PreventUpdate

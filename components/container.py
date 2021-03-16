@@ -27,4 +27,4 @@ def render_container(create_clicks, param, ftype, tformat):
         return create_visualization(screen_height, screen_width, create_clicks, ftype, param, maxValue, df_frame, tformat)
     else:
         # print(collection.temp)
-        return create_carousel(screen_width, create_clicks, param, maxValue, df_frame)
+        return create_carousel(screen_height, screen_width, create_clicks, ftype, param, maxValue, df_frame, tformat)

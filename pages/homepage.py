@@ -75,6 +75,7 @@ layout = dbc.Jumbotron(
         dcc.Store(id='testing-js', data=fig),
         dcc.Store(id='testing-plot', data= fig),
 
+
         html.Button('client', id='client-btn'),
         html.P(
             "initial\n1",

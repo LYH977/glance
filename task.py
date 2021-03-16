@@ -136,7 +136,7 @@ def process_dataset(create_click, dataframe, vtype, parameter):
     #             obj[f][e][parameter[v]] = []
     for t in notif_tags:
         tags.append(parameter[t])
-    print('tags', tags)
+    # print('tags', tags)
     if tags:
         tag_df = dataframe[tags]
         tag_df = tag_df.drop_duplicates()  # Lat, Long, Country
@@ -180,10 +180,6 @@ def process_dataset(create_click, dataframe, vtype, parameter):
         for k in obj.keys(): # index
             for e in extract: # MAX, MIN
                 for f in fields:
-                    print('k', k)
-                    print('e', e)
-
-                    print('f', f)
                     for msg in obj[k][e]['temp'][f]:
                         obj[k][e]['count'] += 1
                         obj[k][e]['data'] += msg + '\n'
@@ -191,7 +187,7 @@ def process_dataset(create_click, dataframe, vtype, parameter):
 
     print('done obj')
     obj = json.dumps(obj, cls=plotly.utils.PlotlyJSONEncoder)
-    print(obj)
+    # print(obj)
     # redis_instance.hset(REDIS_HASH_NAME, 'new', obj  )
     redis_instance.set( 'new', obj  )
 
