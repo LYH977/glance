@@ -10,11 +10,13 @@ from utils.constant import CAROUSEL_CONSTANT, ITEM, TIME
 from utils.method import set_slider_calendar, get_last_timestamp
 
 
-def create_carousel(screen_height, screen_width, create_clicks, ftype, param, maxValue, df_frame, tformat):
+def create_carousel(screen_height, screen_width, create_clicks, param, maxValue, df_frame, tformat):
     last_nano = get_last_timestamp(collection.temp[TIME])
 
     return html.Div(
-        style={'width': screen_width/2.2, 'display': 'inline-block', 'outline': 'thin lightgrey solid', 'padding': 10, 'position':'relative'},
+        className='carousel',
+
+        style={'height': screen_height* 0.75, 'width': screen_width/2.2, },
         children=html.Div([
             dcc.Store(id={'type': 'ca-is-animating', 'index': create_clicks}, data = False),
             # dcc.Store(id='ca-uuid', data = create_clicks),
@@ -31,10 +33,16 @@ def create_carousel(screen_height, screen_width, create_clicks, ftype, param, ma
                 max_intervals=maxValue,
                 disabled=True
             ),
+            dcc.Interval(
+                id={'type': 'ca-live-interval', 'index': create_clicks},
+                interval=2000,
+                n_intervals=0,
+                disabled=True
+            ),
             dbc.Row([
                 dbc.Col(html.Label(create_clicks)),
                 dbc.Col(daq.BooleanSwitch(
-                    id={'type': 'live-mode', 'index': create_clicks},
+                    id={'type': 'ca-live-mode', 'index': create_clicks},
                     on=False,
                     color="#9B51E0"
                 )),

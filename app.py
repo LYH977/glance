@@ -13,8 +13,7 @@ from callback.select_dataset_modal_callback import \
     register_validate_d_create, register_validate_ch_create, register_validate_ca_create, register_update_dt_dropdown, \
     register_update_chosen_dropdown, register_update_chosen_tformat
 
-from callback.container_callback import \
-    register_update_visual_container, \
+from callback.visualization_callback import \
     register_update_figure, \
     register_update_slider, \
     register_update_playing_status, \
@@ -45,8 +44,7 @@ register_validate_ca_create(app)
 register_update_dt_dropdown(app)
 register_update_chosen_dropdown(app)
 
-# container_callback
-register_update_visual_container(app)
+# visualization_callback
 register_update_figure(app)
 register_update_slider(app)
 register_update_playing_status(app)
@@ -82,4 +80,8 @@ register_clear_upload_content(app)
 
 #  dashboard callback
 register_update_dashboard(app)
+
+#  container callback
+register_update_visual_container(app)
+
 server = app.server

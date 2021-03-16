@@ -185,7 +185,6 @@ def create_visualization(screen_height, screen_width, create_clicks, ftype, para
                 max_intervals=maxValue,
                 disabled=True
             ),
-
             dcc.Interval(
                 id={'type': 'live-interval', 'index': create_clicks},
                 interval=2000,

@@ -136,12 +136,12 @@ def register_toggle_modal(app):
             input_type = 'No input yet'
         else:
             input_type = ctx.triggered[0]['prop_id'].split('.')[0]
-        if input_type == 'create-visual':
-            if param['vtype'] == CAROUSEL:
-                temp = []
-                for row in collection.temp.index:
-                    temp.append( create_ca_img(collection.temp.loc[row, param['parameter'][CAROUSEL_CONSTANT[ITEM]]]) )
-                collection.img_container[create] = temp
+        # if input_type == 'create-visual':
+        #     if param['vtype'] == CAROUSEL:
+        #         temp = []
+        #         for row in collection.temp.index:
+        #             temp.append( create_ca_img(collection.temp.loc[row, param['parameter'][CAROUSEL_CONSTANT[ITEM]]]) )
+        #         collection.img_container[create] = temp
         # if open is  None:
         #     return dash.no_update
         return not is_open
