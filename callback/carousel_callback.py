@@ -1,3 +1,6 @@
+import json
+from datetime import datetime, timedelta
+
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -5,10 +8,16 @@ import dash_daq as daq
 from dash.dependencies import Input, Output, ALL, State, MATCH, ALLSMALLER
 from dash.exceptions import PreventUpdate
 
+import task
 from components import visualization, select_dataset_modal, container
+from components.carousel import create_ca_img
+from components.visualization import create_figure, collapse_markup
 from utils import collection
-from utils.method import  get_ctx_type, get_ctx_property, get_ctx_value, get_ctx_index
-from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CAROUSEL, CHOROPLETH, BAR_CHART_RACE, FRAME
+from utils.collection import visual_container, redis_instance
+from utils.method import get_ctx_type, get_ctx_property, get_ctx_value, get_ctx_index, formatted_time_value, \
+    to_nanosecond_epoch, select_query, get_last_timestamp
+from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CAROUSEL, CHOROPLETH, BAR_CHART_RACE, \
+    STANDARD_T_FORMAT, FRAME, TIME, MAXIMUM, MINIMUM, CAROUSEL_CONSTANT, ITEM
 
 
 def register_display_image(app):
@@ -222,9 +231,11 @@ def register_ca_update_live_data(app):
                 result[FRAME] = result[TIME].map(lambda x: formatted_time_value(x, format))
                 last_nano = get_last_timestamp(result[TIME])
                 collection.data[input_index] = collection.data[input_index].append(result, ignore_index=True)
+                # print('result', result.columns)
+                # print('param', param)
 
                 for row in result.index:
-                    collection.img_container[input_index].append( create_ca_img(result.loc[row, param['parameter'][CAROUSEL_CONSTANT[ITEM]]]) )
+                    collection.img_container[input_index].append( create_ca_img(result.loc[row, param[CAROUSEL_CONSTANT[ITEM]]]) )
 
                 # fig = create_figure(collection.data[input_index], param, ftype)
                 return last_nano

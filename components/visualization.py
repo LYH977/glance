@@ -164,7 +164,7 @@ def create_visualization(screen_height, screen_width, create_clicks, ftype, para
     return html.Div(
         className='visualization',
         style={
-            # 'height': screen_height* 0.75,
+            'height': screen_height* 0.72,
             'width': screen_width/2.2,
                # 'width': '500px',
                },

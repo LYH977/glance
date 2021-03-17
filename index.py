@@ -1,21 +1,15 @@
-import dash
-
 import dash_html_components as html
-from dash.dependencies import Input, Output, State
-import dash_bootstrap_components as dbc
-import dash_core_components as dcc
+from dash.dependencies import Input, Output
 
 # Connect to main app.py file
-from dash.exceptions import PreventUpdate
 
 from app import app
 
-from pages import homepage, dashboard, upload_modal
-from components import carousel
+from pages import homepage, dashboard
+from components import upload_modal
 from layout.navbar import navbar
 
-from utils import collection
-from utils.method import reset_var, get_ctx_type, get_ctx_index
+from utils.method import reset_var
 
 app.layout = html.Div([
     navbar,

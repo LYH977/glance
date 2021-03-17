@@ -80,10 +80,14 @@ def snapshot_markup (filename):
         dbc.FormGroup(
             [
                 dbc.Label("Visualization type", html_for="dropdown"),
-                dcc.Dropdown(
+                # dcc.Dropdown(
+                #     id="visual-type",
+                #     options=[{"label": i, "value": i} for i in FIGURE_OPTION],
+                # ),
+                dbc.Select(
                     id="visual-type",
                     options=[{"label": i, "value": i} for i in FIGURE_OPTION],
-                ),
+                )
             ]
         ),
     ])
@@ -119,16 +123,24 @@ def output_form_markup(type):
 
 
 def parameter_option(name, id, multi = False):
+    if not multi:
+        dropdown = dbc.Select(
+            style={'width': '100%'},
+            id=id,
+            options=[{"label": i, "value": i} for i in collection.temp.columns],
+        )
+    else:
+        dropdown = dcc.Dropdown(
+            style={'width': '100%'},
+            id=id,
+            options=[{"label": i, "value": i} for i in collection.temp.columns],
+            multi= True
+        ),
     return  \
         dbc.FormGroup(
                     [
                         dbc.Label(name, className="mr-2"),
-                        dcc.Dropdown(
-                            style={'width': '100%'},
-                            id=id,
-                            options=[{"label": i, "value": i} for i in collection.temp.columns],
-                            multi = multi
-                        ),
+                        dropdown,
                     ],
                     # className="mr-3",
                     style={'width': '50%'}
@@ -139,13 +151,20 @@ def time_format_option():
         dbc.FormGroup(
                     [
                         dbc.Label('Choose Time Format', className="mr-2"),
-                        dcc.Dropdown(
+                        # dcc.Dropdown(
+                        #     style={'width': '100%'},
+                        #     id='time-format',
+                        #     options=[{"label": i, "value": j} for i,j in zip(TIME_FORMAT.keys(), TIME_FORMAT.values())],
+                        #     clearable= False,
+                        #     value = YEAR
+                        # ),
+                        dbc.Select(
                             style={'width': '100%'},
                             id='time-format',
-                            options=[{"label": i, "value": j} for i,j in zip(TIME_FORMAT.keys(), TIME_FORMAT.values())],
-                            clearable= False,
-                            value = YEAR
-                        ),
+                            options=[{"label": i, "value": j} for i, j in
+                                     zip(TIME_FORMAT.keys(), TIME_FORMAT.values())],
+                            value=YEAR
+                        )
                     ],
                     # className="mr-3",
                     style={'width': '50%'}
@@ -156,12 +175,17 @@ def dropdown_markup(measurements):
     return dbc.FormGroup(
         [
             dbc.Label('Choose a dataset', className="mr-2"),
-            dcc.Dropdown(
+            # dcc.Dropdown(
+            #     style={'width': '100%'},
+            #     id='dataset-dropdown',
+            #     options=[{"label": i['name'], "value": i['name']} for i in measurements],
+            #     multi=False
+            # ),
+            dbc.Select(
                 style={'width': '100%'},
                 id='dataset-dropdown',
                 options=[{"label": i['name'], "value": i['name']} for i in measurements],
-                multi=False
-            ),
+            )
         ],
         # className="mr-3",
         style={'width': '50%'}

@@ -1,24 +1,16 @@
 from datetime import datetime
 
-import dash_bootstrap_components as dbc
-import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
-import dash_table
 import dash
 from dash.exceptions import PreventUpdate
 
-from database.dbConfig import client, new_client
-from pages.upload_modal import preview_markup, dt_modifier_markup, dt_dropdown_markup
-from components.carousel import create_ca_img
-from utils.constant import FIGURE_OPTION, SCATTER_MAP_PARAM, SM_PARAM, CA_PARAM, CH_PARAM, D_PARAM, BC_PARAM, SG_PARAM, \
-    CAROUSEL, CAROUSEL_CONSTANT, ITEM
+from database.dbConfig import new_client
+from components.upload_modal import preview_markup, dt_modifier_markup, dt_dropdown_markup
 from utils import collection
-from utils.method import get_ctx_type,get_ctx_property,get_ctx_value,get_ctx_index
-from components.select_dataset_modal import output_form_markup,dataset_portal_markup, dataset_portal_markup
+from utils.method import get_ctx_type
 import base64
 import io
-import json
 import pandas as pd
 
 

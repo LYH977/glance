@@ -274,7 +274,7 @@ def register_update_live_data(app):
         else:
             input_type = get_ctx_type(ctx)
             input_index = get_ctx_index(ctx)
-        print(datetime.now(),' collection.live_processing', collection.live_processing)
+        # print(datetime.now(),' collection.live_processing', collection.live_processing)
         if collection.live_processing[input_index] is True:
             raise  PreventUpdate
         else:
@@ -288,7 +288,7 @@ def register_update_live_data(app):
                 last_nano = get_last_timestamp(result[TIME])
                 collection.data[input_index] = collection.data[input_index].append(result, ignore_index=True)
                 fig = create_figure(collection.data[input_index], param, ftype)
-                print('last_nano',last_nano)
+                # print('last_nano',last_nano)
                 return last_nano,fig
 
             else:
