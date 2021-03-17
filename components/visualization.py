@@ -158,13 +158,16 @@ def create_choropleth(data,parameter):
     configure_fig(fig)
     return fig
 
-def create_visualization(screen_height, screen_width, create_clicks, ftype, param, maxValue, df_frame, tformat):
+def create_visualization(screen_height, screen_width, create_clicks, ftype, param, maxValue, df_frame, tformat,dbname):
     last_nano = get_last_timestamp(collection.temp[TIME])
     figure = create_figure(collection.data[create_clicks], param, ftype)
-    # print(last_nano)
     return html.Div(
         className='visualization',
-        style={'height': screen_height* 0.75,'width': screen_width/2.2, },
+        style={
+            # 'height': screen_height* 0.75,
+            'width': screen_width/2.2,
+               # 'width': '500px',
+               },
         children=html.Div([
             dcc.Store(id={'type': 'my-index', 'index': create_clicks}, data=create_clicks),
             dcc.Store(id={'type': 'is-animating', 'index': create_clicks}, data = False),
@@ -177,6 +180,7 @@ def create_visualization(screen_height, screen_width, create_clicks, ftype, para
             dcc.Store(id={'type': 'last-notif-click', 'index': create_clicks}, data= ''),
             dcc.Store(id={'type': 'celery-data', 'index': create_clicks}, data = None),
             dcc.Store(id={'type': 'current-frame', 'index': create_clicks}, data=df_frame[0]),
+            dcc.Store(id={'type': 'db-name', 'index': create_clicks}, data=dbname),
 
             dcc.Interval(
                 id={'type': 'interval', 'index': create_clicks},

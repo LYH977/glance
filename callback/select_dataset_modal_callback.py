@@ -68,7 +68,12 @@ def validate_create(data):
 
 def register_update_after_upload(app):
     @app.callback(Output('dataset-portal', 'children'),
-                  [Input("open", "n_clicks"), Input("cancel-create-visual", "n_clicks"),Input("create-visual", "n_clicks"), Input('chosen-dropdown', 'data')],
+                  [
+                      Input("open", "n_clicks"),
+                      Input("cancel-create-visual", "n_clicks"),
+                      Input("create-visual", "n_clicks"),
+                      Input('chosen-dropdown', 'data')
+                  ],
                   [State("modal", "is_open")],
                   prevent_initial_call=True
     )
@@ -94,8 +99,8 @@ def register_update_after_upload(app):
         elif input_type == 'create-visual' or 'cancel-create-visual' :
             return dash.no_update if is_open is True else []
 
-        elif input_type ==  'create-visual':
-            return  []
+        # elif input_type ==  'create-visual':
+        #     return  []
         else:
             raise PreventUpdate
 #############################################################################################################################################

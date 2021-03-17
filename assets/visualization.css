@@ -15,7 +15,7 @@
 }
 
 .notif-body{
-    height: 180px;
+    height: 100px;
     overflow: auto;
     white-space: pre;
 }

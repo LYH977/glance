@@ -2,7 +2,9 @@ import dash
 import dash_bootstrap_components as dbc
 
 from callback.carousel_callback import register_display_image, register_ca_update_slider, register_update_ca_play_btn, \
-    register_update_ca_playing_status
+    register_update_ca_playing_status, register_update_ca_live_mode, register_ca_update_atmax, \
+    register_ca_update_live_data
+from callback.container_callback import register_update_visual_container
 from callback.dashboard_callback import register_update_dashboard
 
 from callback.select_dataset_modal_callback import \
@@ -63,6 +65,10 @@ register_display_image(app)
 register_ca_update_slider(app)
 register_update_ca_play_btn(app)
 register_update_ca_playing_status(app)
+register_update_ca_live_mode(app)
+register_ca_update_atmax(app)
+register_ca_update_live_data(app)
+
 
 # upload_modal_callback
 register_update_preview(app)

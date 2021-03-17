@@ -260,11 +260,13 @@ def register_update_live_data(app):
             State({'type':'last-timestamp', 'index': MATCH}, 'data'),
             State({'type':'frame-format', 'index': MATCH}, 'data'),
             State({'type': 'figure-type', 'index': MATCH}, 'data'),
-            State({'type': 'my_param', 'index': MATCH}, 'data')
+            State({'type': 'my_param', 'index': MATCH}, 'data'),
+            State({'type': 'db-name', 'index': MATCH}, 'data'),
+
         ],
         prevent_initial_call=True
     )
-    def update_live_data(live, ts, format, ftype, param):
+    def update_live_data(live, ts, format, ftype, param, dbname):
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
@@ -277,7 +279,7 @@ def register_update_live_data(app):
             raise  PreventUpdate
         else:
             collection.live_processing[input_index] = True
-            result = select_query('live', ' where time >{}'.format(ts))
+            result = select_query(dbname, ' where time >{}'.format(ts))
 
             if result is not None:
                 result[TIME] = result.index.map(lambda x: str(x).split('+')[0])

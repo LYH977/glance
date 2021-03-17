@@ -10,13 +10,17 @@ from utils.constant import CAROUSEL_CONSTANT, ITEM, TIME
 from utils.method import set_slider_calendar, get_last_timestamp
 
 
-def create_carousel(screen_height, screen_width, create_clicks, param, maxValue, df_frame, tformat):
+def create_carousel(screen_height, screen_width, create_clicks, param, maxValue, df_frame, tformat, dbname):
     last_nano = get_last_timestamp(collection.temp[TIME])
 
     return html.Div(
         className='carousel',
 
-        style={'height': screen_height* 0.75, 'width': screen_width/2.2, },
+        style={
+            # 'height': screen_height* 0.75,
+           'width': screen_width/2.2,
+               # 'width': '500px',
+               },
         children=html.Div([
             dcc.Store(id={'type': 'ca-is-animating', 'index': create_clicks}, data = False),
             # dcc.Store(id='ca-uuid', data = create_clicks),
@@ -25,6 +29,7 @@ def create_carousel(screen_height, screen_width, create_clicks, param, maxValue,
             dcc.Store(id={'type': 'ca-last-timestamp', 'index': create_clicks}, data=last_nano),
             dcc.Store(id={'type': 'ca-at-max', 'index': create_clicks}, data=False),
             dcc.Store(id={'type': 'ca-current-frame', 'index': create_clicks}, data=df_frame[0]),
+            dcc.Store(id={'type': 'ca-db-name', 'index': create_clicks}, data=dbname),
 
             dcc.Interval(
                 id={'type': 'ca-interval', 'index': create_clicks},
@@ -52,7 +57,7 @@ def create_carousel(screen_height, screen_width, create_clicks, param, maxValue,
             html.Div(
                 create_ca_img(collection.temp.loc[0,param[CAROUSEL_CONSTANT[ITEM]]]),
                 id={'type': 'fade1', 'index': create_clicks},
-                style={ 'height':300, 'width':300 , 'background':'red'},
+                # style={ 'height':300, 'width':300 , 'background':'red'},
             ),
 
             dcc.Slider(

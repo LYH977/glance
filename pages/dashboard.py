@@ -22,11 +22,15 @@ from raceplotly.plots import barplot
 
 layout = html.Div([
     html.Div('it is empty', id='empty-scene', className='empty-scene'),
-    html.Div(id = 'visual-container', children=[], ),
+    html.Div(id = 'visual-container', children=[], style={
+    'display': 'grid',
+    'grid-template-columns': '1fr 1fr',
+
+    }),
     select_dataset_modal.modal
 , ], style={
     'position':'relative',
-    # 'background':'rgb(60, 60, 60) ',
+    'background':'yellow ',
     }
 )
 

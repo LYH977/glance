@@ -191,16 +191,18 @@ def register_ca_update_atmax(app):
 # fetch new data for live mode
 def register_ca_update_live_data(app):
     @app.callback(
-        [Output({'type':'ca-last-timestamp', 'index': MATCH}, 'data'),Output({'type':'back-buffer', 'index': MATCH}, 'data')],
+        Output({'type':'ca-last-timestamp', 'index': MATCH}, 'data'),
         [Input({'type':'ca-live-interval', 'index': MATCH}, 'n_intervals')],
         [
             State({'type':'ca-last-timestamp', 'index': MATCH}, 'data'),
             State({'type':'ca-frame-format', 'index': MATCH}, 'data'),
-            State({'type': 'ca-my_param', 'index': MATCH}, 'data')
+            State({'type': 'ca-my_param', 'index': MATCH}, 'data'),
+            State({'type': 'ca-db-name', 'index': MATCH}, 'data')
+
         ],
         prevent_initial_call=True
     )
-    def update_live_data(live, ts, format,  param):
+    def update_live_data(live, ts, format,  param, dbname):
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
@@ -213,17 +215,19 @@ def register_ca_update_live_data(app):
             raise  PreventUpdate
         else:
             collection.live_processing[input_index] = True
-            result = select_query('live', ' where time >{}'.format(ts))
+            result = select_query(dbname, ' where time >{}'.format(ts))
 
             if result is not None:
                 result[TIME] = result.index.map(lambda x: str(x).split('+')[0])
                 result[FRAME] = result[TIME].map(lambda x: formatted_time_value(x, format))
-                # result.reset_index(drop=True, inplace=True)
                 last_nano = get_last_timestamp(result[TIME])
                 collection.data[input_index] = collection.data[input_index].append(result, ignore_index=True)
-                fig = create_figure(collection.data[input_index], param, ftype)
-                print('last_nano',last_nano)
-                return last_nano,fig
+
+                for row in result.index:
+                    collection.img_container[input_index].append( create_ca_img(result.loc[row, param['parameter'][CAROUSEL_CONSTANT[ITEM]]]) )
+
+                # fig = create_figure(collection.data[input_index], param, ftype)
+                return last_nano
 
             else:
                 collection.live_processing[input_index] = False

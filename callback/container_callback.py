@@ -25,16 +25,20 @@ def register_update_visual_container(app):
     @app.callback(
          Output('visual-container', 'children') ,
         [ Input('create-visual', 'n_clicks'), Input({'type':'dlt-btn', 'index': ALL},'n_clicks') ],
-        [ State('visual-container', 'children') , State('last-param', 'data'),  State('chosen-tformat', 'data')    ],
+        [
+            State('visual-container', 'children') ,
+            State('last-param', 'data'),
+            State('chosen-tformat', 'data'),
+            State('chosen-dropdown', 'data')
+        ],
         prevent_initial_call=True)
-    def update_visual_container(create_clicks, deletable, div_children, param, tformat):
+    def update_visual_container(create_clicks, deletable, div_children, param, tformat, dbname):
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
             input_type = 'No input yet'
         else:
             input_type = get_ctx_type(ctx)
-            input_index = get_ctx_index(ctx)
 
         if input_type == 'create-visual': # input from add button
             collection.temp = collection.temp.dropna()
@@ -43,23 +47,23 @@ def register_update_visual_container(app):
             collection.data[create_clicks] = collection.temp
             collection.live_processing[create_clicks] = False
 
-            if param['vtype'] != CAROUSEL: #  carousel
+            if param['vtype'] == CAROUSEL: #  carousel
                 temp = []
                 for row in collection.temp.index:
                     temp.append( create_ca_img(collection.temp.loc[row, param['parameter'][CAROUSEL_CONSTANT[ITEM]]]) )
-                collection.img_container[input_index] = temp
+                collection.img_container[create_clicks] = temp
             else: # other than carousel
                 # task.process_dataset(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'])
                 result = task.process_dataset.delay(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'])
-            new_child = container.render_container(create_clicks, param['parameter'], param['vtype'], tformat)
+            new_child = container.render_container(create_clicks, param['parameter'], param['vtype'], tformat, dbname)
             div_children.append(new_child)
             visual_container.append(create_clicks)
             return div_children
 
         else: # input from delete button
             print('visual_container:', visual_container)
-            # delete_index = get_ctx_index(ctx)
-            temp = visual_container.index(input_index)
+            delete_index = get_ctx_index(ctx)
+            temp = visual_container.index(delete_index)
             del div_children[temp]
             del visual_container[temp]
             return div_children
