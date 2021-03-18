@@ -73,7 +73,6 @@ def create_scattermap(data, parameter):
         mapbox_style = 'dark', zoom=1,
         animation_frame = FRAME,
         # animation_group="Province/State",
-        # height = 600,
         # width=swidth ,
         hover_data = parameter[SCATTER_MAP_CONSTANT[MESSAGE]]
         # hover_data=['Active', 'Confirmed']
@@ -158,7 +157,7 @@ def create_choropleth(data,parameter):
     configure_fig(fig)
     return fig
 
-def create_visualization(screen_height, screen_width, create_clicks, ftype, param, maxValue, df_frame, tformat,dbname):
+def create_visualization(screen_height, screen_width, create_clicks, ftype, param, maxValue, df_frame, tformat,dbname, now):
     last_nano = get_last_timestamp(collection.temp[TIME])
     figure = create_figure(collection.data[create_clicks], param, ftype)
     return html.Div(
@@ -181,6 +180,7 @@ def create_visualization(screen_height, screen_width, create_clicks, ftype, para
             dcc.Store(id={'type': 'celery-data', 'index': create_clicks}, data = None),
             dcc.Store(id={'type': 'current-frame', 'index': create_clicks}, data=df_frame[0]),
             dcc.Store(id={'type': 'db-name', 'index': create_clicks}, data=dbname),
+            dcc.Store(id={'type': 'redis-timestamp', 'index': create_clicks}, data = now),
 
             dcc.Interval(
                 id={'type': 'interval', 'index': create_clicks},
@@ -211,13 +211,17 @@ def create_visualization(screen_height, screen_width, create_clicks, ftype, para
 
             ]),
             dcc.Graph(
+                responsive= False,
                 className='visualization',
                 id={'type': 'visualization', 'index': create_clicks},
                 figure = figure,
                 style={'height': VISUAL_HEIGHT + COLLAPSE_HEIGHT,
                        'transition':'height 0.5s'
                        },
-                config={'modeBarButtonsToRemove': ['pan2d','select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox','toggleHover']  }
+                config={
+                    'modeBarButtonsToRemove': ['pan2d','select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox','toggleHover','toImage'],
+                    'displaylogo': False
+                }
             ),
 
             dbc.Row([

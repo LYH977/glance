@@ -239,11 +239,17 @@ def register_update_atmax(app):
 # update live interval according to live switch
 def register_update_live_mode(app):
     @app.callback(
-       [ Output({'type':'live-interval', 'index': MATCH}, 'disabled'), Output({'type':'play-btn', 'index': MATCH}, 'disabled')],
+       [
+           Output({'type':'live-interval', 'index': MATCH}, 'disabled'),
+           Output({'type':'play-btn', 'index': MATCH}, 'disabled'),
+           Output({'type': 'redis-timestamp', 'index': MATCH}, 'data'),
+       ],
         [Input({'type':'live-mode', 'index': MATCH}, 'on')],
         prevent_initial_call=True
     )
     def update_live_mode(live):
+        if not live:
+            now = datetime.now().timestamp()
         return not live, live
 
 
@@ -355,15 +361,17 @@ def register_update_celery_data(app):
         [
             State({'type': 'anim-slider', 'index': MATCH}, 'value'),
             State({'type': 'my-index', 'index': MATCH}, 'data'),
+            State({'type': 'redis-timestamp', 'index': MATCH}, 'data'),
         ]
         # prevent_initial_call=True
     )
-    def update_celery_data(interval, slider, index):
+    def update_celery_data(interval, slider, index, now):
         try:
-            result = redis_instance.get(index).decode("utf-8")
+            result = redis_instance.hget(index, now).decode("utf-8")
             result = json.loads(result)
             ctx = dash.callback_context
             input_index = get_ctx_index(ctx)
+            #get max and min of current frame
             count = {
                 MAXIMUM : result[str(slider)][MAXIMUM]['count'],
                 MINIMUM: result[str(slider)][MINIMUM]['count'],
@@ -415,8 +423,12 @@ def register_update_notif_body(app):
             return notif, cdata[str(cvalue)][MAXIMUM]['count'], cdata[str(cvalue)][MINIMUM]['count']
 
         elif input_type =='anim-slider' and celery is not None:
-            notif = celery[str(slider)][type]['data'] if type != '' else ''
-            return notif, cdata[str(slider)][MAXIMUM]['count'], cdata[str(slider)][MINIMUM]['count']
+            length = len(celery)
+            if slider > length -1:
+                return 'Loading...', '-', '-'
+            else:
+                notif = celery[str(slider)][type]['data'] if type != '' else ''
+                return notif, cdata[str(slider)][MAXIMUM]['count'], cdata[str(slider)][MINIMUM]['count']
 
         elif input_type == 'last-notif-click' :
             notif = celery[str(slider)][type]['data'] if type != '' else ''

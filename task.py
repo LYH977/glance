@@ -108,18 +108,15 @@ def setup_periodic_tasks(sender, **kwargs):
     )
 
 @app.task
-def process_dataset(create_click, dataframe, vtype, parameter):
+def process_dataset(create_click, dataframe, vtype, parameter, now):
     dataframe = pd.DataFrame.from_dict(dataframe)
     print('starting')
     tags = []
     obj = {}
     extract = [MAXIMUM, MINIMUM]
     frames = dataframe[FRAME].unique().tolist()
-    # print(frames)
-    # print(frames.index('2020-01-22'))
     notif_tags = NOTIFICATION_PARAM[vtype][TAG]
-    # for t in range(len(frames)):
-    #     print(frames[t])
+
 
     for f in range(len(frames)):
         obj[f] = {'frame': frames[f]}
@@ -128,12 +125,6 @@ def process_dataset(create_click, dataframe, vtype, parameter):
             for v in NOTIFICATION_PARAM[vtype][FIELD]:
                 obj[f][e]['temp'][parameter[v]] = []
 
-    # for f in frames:
-    #     obj[f] = {}
-    #     for e in extract:
-    #         obj[f][e] = {}
-    #         for v in NOTIFICATION_PARAM[vtype][FIELD]:
-    #             obj[f][e][parameter[v]] = []
     for t in notif_tags:
         tags.append(parameter[t])
     # print('tags', tags)
@@ -189,7 +180,7 @@ def process_dataset(create_click, dataframe, vtype, parameter):
     obj = json.dumps(obj, cls=plotly.utils.PlotlyJSONEncoder)
     # print(obj)
     # redis_instance.hset(REDIS_HASH_NAME, 'new', obj  )
-    redis_instance.set( create_click, obj  )
+    redis_instance.hset( create_click, now, obj)
 
     #
     # @app.task
