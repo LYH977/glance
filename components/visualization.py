@@ -15,7 +15,7 @@ from utils import collection
 from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CAROUSEL, CHOROPLETH, BAR_CHART_RACE, \
     SCATTER_MAP_CONSTANT, LATITUDE, LONGITUDE, SIZE, COLOR, NAME, FRAME, MESSAGE, SCATTER_GEO_CONSTANT, \
     BAR_CHART_RACE_CONSTANT, ITEM, VALUE, DENSITY_CONSTANT, Z, CHOROPLETH_CONSTANT, LOCATIONS, STANDARD_T_FORMAT, TIME, \
-    MAXIMUM, MINIMUM
+    MAXIMUM, MINIMUM, VISUAL_HEIGHT, COLLAPSE_HEIGHT
 from raceplotly.plots import barplot
 
 from utils.method import set_slider_calendar, formatted_time_value, to_nanosecond_epoch, get_last_timestamp
@@ -162,7 +162,7 @@ def create_visualization(screen_height, screen_width, create_clicks, ftype, para
     last_nano = get_last_timestamp(collection.temp[TIME])
     figure = create_figure(collection.data[create_clicks], param, ftype)
     return html.Div(
-        className='visualization',
+        className='visualization-container',
         style={
             'height': screen_height* 0.72,
             'width': screen_width/2.2,
@@ -211,23 +211,27 @@ def create_visualization(screen_height, screen_width, create_clicks, ftype, para
 
             ]),
             dcc.Graph(
+                className='visualization',
                 id={'type': 'visualization', 'index': create_clicks},
                 figure = figure,
-                style={'height': 300},
+                style={'height': VISUAL_HEIGHT + COLLAPSE_HEIGHT,
+                       'transition':'height 0.5s'
+                       },
                 config={'modeBarButtonsToRemove': ['pan2d','select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox','toggleHover']  }
             ),
-            dcc.Slider(
-                id={'type': 'anim-slider', 'index': create_clicks},
-                updatemode='drag',
-                min=0,
-                max=maxValue,
-                value=0,
-                marks={str(i): str(des) for i, des in
-                       zip(range(0, df_frame.shape[0]), set_slider_calendar(df_frame))},
-            ),
-            html.Div([
-                html.Button('play', id={'type': 'play-btn', 'index': create_clicks} ),
-                html.Label( df_frame[0], id={'type': 'slider-label', 'index': create_clicks})
+
+            dbc.Row([
+                dbc.Col(html.Button('play', id={'type': 'play-btn', 'index': create_clicks} ), width= 'auto'),
+                dbc.Col(html.Label( df_frame[0], id={'type': 'slider-label', 'index': create_clicks}), width= 'auto'),
+                dbc.Col(dcc.Slider(
+                    id={'type': 'anim-slider', 'index': create_clicks},
+                    updatemode='drag',
+                    min=0,
+                    max=maxValue,
+                    value=0,
+                    # marks={str(i): str(des) for i, des in
+                    #        zip(range(0, df_frame.shape[0]), set_slider_calendar(df_frame))},
+                )),
             ]),
 
             html.Div(
@@ -236,12 +240,10 @@ def create_visualization(screen_height, screen_width, create_clicks, ftype, para
                     color="light",
                     type="grow"
                 ),
-
             ),
-
-
         ]),
     )
+
 
 def notif_badge_markup(id, number, create_clicks):
     return dbc.Col(

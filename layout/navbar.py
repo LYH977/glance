@@ -12,7 +12,7 @@ navbar = dbc.NavbarSimple(
     ],
     brand="Glance",
     brand_href="/pages/home",
-    color="primary",
+    color="dark",
     dark=True,
 )
 

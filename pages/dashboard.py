@@ -30,7 +30,7 @@ layout = html.Div([
     select_dataset_modal.modal
 , ], style={
     'position':'relative',
-    'background':'yellow ',
+    # 'background':'#242444'
     }
 )
 

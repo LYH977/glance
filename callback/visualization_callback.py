@@ -16,7 +16,7 @@ from utils.collection import visual_container, redis_instance
 from utils.method import get_ctx_type, get_ctx_property, get_ctx_value, get_ctx_index, formatted_time_value, \
     to_nanosecond_epoch, select_query, get_last_timestamp
 from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CAROUSEL, CHOROPLETH, BAR_CHART_RACE, \
-    STANDARD_T_FORMAT, FRAME, TIME, MAXIMUM, MINIMUM
+    STANDARD_T_FORMAT, FRAME, TIME, MAXIMUM, MINIMUM, VISUAL_HEIGHT, COLLAPSE_HEIGHT
 
 
 def change_frame(ftype,fig2, value ):
@@ -303,6 +303,7 @@ def register_toggle_collapse(app):
         [
             Output({'type':'last-notif-click', 'index': MATCH}, 'data'),
             Output({'type':'notif-collapse', 'index': MATCH}, 'is_open'),
+            Output({'type': 'visualization', 'index': MATCH}, 'style'),
 
         ],
         [
@@ -324,9 +325,19 @@ def register_toggle_collapse(app):
         if input_type == f'{MAXIMUM}-notif' and max is not None or input_type == f'{MINIMUM}-notif' and min is not None:
             if not is_open :
                 toggle = True
+                style = {'height': VISUAL_HEIGHT,
+                         'transition':'height 0.5s'
+                         }
             else:
-                toggle = False if state == input_type else dash.no_update
-            return  input_type, toggle
+                if state == input_type:
+                    toggle = False
+                    style = {'height': VISUAL_HEIGHT + COLLAPSE_HEIGHT,
+                             'transition':'height 0.5s'
+                             }
+                else:
+                    toggle = style = dash.no_update
+
+            return  input_type, toggle, style
         else:
             raise PreventUpdate
 
@@ -341,12 +352,15 @@ def register_update_celery_data(app):
             Output({'type': 'loading-notif-output', 'index': MATCH}, 'children')
         ],
         [Input({'type':'celery-interval', 'index': MATCH}, 'n_intervals')],
-        [State({'type': 'anim-slider', 'index': MATCH}, 'value')]
+        [
+            State({'type': 'anim-slider', 'index': MATCH}, 'value'),
+            State({'type': 'my-index', 'index': MATCH}, 'data'),
+        ]
         # prevent_initial_call=True
     )
-    def update_celery_data(interval, slider):
+    def update_celery_data(interval, slider, index):
         try:
-            result = redis_instance.get('new').decode("utf-8")
+            result = redis_instance.get(index).decode("utf-8")
             result = json.loads(result)
             ctx = dash.callback_context
             input_index = get_ctx_index(ctx)

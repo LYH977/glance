@@ -1,9 +1,14 @@
-.visualization {
-    background: rgb(120, 120, 120);
+.visualization-container {
+    background: #46648c;
     display: inline-block;
     padding: 20px;
     margin: 20px;
     position:relative;
+    border-radius : 10px;
+}
+
+.visualization {
+    overflow : hidden;
 }
 
 .collapse {
@@ -15,7 +20,7 @@
 }
 
 .notif-body{
-    height: 100px;
+    height: 150px;
     overflow: auto;
     white-space: pre;
 }

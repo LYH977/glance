@@ -16,7 +16,10 @@ app.layout = html.Div([
     html.Div(id='page-content', children=[]),
     upload_modal.layout
 
-])
+],style={
+     # 'background-image': 'linear-gradient(to bottom right, #189de4, #52b7e9, #146ca4, #46648c, #242444)',
+    # 'background':'#242444'
+    })
 
 
 @app.callback(Output('page-content', 'children'),
