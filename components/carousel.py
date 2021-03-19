@@ -57,7 +57,7 @@ def create_carousel(screen_height, screen_width, create_clicks, param, maxValue,
             html.Div(
                 create_ca_img(collection.temp.loc[0,param[CAROUSEL_CONSTANT[ITEM]]]),
                 id={'type': 'fade1', 'index': create_clicks},
-                # style={ 'height':300, 'width':300 , 'background':'red'},
+                style={ 'height': '450px', 'width': '100%'},
             ),
 
             dcc.Slider(
@@ -66,12 +66,12 @@ def create_carousel(screen_height, screen_width, create_clicks, param, maxValue,
                 min=0,
                 max=maxValue,
                 value=0,
-                marks={str(i): str(des) for i, des in
-                       zip(range(0, df_frame.shape[0]), set_slider_calendar(df_frame))},
+                # marks={str(i): str(des) for i, des in
+                #        zip(range(0, df_frame.shape[0]), set_slider_calendar(df_frame))},
             ),
             html.Div([
                 html.Button('play', id={'type': 'ca-play-btn', 'index': create_clicks}),
-                html.Label(df_frame[0], id={'type': 'ca-slider-label', 'index': create_clicks})
+                html.Label(df_frame[0], id={'type': 'ca-slider-label', 'index': create_clicks}, style={'color':'white'})
             ]),
         ]),
                 )
@@ -79,5 +79,5 @@ def create_carousel(screen_height, screen_width, create_clicks, param, maxValue,
 def create_ca_img(src):
     return html.Img(
         src=src,
-        style={'height': '50%', 'width': '100%'}
+        style={'height': '100%', 'width': '100%', 'overflow':'hidden'}
     )

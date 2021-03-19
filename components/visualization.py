@@ -42,6 +42,7 @@ def create_figure(data, parameter, ftype):
 
 
 def configure_fig(fig):
+    # print(fig)
     fig.layout.sliders[0].visible = False
     fig.layout.updatemenus[0].visible = False
     fig.layout.updatemenus[0].buttons[0].args[1]["frame"]["duration"] = 200
@@ -52,7 +53,8 @@ def configure_fig(fig):
     fig.layout.margin.r = 0
     fig.layout.margin.l = 0
     fig.layout.updatemenus[0].showactive = True
-
+    fig.layout.autosize = False
+    # fig.layout.height = 200
 
 def convert_to_float(data, parameter, list):
     for i in list:
@@ -74,6 +76,7 @@ def create_scattermap(data, parameter):
         animation_frame = FRAME,
         # animation_group="Province/State",
         # width=swidth ,
+
         hover_data = parameter[SCATTER_MAP_CONSTANT[MESSAGE]]
         # hover_data=['Active', 'Confirmed']
         # custom_data=['Date']
@@ -94,12 +97,8 @@ def create_scatter_geo(data, parameter):
         color = parameter[SCATTER_GEO_CONSTANT[COLOR]],
         hover_name = parameter[SCATTER_GEO_CONSTANT[NAME]],
         animation_frame = FRAME,
-        # animation_group="Province/State",
-        # height = 600,
         hover_data = parameter[SCATTER_GEO_CONSTANT[MESSAGE]],
         projection = "natural earth"
-        # hover_data=['Active', 'Confirmed']
-        # custom_data=['Date']
     )
     configure_fig(fig)
     return fig
@@ -135,7 +134,9 @@ def create_density(data, parameter):
         center = dict(lat = 0, lon = 180),
         zoom = 0,
         animation_frame = FRAME,
-        mapbox_style = "dark")
+        mapbox_style = "dark",
+        # height= 200
+    )
     configure_fig(fig)
     return fig
 
@@ -160,6 +161,7 @@ def create_choropleth(data,parameter):
 def create_visualization(screen_height, screen_width, create_clicks, ftype, param, maxValue, df_frame, tformat,dbname, now):
     last_nano = get_last_timestamp(collection.temp[TIME])
     figure = create_figure(collection.data[create_clicks], param, ftype)
+    total_rows = len(collection.data[create_clicks].index)
     return html.Div(
         className='visualization-container',
         style={
@@ -181,6 +183,7 @@ def create_visualization(screen_height, screen_width, create_clicks, ftype, para
             dcc.Store(id={'type': 'current-frame', 'index': create_clicks}, data=df_frame[0]),
             dcc.Store(id={'type': 'db-name', 'index': create_clicks}, data=dbname),
             dcc.Store(id={'type': 'redis-timestamp', 'index': create_clicks}, data = now),
+            dcc.Store(id={'type': 'last-total-rows', 'index': create_clicks}, data= total_rows),
 
             dcc.Interval(
                 id={'type': 'interval', 'index': create_clicks},
@@ -198,7 +201,7 @@ def create_visualization(screen_height, screen_width, create_clicks, ftype, para
             dcc.Interval(
                 id={'type': 'celery-interval', 'index': create_clicks},
                 interval=2000,
-                n_intervals=10,
+                n_intervals=0,
             ),
             dbc.Row([
                 dbc.Col(html.Label(create_clicks)),
@@ -216,17 +219,21 @@ def create_visualization(screen_height, screen_width, create_clicks, ftype, para
                 id={'type': 'visualization', 'index': create_clicks},
                 figure = figure,
                 style={'height': VISUAL_HEIGHT + COLLAPSE_HEIGHT,
-                       'transition':'height 0.5s'
+                       'transition':'height 0.5s',
+                       'overflow':'hidden'
                        },
                 config={
-                    'modeBarButtonsToRemove': ['pan2d','select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox','toggleHover','toImage'],
-                    'displaylogo': False
+                    # 'modeBarButtonsToRemove': ['pan2d','select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox','toggleHover','toImage'],
+                    'displaylogo': False,
+                    'responsive': False,
+                    'autosizable': False,
+                    'displayModeBar': False
                 }
             ),
 
             dbc.Row([
                 dbc.Col(html.Button('play', id={'type': 'play-btn', 'index': create_clicks} ), width= 'auto'),
-                dbc.Col(html.Label( df_frame[0], id={'type': 'slider-label', 'index': create_clicks}), width= 'auto'),
+                dbc.Col(html.Label( df_frame[0], id={'type': 'slider-label', 'index': create_clicks}, style = {'color':'white'}), width= 'auto'),
                 dbc.Col(dcc.Slider(
                     id={'type': 'anim-slider', 'index': create_clicks},
                     updatemode='drag',
