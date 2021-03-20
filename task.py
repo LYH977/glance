@@ -110,7 +110,7 @@ def setup_periodic_tasks(sender, **kwargs):
 @app.task
 def process_dataset(create_click, dataframe, vtype, parameter, now):
     dataframe = pd.DataFrame.from_dict(dataframe)
-    print('starting')
+    print('starting',now)
     tags = []
     obj = {}
     extract = [MAXIMUM, MINIMUM]

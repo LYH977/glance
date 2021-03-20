@@ -31,6 +31,11 @@ def change_frame(ftype, fig2, value):
     elif ftype == CHOROPLETH:
         fig2['data'][0] = fig2['frames'][value]['data'][0]
 
+def handleOutOfRangeNotif(celery, slider):
+    length = len(celery)
+    if slider > length - 1:
+        return True
+
 
 # update visualization container by appending or removing item from array
 # def register_update_visual_container(app):
@@ -88,14 +93,14 @@ def register_update_figure(app):
         # ],
         Input({'type': 'anim-slider', 'index': MATCH}, 'value'),
         [
-            State({'type': 'figure-type', 'index': MATCH}, 'data'),
+            State({'type': 'my_param', 'index': MATCH}, 'data'),
             State({'type': 'at-max', 'index': MATCH}, 'data'),
             State({'type': 'live-mode', 'index': MATCH}, 'on'),
             State({'type': 'back-buffer', 'index': MATCH}, 'data'),
 
         ],
         prevent_initial_call=True)
-    def update_figure(value, ftype, atmax, live, new_fig):
+    def update_figure(value, param, atmax, live, new_fig):
         # config = {
         #     'displaylogo': False,
         #     'responsive': False,
@@ -111,7 +116,7 @@ def register_update_figure(app):
         if live and atmax:
             new_max = len(new_fig['frames'])
             val = new_max - 1
-        change_frame(ftype, new_fig, val)
+        change_frame(param['vtype'], new_fig, val)
         return fig2
 
 
@@ -257,7 +262,6 @@ def register_update_live_mode(app):
         [
             Output({'type': 'live-interval', 'index': MATCH}, 'disabled'),
             Output({'type': 'play-btn', 'index': MATCH}, 'disabled'),
-            # Output({'type': 'redis-timestamp', 'index': MATCH}, 'data'),
         ],
         [Input({'type': 'live-mode', 'index': MATCH}, 'on')],
         prevent_initial_call=True
@@ -283,14 +287,14 @@ def register_update_live_data(app):
         [
             State({'type': 'last-timestamp', 'index': MATCH}, 'data'),
             State({'type': 'frame-format', 'index': MATCH}, 'data'),
-            State({'type': 'figure-type', 'index': MATCH}, 'data'),
+            # State({'type': 'figure-type', 'index': MATCH}, 'data'),
             State({'type': 'my_param', 'index': MATCH}, 'data'),
             State({'type': 'db-name', 'index': MATCH}, 'data'),
 
         ],
         prevent_initial_call=True
     )
-    def update_live_data(live, ts, format, ftype, param, dbname):
+    def update_live_data(live, ts, format,  param, dbname):
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
@@ -311,7 +315,7 @@ def register_update_live_data(app):
                 # result.reset_index(drop=True, inplace=True)
                 last_nano = get_last_timestamp(result[TIME])
                 collection.data[input_index] = collection.data[input_index].append(result, ignore_index=True)
-                fig = create_figure(collection.data[input_index], param, ftype)
+                fig = create_figure(collection.data[input_index], param['parameter'], param['vtype'])
                 # print('last_nano',last_nano)
                 return last_nano, fig
 
@@ -374,7 +378,11 @@ def register_update_celery_data(app):
             Output({'type': 'celery-interval', 'index': MATCH}, 'disabled'),
             Output({'type': 'loading-notif-output', 'index': MATCH}, 'children')
         ],
-        [Input({'type': 'celery-interval', 'index': MATCH}, 'n_intervals')],
+        [
+            Input({'type': 'celery-interval', 'index': MATCH}, 'n_intervals'),
+            Input({'type': 'last-total-rows', 'index': MATCH}, 'data'),
+
+        ],
         [
             State({'type': 'anim-slider', 'index': MATCH}, 'value'),
             State({'type': 'my-index', 'index': MATCH}, 'data'),
@@ -382,22 +390,37 @@ def register_update_celery_data(app):
         ]
         # prevent_initial_call=True
     )
-    def update_celery_data(interval, slider, index, now):
-        try:
-            result = redis_instance.hget(index, now).decode("utf-8")
-            result = json.loads(result)
-            ctx = dash.callback_context
+    def update_celery_data(interval,rows, slider, index, now):
+        ctx = dash.callback_context
+        input_index = None
+        if not ctx.triggered:
+            input_type = 'No input yet'
+        else:
+            input_type = get_ctx_type(ctx)
             input_index = get_ctx_index(ctx)
-            # get max and min of current frame
-            count = {
-                MAXIMUM: result[str(slider)][MAXIMUM]['count'],
-                MINIMUM: result[str(slider)][MINIMUM]['count'],
-            }
-            return result, True, collapse_markup(input_index, count)
-        except Exception as e:
-            print('celery', e)
+        if input_type == 'celery-interval':
+            try:
+                # print('checking bro', now)
+
+                result = redis_instance.hget(index, now).decode("utf-8")
+                result = json.loads(result)
+                ctx = dash.callback_context
+                input_index = get_ctx_index(ctx)
+                # get max and min of current frame
+                count = {
+                    MAXIMUM: result[str(slider)][MAXIMUM]['count'],
+                    MINIMUM: result[str(slider)][MINIMUM]['count'],
+                }
+                # print('done bro', now)
+
+                return result, True, collapse_markup(input_index, count)
+            except Exception as e:
+                print('celery', e)
+                return dash.no_update, False, dash.no_update
+        elif input_type == 'last-total-rows':
+            # print('started bro', now)
             return dash.no_update, False, dash.no_update
-        # return dash.no_update, False, dash.no_update
+        raise PreventUpdate
 
 
 #############################################################################################################################################
@@ -408,7 +431,8 @@ def register_update_notif_body(app):
         [
             Output({'type': 'notif-body', 'index': MATCH}, 'children'),
             Output({'type': f'{MAXIMUM}-badge', 'index': MATCH}, 'children'),
-            Output({'type': f'{MINIMUM}-badge', 'index': MATCH}, 'children')
+            Output({'type': f'{MINIMUM}-badge', 'index': MATCH}, 'children'),
+
         ],
         [
             Input({'type': 'celery-data', 'index': MATCH}, 'data'),
@@ -418,12 +442,13 @@ def register_update_notif_body(app):
         [
             State({'type': 'anim-slider', 'index': MATCH}, 'value'),
             State({'type': 'last-notif-click', 'index': MATCH}, 'data'),
-            State({'type': 'celery-data', 'index': MATCH}, 'data'),
+            # State({'type': 'celery-data', 'index': MATCH}, 'data'),
+
         ],
 
         prevent_initial_call=True
     )
-    def update_notif_body(cdata, slider, itype, cvalue, stype, celery):
+    def update_notif_body(cdata, slider, itype, cvalue, stype):
         if stype is None:
             raise PreventUpdate
         ctx = dash.callback_context
@@ -437,19 +462,24 @@ def register_update_notif_body(app):
         type = stype.split('-')[0]
 
         if input_type == 'celery-data':
+            if handleOutOfRangeNotif(cdata, slider):
+                return 'Loading...', '-', '-'
             notif = cdata[str(cvalue)][type]['data'] if type != '' else ''
             return notif, cdata[str(cvalue)][MAXIMUM]['count'], cdata[str(cvalue)][MINIMUM]['count']
 
-        elif input_type == 'anim-slider' and celery is not None:
-            length = len(celery)
-            if slider > length - 1:
+        elif input_type == 'anim-slider' and cdata is not None:
+            # print('cdata',cdata)
+            # print('celery',celery)
+
+            if handleOutOfRangeNotif(cdata, slider):
                 return 'Loading...', '-', '-'
-            else:
-                notif = celery[str(slider)][type]['data'] if type != '' else ''
-                return notif, cdata[str(slider)][MAXIMUM]['count'], cdata[str(slider)][MINIMUM]['count']
+            notif = cdata[str(slider)][type]['data'] if type != '' else ''
+            return notif, cdata[str(slider)][MAXIMUM]['count'], cdata[str(slider)][MINIMUM]['count']
 
         elif input_type == 'last-notif-click':
-            notif = celery[str(slider)][type]['data'] if type != '' else ''
+            if handleOutOfRangeNotif(cdata, slider):
+                return 'Loading...', '-', '-'
+            notif = cdata[str(slider)][type]['data'] if type != '' else ''
             return notif, cdata[str(slider)][MAXIMUM]['count'], cdata[str(slider)][MINIMUM]['count']
 
         else:
@@ -503,17 +533,17 @@ def register_update_last_celery_key(app):
             Output({'type': 'redis-timestamp', 'index': MATCH}, 'data'),
         ],
         [
-            Input({'type': 'celery-data', 'index': MATCH}, 'data'),
+            # Input({'type': 'celery-data', 'index': MATCH}, 'data'),
             Input({'type': 'live-mode', 'index': MATCH}, 'on'),
-            Input({'type': 'live-interval', 'index': MATCH}, 'interval'),
+            Input({'type': 'live-interval', 'index': MATCH}, 'n_intervals'),
         ],
         [
             State({'type': 'last-total-rows', 'index': MATCH}, 'data'),
-            State({'type': 'notif-collapse', 'index': MATCH}, 'is_open')
+            State({'type': 'my_param', 'index': MATCH}, 'data')
         ],
         prevent_initial_call=True
     )
-    def update_last_celery_key(celery, live, interval, key, is_open):
+    def update_last_celery_key( live, interval, last_rows, param):
         ctx = dash.callback_context
         input_index= None
         if not ctx.triggered:
@@ -521,33 +551,24 @@ def register_update_last_celery_key(app):
         else:
             input_type = get_ctx_type(ctx)
             input_index = get_ctx_index(ctx)
-        if input_type =='celery-data':
-            return len(collection.data[input_index].index), dash.no_update
-        # elif input_type == 'live-mode':
-        #     print(1)
-        # elif input_type == 'live-interval':
-        #     if live%5 == 0:
-        #
-        #     print(1)
-        else:
-            raise PreventUpdate
+
+        if input_type == 'live-mode' and  not live:
+            current_rows = len(collection.data[input_index].index)
+            if last_rows < current_rows:
+                now = datetime.now().timestamp()
+                result = task.process_dataset.delay(input_index, collection.data[input_index].to_dict(), param['vtype'], param['parameter'], now)
+
+                return current_rows, now
+
+        elif input_type == 'live-interval':
+            current_rows = len(collection.data[input_index].index)
+            if interval != 0  and interval % 5 == 0 and last_rows < current_rows:
+                now = datetime.now().timestamp()
+                # print(now,' interval: ', interval, )
+                result = task.process_dataset.delay(input_index, collection.data[input_index].to_dict(), param['vtype'], param['parameter'], now)
+                return current_rows, now
+
+        raise PreventUpdate
 
 
 #############################################################################################################################################
-
-# def register_update_redis_timestamp(app):
-#     @app.callback(
-#        # [
-#            Output({'type': 'redis-timestamp', 'index': MATCH}, 'data'),
-#        # ],
-#         [
-#             Input({'type':'live-mode', 'index': MATCH}, 'on')
-#         ],
-#         prevent_initial_call=True
-#     )
-#     def update_live_mode(live):
-#         if live is False:
-#             now = datetime.now().timestamp()
-#         else:
-#             now = dash.no_update
-#         return now

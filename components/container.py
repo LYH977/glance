@@ -17,12 +17,12 @@ root = tk.Tk()
 screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenheight()
 
-def render_container(create_clicks, param, ftype, tformat, dbname, now):
+def render_container(create_clicks, param, tformat, dbname, now):
     data = collection.temp.dropna()
     df_frame = data[FRAME].unique()
     maxValue = df_frame.shape[0] - 1
-    if(ftype != CAROUSEL):
-        return create_visualization(screen_height, screen_width, create_clicks, ftype, param, maxValue, df_frame, tformat, dbname, now)
+    if(param['vtype'] != CAROUSEL):
+        return create_visualization(screen_height, screen_width, create_clicks,  param, maxValue, df_frame, tformat, dbname, now)
     else:
         # print(collection.temp)
-        return create_carousel(screen_height, screen_width, create_clicks,  param, maxValue, df_frame, tformat, dbname)
+        return create_carousel(screen_height, screen_width, create_clicks,  param['parameter'], maxValue, df_frame, tformat, dbname)

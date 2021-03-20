@@ -158,9 +158,9 @@ def create_choropleth(data,parameter):
     configure_fig(fig)
     return fig
 
-def create_visualization(screen_height, screen_width, create_clicks, ftype, param, maxValue, df_frame, tformat,dbname, now):
+def create_visualization(screen_height, screen_width, create_clicks,  param, maxValue, df_frame, tformat,dbname, now):
     last_nano = get_last_timestamp(collection.temp[TIME])
-    figure = create_figure(collection.data[create_clicks], param, ftype)
+    figure = create_figure(collection.data[create_clicks], param['parameter'], param['vtype'])
     total_rows = len(collection.data[create_clicks].index)
     return html.Div(
         className='visualization-container',
@@ -172,7 +172,7 @@ def create_visualization(screen_height, screen_width, create_clicks, ftype, para
         children=html.Div([
             dcc.Store(id={'type': 'my-index', 'index': create_clicks}, data=create_clicks),
             dcc.Store(id={'type': 'is-animating', 'index': create_clicks}, data = False),
-            dcc.Store(id={'type': 'figure-type', 'index': create_clicks}, data = ftype),
+            # dcc.Store(id={'type': 'figure-type', 'index': create_clicks}, data = ftype),
             dcc.Store(id={'type': 'my_param', 'index': create_clicks}, data = param),
             dcc.Store(id={'type': 'back-buffer', 'index': create_clicks}, data = figure),
             dcc.Store(id={'type': 'frame-format', 'index': create_clicks}, data = tformat),
