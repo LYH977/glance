@@ -37,50 +37,6 @@ def handleOutOfRangeNotif(celery, slider):
         return True
 
 
-# update visualization container by appending or removing item from array
-# def register_update_visual_container(app):
-#     @app.callback(
-#          Output('visual-container', 'children') ,
-#         [ Input('create-visual', 'n_clicks'), Input({'type':'dlt-btn', 'index': ALL},'n_clicks') ],
-#         [ State('visual-container', 'children') , State('last-param', 'data'),  State('chosen-tformat', 'data')    ],
-#         prevent_initial_call=True)
-#     def update_visual_container(create_clicks, deletable, div_children, param, tformat):
-#         ctx = dash.callback_context
-#         if not ctx.triggered:
-#             input_type = 'No input yet'
-#         else:
-#             input_type = get_ctx_type(ctx)
-#             # input_type = get_ctx_type(ctx)
-#
-#         if input_type == 'create-visual': # input from add button
-#             collection.temp = collection.temp.dropna()
-#             collection.temp.reset_index(drop=True, inplace=True)
-#             collection.temp[FRAME] = collection.temp[TIME].map(lambda x: formatted_time_value(x, tformat))
-#             collection.data[create_clicks] = collection.temp
-#             collection.live_processing[create_clicks] = False
-#
-#             if param['vtype'] != CAROUSEL: #  carousel
-#                 temp = []
-#                 for row in collection.temp.index:
-#                     temp.append( create_ca_img(collection.temp.loc[row, param['parameter'][CAROUSEL_CONSTANT[ITEM]]]) )
-#                 collection.img_container[create] = temp
-#             else: # other than carousel
-#                 # task.process_dataset(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'])
-#                 result = task.process_dataset.delay(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'])
-#             new_child = container.render_container(create_clicks, param['parameter'], param['vtype'], tformat)
-#             div_children.append(new_child)
-#             visual_container.append(create_clicks)
-#             return div_children
-#
-#         else: # input from delete button
-#             print('visual_container:', visual_container)
-#             delete_index = get_ctx_index(ctx)
-#             temp = visual_container.index(delete_index)
-#             del div_children[temp]
-#             del visual_container[temp]
-#             return div_children
-
-
 #############################################################################################################################################
 
 
@@ -267,10 +223,6 @@ def register_update_live_mode(app):
         prevent_initial_call=True
     )
     def update_live_mode(live):
-        # if live is False:
-        #     now = datetime.now().timestamp()
-        # else:
-        #     now = dash.no_update
         return not live, live
 
 
@@ -331,8 +283,8 @@ def register_toggle_collapse(app):
     @app.callback(
         [
             Output({'type': 'last-notif-click', 'index': MATCH}, 'data'),
-            Output({'type': 'notif-collapse', 'index': MATCH}, 'is_open'),
-            Output({'type': 'visualization', 'index': MATCH}, 'style'),
+            Output({'type': 'is-slided-up', 'index': MATCH}, 'data'),
+            Output({'type': 'option-wrapper', 'index': MATCH}, 'style'),
 
         ],
         [
@@ -341,7 +293,7 @@ def register_toggle_collapse(app):
         ],
         [
             State({'type': 'last-notif-click', 'index': MATCH}, 'data'),
-            State({'type': 'notif-collapse', 'index': MATCH}, 'is_open')
+            State({'type': 'is-slided-up', 'index': MATCH}, 'data')
         ],
         prevent_initial_call=True
     )
@@ -352,20 +304,19 @@ def register_toggle_collapse(app):
         else:
             input_type = get_ctx_type(ctx)
         if input_type == f'{MAXIMUM}-notif' and max is not None or input_type == f'{MINIMUM}-notif' and min is not None:
-            if not is_open:
-                toggle = True
-                style = {'height': VISUAL_HEIGHT, 'transition': 'height 0.5s', 'overflow': 'hidden'}
+
+            toggle = False if input_type == state and is_open else True
+            # print('toggle', toggle)
+
+            if not toggle:
+                style = {'height': '15%'}
             else:
-                if state == input_type:
-                    toggle = False
-                    style = {'height': VISUAL_HEIGHT + COLLAPSE_HEIGHT, 'transition': 'height 0.5s',
-                             'overflow': 'hidden'}
-                else:
-                    toggle = style = dash.no_update
+                style = {'height': '40%'}
+
 
             return input_type, toggle, style
-        else:
-            raise PreventUpdate
+
+        raise PreventUpdate
 
 
 #############################################################################################################################################
@@ -501,7 +452,7 @@ def register_toggle_badge_color(app):
         ],
         [
             State({'type': 'last-notif-click', 'index': MATCH}, 'data'),
-            State({'type': 'notif-collapse', 'index': MATCH}, 'is_open')
+            State({'type': 'is-slided-up', 'index': MATCH}, 'data')
         ],
         prevent_initial_call=True
     )
@@ -511,17 +462,18 @@ def register_toggle_badge_color(app):
             input_type = 'No input yet'
         else:
             input_type = get_ctx_type(ctx)
+        type = input_type.split('-')[0]
         if input_type == f'{MAXIMUM}-notif' and max is not None or input_type == f'{MINIMUM}-notif' and min is not None:
             obj = {
                 MAXIMUM: 'light',
                 MINIMUM: 'light'
             }
-            type = input_type.split('-')[0]
+
             if input_type != state or (input_type == state and not is_open):
                 obj[type] = 'info'
-            return obj[MAXIMUM], obj[MINIMUM]
-        else:
-            raise PreventUpdate
+            return  obj[MAXIMUM], obj[MINIMUM]
+
+        raise PreventUpdate
 
 
 #############################################################################################################################################

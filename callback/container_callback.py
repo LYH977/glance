@@ -23,10 +23,10 @@ from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CAROUSEL, CHOROPLE
 # update visualization container by appending or removing item from array
 def register_update_visual_container(app):
     @app.callback(
-         Output('visual-container', 'children') ,
+         Output('visual-collection', 'children') ,
         [ Input('create-visual', 'n_clicks'), Input({'type':'dlt-btn', 'index': ALL},'n_clicks') ],
         [
-            State('visual-container', 'children') ,
+            State('visual-collection', 'children') ,
             State('last-param', 'data'),
             State('chosen-tformat', 'data'),
             State('chosen-dropdown', 'data')

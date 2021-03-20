@@ -24,3 +24,12 @@
     overflow: auto;
     white-space: pre;
 }
+
+.option-wrapper {
+    width: 100%;
+    bottom: 0;
+    transition: height 0.5s;
+    background:#46648c;
+    position:absolute;
+    z-index: 99
+}

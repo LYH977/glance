@@ -71,7 +71,8 @@ def snapshot_markup (filename):
             html.H6('Below are the first 5 rows.'),
             dash_table.DataTable(
                 data=collection.temp.head(5).to_dict('records'),
-                columns=[{'name': i, 'id': i} for i in collection.temp.columns]
+                columns=[{'name': i, 'id': i} for i in collection.temp.columns],
+
             ),
         ]
         , style={'overflow':'auto'}),

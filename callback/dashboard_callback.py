@@ -23,7 +23,7 @@ from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CAROUSEL, CHOROPLE
 def register_update_dashboard(app):
     @app.callback(
         Output('empty-scene', 'children'),
-        [Input('visual-container', 'children')],
+        [Input('visual-collection', 'children')],
         prevent_initial_call=True
     )
     def update_dashboard(children):

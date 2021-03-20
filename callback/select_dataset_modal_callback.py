@@ -39,28 +39,6 @@ def validate_create(data):
     # print(data['parameter'])
     return {'is_filled': is_filled, 'parameter': data['parameter']}
 
-#############################################################################################################################################
-
-# def parse_contents(contents, filename):
-#     # print('contents', contents)
-#     content_type, content_string = contents.split(',')
-#     decoded = base64.b64decode(content_string)
-#     try:
-#         if 'csv' in filename:
-#             # Assume that the user uploaded a CSV file
-#             collection.temp = pd.read_csv(
-#                 io.StringIO(decoded.decode('utf-8')))
-#         elif 'xls' in filename:
-#             # Assume that the user uploaded an data file
-#             collection.temp = pd.read_data(io.BytesIO(decoded))
-#     except Exception as e:
-#         print(e)
-#         return html.Div([
-#             'There was an error processing this file.'
-#         ])
-#     return dataset_portal_markup(filename)
-
-
 
 
 #############################################################################################################################################
