@@ -293,16 +293,16 @@ def collapse_markup(create_clicks, count):
 
         ),
         html.Div(
-            dbc.Card([
-                dbc.CardBody(
-                    "-",
-                    id={'type': 'notif-body', 'index': create_clicks},
-                    className='notif-body'
-                ),
-            ]),
-            id={'type': 'notif-collapse', 'index': create_clicks},
-            style={'display':'none'}
+            id={'type': 'notif-body-wrapper', 'index': create_clicks},
+            className='notif-body-wrapper',
+            style={'display': 'hidden', 'height': '0'  },
+            children=html.Div(
+                id={'type': 'notif-body', 'index': create_clicks},
+                className='notif-body',
+
         )
+        ),
+
     ])
 
 

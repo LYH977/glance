@@ -1,3 +1,7 @@
+*{
+    box-sizing: border-box;
+}
+
 .visualization-container {
     background: #46648c;
     display: inline-block;
@@ -18,12 +22,26 @@
     margin: 0 10px 0 0;
 
 }
+.notif-body-wrapper{
+    overflow: hidden;
+    background:white;
+    transition: height 0.5s ,display 0.5s, padding 1s;
+    margin-top: 10px;
+    border-radius : 10px;
+
+
+}
 
 .notif-body{
-    height: 150px;
-    overflow: auto;
     white-space: pre;
+    height : 100%;
+    width : 100%;
+    padding: 10px;
+    overflow: auto;
+
+
 }
+
 
 .option-wrapper {
     width: 100%;

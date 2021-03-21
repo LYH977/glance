@@ -36,6 +36,16 @@ def handleOutOfRangeNotif(celery, slider):
     if slider > length - 1:
         return True
 
+def assign_style (toggle):
+    if toggle:
+        ostyle = {'height': '40%'}
+        nstyle = {'display': 'block', 'height': '150px'}
+
+    else:
+        ostyle = {'height': '15%'}
+        nstyle = {'display': 'hidden', 'height': 0, }
+    return ostyle, nstyle
+
 
 #############################################################################################################################################
 
@@ -57,15 +67,6 @@ def register_update_figure(app):
         ],
         prevent_initial_call=True)
     def update_figure(value, param, atmax, live, new_fig):
-        # config = {
-        #     'displaylogo': False,
-        #     'responsive': False,
-        #     'autosizable': False,
-        #     'displayModeBar': False
-        # }
-        # print('responsive',responsive)
-        # print('config',config)
-        # print('layout',new_fig)
 
         fig2 = new_fig
         val = value
@@ -142,7 +143,6 @@ def register_update_playing_status(app):
             Output({'type': 'is-animating', 'index': MATCH}, 'data'),
             Output({'type': 'interval', 'index': MATCH}, 'n_intervals'),
             Output({'type': 'slider-label', 'index': MATCH}, 'children'),
-            # Output({'type': 'at-max', 'index': MATCH}, 'data')
         ],
         [
             Input({'type': 'play-btn', 'index': MATCH}, 'n_clicks'),
@@ -239,7 +239,6 @@ def register_update_live_data(app):
         [
             State({'type': 'last-timestamp', 'index': MATCH}, 'data'),
             State({'type': 'frame-format', 'index': MATCH}, 'data'),
-            # State({'type': 'figure-type', 'index': MATCH}, 'data'),
             State({'type': 'my_param', 'index': MATCH}, 'data'),
             State({'type': 'db-name', 'index': MATCH}, 'data'),
 
@@ -285,36 +284,35 @@ def register_toggle_collapse(app):
             Output({'type': 'last-notif-click', 'index': MATCH}, 'data'),
             Output({'type': 'is-slided-up', 'index': MATCH}, 'data'),
             Output({'type': 'option-wrapper', 'index': MATCH}, 'style'),
+            Output({'type': 'notif-body-wrapper', 'index': MATCH}, 'style'),
 
         ],
         [
+            Input({'type': 'celery-data', 'index': MATCH}, 'data'),
             Input({'type': f'{MAXIMUM}-notif', 'index': MATCH}, 'n_clicks'),
             Input({'type': f'{MINIMUM}-notif', 'index': MATCH}, 'n_clicks')
         ],
         [
             State({'type': 'last-notif-click', 'index': MATCH}, 'data'),
-            State({'type': 'is-slided-up', 'index': MATCH}, 'data')
+            State({'type': 'is-slided-up', 'index': MATCH}, 'data'),
+
         ],
         prevent_initial_call=True
     )
-    def toggle_collapse(max, min, state, is_open):
+    def toggle_collapse(celery, max, min, state, is_open):
         ctx = dash.callback_context
         if not ctx.triggered:
             input_type = 'No input yet'
         else:
             input_type = get_ctx_type(ctx)
+        if input_type == 'celery-data':
+            ostyle, nstyle = assign_style(is_open)
+            return dash.no_update, dash.no_update, ostyle, nstyle
+
         if input_type == f'{MAXIMUM}-notif' and max is not None or input_type == f'{MINIMUM}-notif' and min is not None:
-
             toggle = False if input_type == state and is_open else True
-            # print('toggle', toggle)
-
-            if not toggle:
-                style = {'height': '15%'}
-            else:
-                style = {'height': '40%'}
-
-
-            return input_type, toggle, style
+            ostyle, nstyle = assign_style(toggle)
+            return input_type, toggle, ostyle, nstyle
 
         raise PreventUpdate
 
@@ -351,8 +349,6 @@ def register_update_celery_data(app):
             input_index = get_ctx_index(ctx)
         if input_type == 'celery-interval':
             try:
-                # print('checking bro', now)
-
                 result = redis_instance.hget(index, now).decode("utf-8")
                 result = json.loads(result)
                 ctx = dash.callback_context
@@ -419,9 +415,6 @@ def register_update_notif_body(app):
             return notif, cdata[str(cvalue)][MAXIMUM]['count'], cdata[str(cvalue)][MINIMUM]['count']
 
         elif input_type == 'anim-slider' and cdata is not None:
-            # print('cdata',cdata)
-            # print('celery',celery)
-
             if handleOutOfRangeNotif(cdata, slider):
                 return 'Loading...', '-', '-'
             notif = cdata[str(slider)][type]['data'] if type != '' else ''
