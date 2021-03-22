@@ -58,23 +58,40 @@ df = pd.DataFrame(
 
 # task.update_data(df.to_dict())
 
-jj = pd.read_csv('C:/Users/FORGE-15/PycharmProjects/glance/datasets/test live.csv')
-fig = px.density_mapbox(
-        jj,
-        lat = 'Latitude',
-        lon = 'Longitude',
-        z = 'Magnitude',
-        radius = 10,
-        center = dict(lat = 0, lon = 180),
-        zoom = 0,
+data = pd.read_csv('C:/Users/FORGE-15/PycharmProjects/glance/datasets/time-series-19-covid-combined.csv')
+fig = px.scatter_mapbox(
+        data, lat = 'Lat',
+        lon = 'Long',
+        size = 'Confirmed', size_max = 50,
+        color = 'Deaths', color_continuous_scale = px.colors.sequential.Pinkyl,
+        hover_name = 'Country/Region',
+        mapbox_style = 'dark', zoom=1,
         animation_frame = 'Date',
-        mapbox_style = "dark")
+        # animation_group="Province/State",
+        # width=swidth ,
+        # hover_data=['Active', 'Confirmed']
+        # custom_data=['Date']
+    )
+# fig.layout.coloraxis.colorbar.bgcolor = 'rgba(255,255,255,0.7)'
+# fig.layout.coloraxis.colorbar.xanchor = 'right'
+# fig.layout.coloraxis.colorbar.xpad = 10
+# fig.layout.coloraxis.colorbar.x = 1
+fig.layout.coloraxis.colorbar.title.font.color = 'rgba(255,0,0,1)'
+fig.layout.coloraxis.colorbar.tickfont.color= 'rgba(255,0,0,1)'
+fig.layout.coloraxis.colorbar.len = 1
+fig.layout.coloraxis.colorbar.yanchor = 'bottom'
+
+# fig.layout.coloraxis.colorbar.bordercolor = '#333'
+
+
+# print(fig.layout.coloraxis)
+
 
 layout = dbc.Jumbotron(
     [
         dcc.Store(id='testing-js', data=fig),
         dcc.Store(id='testing-plot', data= fig),
-
+        dcc.Graph(figure = fig),
 
         html.Button('client', id='client-btn'),
         html.P(

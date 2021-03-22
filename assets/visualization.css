@@ -13,6 +13,7 @@
 
 .visualization {
     overflow : hidden;
+    height: 80%;
 }
 
 .collapse {

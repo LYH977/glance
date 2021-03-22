@@ -47,7 +47,19 @@ def configure_fig(fig):
     fig.layout.updatemenus[0].visible = False
     fig.layout.updatemenus[0].buttons[0].args[1]["frame"]["duration"] = 200
     fig.layout.updatemenus[0].buttons[0].args[1]["transition"]["duration"] = 200
-    fig.layout.coloraxis.showscale = False
+    # fig.layout.coloraxis.showscale = False
+
+    fig.layout.coloraxis.colorbar.len = 0.5
+    fig.layout.coloraxis.colorbar.yanchor = 'bottom'
+    # fig.layout.coloraxis.colorbar.xanchor = 'right'
+    fig.layout.coloraxis.colorbar.xpad = 10
+    fig.layout.coloraxis.colorbar.x =0
+    fig.layout.coloraxis.colorbar.thickness = 10
+
+    fig.layout.coloraxis.colorbar.bgcolor = 'rgba(0,0,0,0.5)'
+    fig.layout.coloraxis.colorbar.title.font.color = 'rgba(255,255,255,1)'
+    fig.layout.coloraxis.colorbar.tickfont.color = 'rgba(255,255,255,1)'
+
     fig.layout.margin.t = 0
     fig.layout.margin.b = 0
     fig.layout.margin.r = 0
@@ -219,12 +231,10 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
                 className='visualization',
                 id={'type': 'visualization', 'index': create_clicks},
                 figure = figure,
-                style={
-                    # 'height': VISUAL_HEIGHT + COLLAPSE_HEIGHT,
-                    'height': '80%',
-                    'transition':'height 0.5s',
-                    # 'overflow':'hidden'
-                       },
+                # style={
+                #     # 'height': VISUAL_HEIGHT + COLLAPSE_HEIGHT,
+                #     'height': '80%',
+                #        },
                 config={
                     # 'modeBarButtonsToRemove': ['pan2d','select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox','toggleHover','toImage'],
                     'displaylogo': False,
