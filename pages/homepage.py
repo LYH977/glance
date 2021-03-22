@@ -84,7 +84,8 @@ fig.layout.coloraxis.colorbar.yanchor = 'bottom'
 # fig.layout.coloraxis.colorbar.bordercolor = '#333'
 
 
-# print(fig.layout.coloraxis)
+# df = px.data.election()
+# df.to_csv('election.csv')
 
 
 layout = dbc.Jumbotron(

@@ -51,14 +51,19 @@ def configure_fig(fig):
 
     fig.layout.coloraxis.colorbar.len = 0.5
     fig.layout.coloraxis.colorbar.yanchor = 'bottom'
-    # fig.layout.coloraxis.colorbar.xanchor = 'right'
     fig.layout.coloraxis.colorbar.xpad = 10
     fig.layout.coloraxis.colorbar.x =0
     fig.layout.coloraxis.colorbar.thickness = 10
 
-    fig.layout.coloraxis.colorbar.bgcolor = 'rgba(0,0,0,0.5)'
-    fig.layout.coloraxis.colorbar.title.font.color = 'rgba(255,255,255,1)'
-    fig.layout.coloraxis.colorbar.tickfont.color = 'rgba(255,255,255,1)'
+    #dark theme legend
+    # fig.layout.coloraxis.colorbar.bgcolor = 'rgba(0,0,0,0.5)'
+    # fig.layout.coloraxis.colorbar.title.font.color = 'rgba(255,255,255,1)'
+    # fig.layout.coloraxis.colorbar.tickfont.color = 'rgba(255,255,255,1)'
+
+    #white theme legend
+    fig.layout.coloraxis.colorbar.bgcolor = 'rgba(255,255,255,0.5)'
+    fig.layout.coloraxis.colorbar.title.font.color = 'rgba(0,0,0,1)'
+    fig.layout.coloraxis.colorbar.tickfont.color = 'rgba(0,0,0,1)'
 
     fig.layout.margin.t = 0
     fig.layout.margin.b = 0
