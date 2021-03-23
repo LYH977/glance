@@ -67,6 +67,7 @@ fig = px.scatter_mapbox(
         hover_name = 'Country/Region',
         mapbox_style = 'dark', zoom=1,
         animation_frame = 'Date',
+    title='testing'
         # animation_group="Province/State",
         # width=swidth ,
         # hover_data=['Active', 'Confirmed']
@@ -92,7 +93,13 @@ layout = dbc.Jumbotron(
     [
         dcc.Store(id='testing-js', data=fig),
         dcc.Store(id='testing-plot', data= fig),
-        dcc.Graph(figure = fig),
+        dcc.Graph(figure = fig,config={
+                    # 'modeBarButtonsToRemove': ['pan2d','select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox','toggleHover','toImage'],
+                    # 'displaylogo': False,
+                    # 'responsive': False,
+                    'editable': True,
+                    # 'displayModeBar': False
+                }),
 
         html.Button('client', id='client-btn'),
         html.P(

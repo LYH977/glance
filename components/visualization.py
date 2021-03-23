@@ -70,6 +70,8 @@ def configure_fig(fig):
     fig.layout.margin.r = 0
     fig.layout.margin.l = 0
     fig.layout.updatemenus[0].showactive = True
+
+    fig['layout']['uirevision'] = 1
     # fig.layout.autosize = False
 
 def convert_to_float(data, parameter, list):
@@ -223,6 +225,21 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
             ),
             dbc.Row([
                 dbc.Col(html.Label(create_clicks)),
+                # dbc.Input(
+                #     id={'type': 'input', 'index': create_clicks},
+                #     type="text",
+                #     value=f'Visualization {create_clicks}',
+                #     minLength =2,
+                #     maxLength= 20
+                # ),
+                dcc.Input(
+                    id={'type': 'input', 'index': create_clicks},
+                    type="text",
+                    value=f'Visualization {create_clicks}',
+                    maxLength=20,
+                    autoFocus= False,
+                    autoComplete= False
+                ),
                 dbc.Col(daq.BooleanSwitch(
                     id={'type': 'live-mode', 'index': create_clicks},
                     on=False,
@@ -244,7 +261,6 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
                     # 'modeBarButtonsToRemove': ['pan2d','select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox','toggleHover','toImage'],
                     'displaylogo': False,
                     # 'responsive': False,
-                    # 'autosizable': False,
                     'displayModeBar': False
                 }
             ),

@@ -9,22 +9,13 @@ import json
 import pandas as pd
 import numpy as np
 
-
 from utils.constant import FRAME, TIME, NOTIFICATION_PARAM, TAG, FIELD, SCATTER_MAP, SCATTER_GEO, SCATTER_MAP_CONSTANT, \
     NAME, LATITUDE, LONGITUDE, MAXIMUM, SCATTER_GEO_CONSTANT, MINIMUM, BAR_CHART_RACE, DENSITY, BAR_CHART_RACE_CONSTANT, \
     ITEM, DENSITY_CONSTANT, CHOROPLETH, CHOROPLETH_CONSTANT, LOCATIONS
 
 app = Celery("Celery App", broker='redis://localhost:6379' ,backend='redis://localhost:6379')
 redis_instance = redis.StrictRedis.from_url('redis://localhost:6379')
-# redis_instance = redis.StrictRedis(db=0)
 
-# pport = 'redis-12571.c1.ap-southeast-1-1.ec2.cloud.redislabs.com:12571'
-# redis_instance = redis.StrictRedis(
-#     host=pport,
-#     port=12571,
-#     password='EGXMBmAkHnhFTLYKGAUEGPdYwf0cZpDC'
-# )
-# app = Celery("Celery App", broker=12571 ,backend=12571)
 
 
 REDIS_HASH_NAME = os.environ.get("DASH_APP_NAME", "app-data")
@@ -35,9 +26,10 @@ REDIS_KEYS = {
 }
 
 def parse_number(value):
-    # print(type(value))
     if value.is_integer():
         return int(value)
+    else:
+        return value
 
 def extract_extrema(vtype,  ma, df, parameter, col, type):
     msg=''
