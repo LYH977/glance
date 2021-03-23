@@ -16,7 +16,20 @@
     height: 80%;
 }
 
-.collapse {
+.visual-title  {
+    background: #46648c;
+    color: white;
+    border: 1px solid transparent;
+    border-radius: 5px;
+}
+
+.visual-title:hover  {
+     filter: brightness(110%);
+}
+.visual-title:focus  {
+    border: 1px inset ;
+    filter: brightness(110%);
+
 }
 
 .notif-badge {
@@ -52,3 +65,4 @@
     position:absolute;
     z-index: 99
 }
+

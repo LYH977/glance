@@ -34,7 +34,7 @@ def parse_number(value):
 def extract_extrema(vtype,  ma, df, parameter, col, type):
     msg=''
     if vtype ==  SCATTER_MAP:
-        msg = "{type} '{column}': {field}, by {name} ({lat},{long})".format(
+        msg = "{type} *{column}* : **{field}**, by `{name}({lat},{long})`".format(
             type = type,
             name=df.loc[ma, parameter[SCATTER_MAP_CONSTANT[NAME]]],
             lat=df.loc[ma, parameter[SCATTER_MAP_CONSTANT[LATITUDE]]],
@@ -43,7 +43,7 @@ def extract_extrema(vtype,  ma, df, parameter, col, type):
             field=parse_number(df.loc[ma, col]),
         )
     elif vtype ==  SCATTER_GEO:
-        msg = "{type} '{column}': {field}, by {name} ({lat},{long})".format(
+        msg = "{type} *{column}* : **{field}**, by `{name}({lat},{long})`".format(
             type=type,
             name=df.loc[ma, parameter[SCATTER_GEO_CONSTANT[NAME]]],
             lat=df.loc[ma, parameter[SCATTER_GEO_CONSTANT[LATITUDE]]],
@@ -52,14 +52,14 @@ def extract_extrema(vtype,  ma, df, parameter, col, type):
             field=parse_number(df.loc[ma, col]),
         )
     elif vtype == BAR_CHART_RACE:
-        msg = "{type} '{column}': {field} by {item}".format(
+        msg = "{type} *{column}* : **{field}** by `{item}`".format(
             type=type,
             column=col,
             field=parse_number(df.loc[ma, col]),
             item=df.loc[ma, parameter[BAR_CHART_RACE_CONSTANT[ITEM]]],
         )
     elif vtype == DENSITY:
-        msg = "{type} '{column}': {field}, by ({lat},{long})".format(
+        msg = "{type} *{column}* : **{field}**, by `({lat},{long})`".format(
             type=type,
             lat=df.loc[ma, parameter[DENSITY_CONSTANT[LATITUDE]]],
             long=df.loc[ma, parameter[DENSITY_CONSTANT[LONGITUDE]]],
@@ -68,7 +68,7 @@ def extract_extrema(vtype,  ma, df, parameter, col, type):
         )
 
     elif vtype == CHOROPLETH:
-        msg = "{type} '{column}': {field}, by {name}({location})".format(
+        msg = "{type} *{column}* : **{field}**, by `{name}({location})`".format(
             type=type,
             name=df.loc[ma, parameter[CHOROPLETH_CONSTANT[NAME]]],
             location=df.loc[ma, parameter[CHOROPLETH_CONSTANT[LOCATIONS]]],
@@ -135,7 +135,8 @@ def process_dataset(create_click, dataframe, vtype, parameter, now):
             condition = True
             for col in tags:
                 condition = condition & (dataframe[col] == tag_df.loc[i, col])
-            target_df = dataframe[condition]
+            target_df = dataframe[condition]  # sort out dataframe by country
+            print(target_df)
 
             for col in fields:  # Confirmed, Deaths
                 column = target_df[col]
@@ -165,7 +166,7 @@ def process_dataset(create_click, dataframe, vtype, parameter, now):
                 for f in fields:
                     for msg in obj[k][e]['temp'][f]:
                         obj[k][e]['count'] += 1
-                        obj[k][e]['data'] += msg + '\n'
+                        obj[k][e]['data'] += msg +'\n'
                 obj[k][e].pop('temp', None)
 
     print('done obj')
@@ -174,40 +175,6 @@ def process_dataset(create_click, dataframe, vtype, parameter, now):
     # redis_instance.hset(REDIS_HASH_NAME, 'new', obj  )
     redis_instance.hset( create_click, now, obj)
 
-    #
-    # @app.task
-    # def update_data():
-    #     print("----> update_data")
-    #     # Create a dataframe with sample data
-    #     # In practice, this function might be making calls to databases,
-    #     # performing computations, etc
-    #     N = 100
-    #     df = pd.DataFrame(
-    #         {
-    #             "time": [
-    #                 datetime.datetime.now() - datetime.timedelta(seconds=i)
-    #                 for i in range(N)
-    #             ],
-    #             "value": np.random.randn(N),
-    #         }
-    #     )
-    #
-    #     # Save the dataframe in redis so that the Dash app, running on a separate
-    #     # process, can read it
-    #     redis_instance.hset(
-    #         REDIS_HASH_NAME,
-    #         REDIS_KEYS["DATASET"],
-    #         json.dumps(
-    #             df.to_dict(),
-    #             # This JSON Encoder will handle things like numpy arrays
-    #             # and datetimes
-    #             cls=plotly.utils.PlotlyJSONEncoder,
-    #         ),
-    #     )
-    #     # Save the timestamp that the dataframe was updated
-    #     redis_instance.hset(
-    #         REDIS_HASH_NAME, REDIS_KEYS["DATE_UPDATED"], str(datetime.datetime.now())
-    #     )
 
 
 @app.task
@@ -224,21 +191,7 @@ def update_data(test):
         }
     )
 
-
-    # redis_instance.hset(
-    #     REDIS_HASH_NAME,
-    #     # REDIS_KEYS["DATASET"],
-    #     'last',
-    #     json.dumps(
-    #         df.to_dict(),
-    #         cls=plotly.utils.PlotlyJSONEncoder,
-    #     ),
-    # )
     redis_instance.set( 'new', json.dumps(
             df.to_dict(),
             cls=plotly.utils.PlotlyJSONEncoder,
         )  )
-    # redis_instance.set('new', '100')
-    # redis_instance.hset(
-    #     REDIS_HASH_NAME, REDIS_KEYS["DATE_UPDATED"], str(datetime.datetime.now())
-    # )

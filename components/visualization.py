@@ -225,20 +225,15 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
             ),
             dbc.Row([
                 dbc.Col(html.Label(create_clicks)),
-                # dbc.Input(
-                #     id={'type': 'input', 'index': create_clicks},
-                #     type="text",
-                #     value=f'Visualization {create_clicks}',
-                #     minLength =2,
-                #     maxLength= 20
-                # ),
                 dcc.Input(
-                    id={'type': 'input', 'index': create_clicks},
+                    id={'type': 'visual-title', 'index': create_clicks},
                     type="text",
                     value=f'Visualization {create_clicks}',
-                    maxLength=20,
+                    maxLength=18,
                     autoFocus= False,
-                    autoComplete= False
+                    autoComplete= 'off',
+                    size='13',
+                    className='visual-title'
                 ),
                 dbc.Col(daq.BooleanSwitch(
                     id={'type': 'live-mode', 'index': create_clicks},
@@ -247,7 +242,9 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
                 )),
                 dbc.Col(html.Button('Delete', id={'type': 'dlt-btn', 'index': create_clicks})),
 
-            ]),
+            ],
+                # style={'padding':'10px'}
+            ),
             dcc.Graph(
                 # responsive= False,
                 className='visualization',
@@ -327,7 +324,7 @@ def collapse_markup(create_clicks, count):
             id={'type': 'notif-body-wrapper', 'index': create_clicks},
             className='notif-body-wrapper',
             style={'display': 'hidden', 'height': '0'  },
-            children=html.Div(
+            children=dcc.Markdown(
                 id={'type': 'notif-body', 'index': create_clicks},
                 className='notif-body',
 
