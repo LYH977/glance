@@ -4,6 +4,8 @@ import os
 import plotly
 import redis
 from time import sleep
+from operator import itemgetter
+
 from celery import Celery
 import json
 import pandas as pd
@@ -32,50 +34,62 @@ def parse_number(value):
         return value
 
 def extract_extrema(vtype,  ma, df, parameter, col, type):
-    msg=''
+    msg = ''
+    field = 0
+    name = ''
     if vtype ==  SCATTER_MAP:
+        field = parse_number(df.loc[ma, col])
+        name = df.loc[ma, parameter[SCATTER_MAP_CONSTANT[NAME]]]
         msg = "{type} *{column}* : **{field}**, by `{name}({lat},{long})`".format(
             type = type,
-            name=df.loc[ma, parameter[SCATTER_MAP_CONSTANT[NAME]]],
-            lat=df.loc[ma, parameter[SCATTER_MAP_CONSTANT[LATITUDE]]],
-            long=df.loc[ma, parameter[SCATTER_MAP_CONSTANT[LONGITUDE]]],
-            column=col,
-            field=parse_number(df.loc[ma, col]),
+            name = name,
+            lat = df.loc[ma, parameter[SCATTER_MAP_CONSTANT[LATITUDE]]],
+            long = df.loc[ma, parameter[SCATTER_MAP_CONSTANT[LONGITUDE]]],
+            column = col,
+            field = field
         )
+
     elif vtype ==  SCATTER_GEO:
+        field = parse_number(df.loc[ma, col])
+        name = df.loc[ma, parameter[SCATTER_GEO_CONSTANT[NAME]]]
         msg = "{type} *{column}* : **{field}**, by `{name}({lat},{long})`".format(
-            type=type,
-            name=df.loc[ma, parameter[SCATTER_GEO_CONSTANT[NAME]]],
-            lat=df.loc[ma, parameter[SCATTER_GEO_CONSTANT[LATITUDE]]],
-            long=df.loc[ma, parameter[SCATTER_GEO_CONSTANT[LONGITUDE]]],
-            column=col,
-            field=parse_number(df.loc[ma, col]),
+            type = type,
+            name = name,
+            lat = df.loc[ma, parameter[SCATTER_GEO_CONSTANT[LATITUDE]]],
+            long = df.loc[ma, parameter[SCATTER_GEO_CONSTANT[LONGITUDE]]],
+            column = col,
+            field = field,
         )
     elif vtype == BAR_CHART_RACE:
+        field = parse_number(df.loc[ma, col])
+        name = df.loc[ma, parameter[BAR_CHART_RACE_CONSTANT[ITEM]]]
         msg = "{type} *{column}* : **{field}** by `{item}`".format(
-            type=type,
-            column=col,
-            field=parse_number(df.loc[ma, col]),
-            item=df.loc[ma, parameter[BAR_CHART_RACE_CONSTANT[ITEM]]],
+            type = type,
+            column = col,
+            field = field,
+            item = name,
         )
     elif vtype == DENSITY:
+        field = parse_number(df.loc[ma, col])
         msg = "{type} *{column}* : **{field}**, by `({lat},{long})`".format(
-            type=type,
-            lat=df.loc[ma, parameter[DENSITY_CONSTANT[LATITUDE]]],
-            long=df.loc[ma, parameter[DENSITY_CONSTANT[LONGITUDE]]],
-            column=col,
-            field=parse_number(df.loc[ma, col]),
+            type = type,
+            lat = df.loc[ma, parameter[DENSITY_CONSTANT[LATITUDE]]],
+            long = df.loc[ma, parameter[DENSITY_CONSTANT[LONGITUDE]]],
+            column = col,
+            field = field,
         )
 
     elif vtype == CHOROPLETH:
+        field = parse_number(df.loc[ma, col])
+        name = df.loc[ma, parameter[CHOROPLETH_CONSTANT[NAME]]]
         msg = "{type} *{column}* : **{field}**, by `{name}({location})`".format(
-            type=type,
-            name=df.loc[ma, parameter[CHOROPLETH_CONSTANT[NAME]]],
-            location=df.loc[ma, parameter[CHOROPLETH_CONSTANT[LOCATIONS]]],
-            column=col,
-            field=parse_number(df.loc[ma, col]),
+            type = type,
+            name = name,
+            location = df.loc[ma, parameter[CHOROPLETH_CONSTANT[LOCATIONS]]],
+            column = col,
+            field = field
         )
-    return msg
+    return {'msg':msg, 'field':field, 'name':name}
 
 
 
@@ -136,7 +150,7 @@ def process_dataset(create_click, dataframe, vtype, parameter, now):
             for col in tags:
                 condition = condition & (dataframe[col] == tag_df.loc[i, col])
             target_df = dataframe[condition]  # sort out dataframe by country
-            print(target_df)
+            # print(target_df)
 
             for col in fields:  # Confirmed, Deaths
                 column = target_df[col]
@@ -147,26 +161,30 @@ def process_dataset(create_click, dataframe, vtype, parameter, now):
                     # find max
                     max_list = target_df.index[target_df[col] == max_value].tolist()
                     for ma in max_list:
-                        msg = extract_extrema(vtype,  ma, target_df, parameter, col, MAXIMUM)
+                        obj_data = extract_extrema(vtype,  ma, target_df, parameter, col, MAXIMUM)
                         frame = target_df.loc[ma, FRAME]
                         index=frames.index(frame)
-                        obj[index][MAXIMUM]['temp'][col].append(msg)
+                        obj[index][MAXIMUM]['temp'][col].append(obj_data)
 
 
                     # find min
                     min_list = target_df.index[target_df[col] == min_value].tolist()
                     for mi in min_list:
-                        msg = extract_extrema(vtype,  mi, target_df, parameter, col, MINIMUM)
+                        obj_data = extract_extrema(vtype,  mi, target_df, parameter, col, MINIMUM)
                         frame = target_df.loc[mi, FRAME]
                         index = frames.index(frame)
-                        obj[index][MINIMUM]['temp'][col].append(msg)
+                        obj[index][MINIMUM]['temp'][col].append(obj_data)
     # print(obj)
         for k in obj.keys(): # index
             for e in extract: # MAX, MIN
                 for f in fields:
-                    for msg in obj[k][e]['temp'][f]:
+                    target = obj[k][e]['temp'][f]
+                    target = sorted(target, key=itemgetter('name'))
+                    target = sorted(target, key=itemgetter('field'),reverse = True)
+                    for msg in target:
                         obj[k][e]['count'] += 1
-                        obj[k][e]['data'] += msg +'\n'
+                        obj[k][e]['data'] += msg['msg'] +'\n'
+                    obj[k][e]['data'] += '\n'+'------------------------------------------------'+'\n'
                 obj[k][e].pop('temp', None)
 
     print('done obj')

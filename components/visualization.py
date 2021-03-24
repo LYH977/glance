@@ -224,7 +224,7 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
                 n_intervals=0,
             ),
             dbc.Row([
-                dbc.Col(html.Label(create_clicks)),
+                # dbc.Col(html.Label(create_clicks)),
                 dcc.Input(
                     id={'type': 'visual-title', 'index': create_clicks},
                     type="text",
@@ -240,7 +240,31 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
                     on=False,
                     color="#9B51E0"
                 )),
-                dbc.Col(html.Button('Delete', id={'type': 'dlt-btn', 'index': create_clicks})),
+                dbc.Col(dbc.Button('Delete', id = {'type': 'dlt-btn', 'index': create_clicks}, color="danger", className="mr-1")),
+                dbc.Col(dbc.Button('Setting', id= f'setting-btn-{create_clicks}' ) ),
+                dbc.Popover(
+                    [
+                        dbc.PopoverHeader("Setting"),
+                        dbc.PopoverBody(
+                            html.Div([
+                                dbc.Row([
+                                    dbc.Col(html.Div("Legend Theme")),
+                                    dbc.Col(daq.BooleanSwitch(
+                                        id={'type': 'legend-style', 'index': create_clicks},
+                                        on=False,
+                                        color="#000000",
+                                        label = 'light'
+                                    )),
+
+                                ])
+                            ])
+                        ),
+                    ],
+                    id = "focus",
+                    target = f'setting-btn-{create_clicks}',
+                    trigger="legacy",
+                    style={'width': 300}
+                ),
 
             ],
                 # style={'padding':'10px'}
@@ -250,10 +274,6 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
                 className='visualization',
                 id={'type': 'visualization', 'index': create_clicks},
                 figure = figure,
-                # style={
-                #     # 'height': VISUAL_HEIGHT + COLLAPSE_HEIGHT,
-                #     'height': '80%',
-                #        },
                 config={
                     # 'modeBarButtonsToRemove': ['pan2d','select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox','toggleHover','toImage'],
                     'displaylogo': False,
