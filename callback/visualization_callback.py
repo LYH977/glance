@@ -53,11 +53,11 @@ def assign_style (toggle):
 # update  figure according to slider
 def register_update_figure(app):
     @app.callback(
-        # [
         Output({'type': 'visualization', 'index': MATCH}, 'figure'),
-        #     Output({'type': 'visualization', 'index': MATCH}, 'responsive'),
-        # ],
-        Input({'type': 'anim-slider', 'index': MATCH}, 'value'),
+        [
+            Input({'type': 'anim-slider', 'index': MATCH}, 'value'),
+            Input({'type': 'legend-theme', 'index': MATCH}, 'on'),
+        ],
         [
             State({'type': 'my_param', 'index': MATCH}, 'data'),
             State({'type': 'at-max', 'index': MATCH}, 'data'),
@@ -66,16 +66,36 @@ def register_update_figure(app):
 
         ],
         prevent_initial_call=True)
-    def update_figure(value, param, atmax, live, new_fig):
-
-        fig2 = new_fig
-        val = value
-        if live and atmax:
-            new_max = len(new_fig['frames'])
-            val = new_max - 1
-        change_frame(param['vtype'], new_fig, val)
-        return fig2
-
+    def update_figure(value,legend, param, atmax, live, new_fig):
+        ctx = dash.callback_context
+        input_index = None
+        if not ctx.triggered:
+            input_type = 'No input yet'
+        else:
+            input_type = get_ctx_type(ctx)
+            input_index = get_ctx_index(ctx)
+        # fig2 = new_fig
+        if input_type == 'anim-slider':
+            fig2 = new_fig
+            val = value
+            if live and atmax:
+                new_max = len(new_fig['frames'])
+                val = new_max - 1
+            change_frame(param['vtype'], new_fig, val)
+            return fig2
+        elif input_type == 'legend-theme':
+            fig2 = new_fig
+            if legend : #dark theme
+                fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(0,0,0,0.5)'
+                fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(255,255,255,1)'
+                fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(255,255,255,1)'
+            else: # light theme
+                fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(255,255,255,0.5)'
+                fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(0,0,0,1)'
+                fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
+            return fig2
+        else:
+            raise PreventUpdate
 
 ############################################################################################################################################## update slider according to interval
 def register_update_slider(app):
@@ -516,4 +536,17 @@ def register_update_last_celery_key(app):
         raise PreventUpdate
 
 
-#############################################################################################################################################
+# ############################################################################################################################################
+
+# # update live interval according to live switch
+# def register_update_legend_theme(app):
+#     @app.callback(
+#         [
+#             Output({'type': 'live-interval', 'index': MATCH}, 'disabled'),
+#             Output({'type': 'play-btn', 'index': MATCH}, 'disabled'),
+#         ],
+#         [Input({'type': 'live-mode', 'index': MATCH}, 'on')],
+#         prevent_initial_call=True
+#     )
+#     def update_live_mode(live):
+#         return not live, live

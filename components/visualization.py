@@ -248,12 +248,12 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
                         dbc.PopoverBody(
                             html.Div([
                                 dbc.Row([
-                                    dbc.Col(html.Div("Legend Theme")),
+                                    # dbc.Col(html.Div("Legend Theme")),
                                     dbc.Col(daq.BooleanSwitch(
-                                        id={'type': 'legend-style', 'index': create_clicks},
+                                        id={'type': 'legend-theme', 'index': create_clicks},
                                         on=False,
                                         color="#000000",
-                                        label = 'light'
+                                        label = 'Legend Theme'
                                     )),
 
                                 ])
