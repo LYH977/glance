@@ -91,6 +91,8 @@ fig.layout.coloraxis.colorbar.yanchor = 'bottom'
 
 layout = dbc.Jumbotron(
     [
+        # html.Span(id='submit-button', n_clicks=0, className='fa fa-send'),
+
         dcc.Store(id='testing-js', data=fig),
         dcc.Store(id='testing-plot', data= fig),
         dcc.Graph(figure = fig,config={

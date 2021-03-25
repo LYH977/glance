@@ -29,10 +29,15 @@ from callback.upload_modal_callback import register_update_preview, register_upd
     register_update_form_complete, register_handle_upload_click, register_clear_dropdown, \
     register_update_datetime_value, register_update_upload_modal, register_clear_upload_content
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True, update_title=None,
-                meta_tags=[{'name': 'viewport',
-                            'content': 'width=device-width, initial-scale=1.0'}]
-                )
+app = dash.Dash(
+    __name__,
+    external_stylesheets=[dbc.themes.BOOTSTRAP, 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'],
+    suppress_callback_exceptions=True,
+    update_title=None,
+    meta_tags=[{'name': 'viewport', 'content': 'width=device-width, initial-scale=1.0'}]
+)
+# app.css.append_css({'external_url': 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'})
+
 # select_dataset_modal_callback
 register_update_after_upload(app)
 register_enable_create_btn(app)

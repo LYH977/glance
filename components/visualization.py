@@ -177,6 +177,7 @@ def create_choropleth(data,parameter):
     configure_fig(fig)
     return fig
 
+
 def create_visualization(screen_height, screen_width, create_clicks,  param, maxValue, df_frame, tformat,dbname, now):
     last_nano = get_last_timestamp(collection.temp[TIME])
     figure = create_figure(collection.data[create_clicks], param['parameter'], param['vtype'])
@@ -263,7 +264,7 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
                     id = "focus",
                     target = f'setting-btn-{create_clicks}',
                     trigger="legacy",
-                    style={'width': 300}
+                    # style={'width': 300}
                 ),
 
             ],

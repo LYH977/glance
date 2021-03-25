@@ -81,7 +81,7 @@ def register_update_figure(app):
             if live and atmax:
                 new_max = len(new_fig['frames'])
                 val = new_max - 1
-            change_frame(param['vtype'], new_fig, val)
+            change_frame(param['vtype'], fig2, val)
             return fig2
         elif input_type == 'legend-theme':
             fig2 = new_fig
@@ -93,6 +93,7 @@ def register_update_figure(app):
                 fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(255,255,255,0.5)'
                 fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(0,0,0,1)'
                 fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
+            change_frame(param['vtype'], fig2, value)
             return fig2
         else:
             raise PreventUpdate
@@ -255,17 +256,22 @@ def register_update_live_data(app):
             Output({'type': 'last-timestamp', 'index': MATCH}, 'data'),
             Output({'type': 'back-buffer', 'index': MATCH}, 'data'),
         ],
-        [Input({'type': 'live-interval', 'index': MATCH}, 'n_intervals')],
+        [
+            Input({'type': 'live-interval', 'index': MATCH}, 'n_intervals'),
+            Input({'type': 'legend-theme', 'index': MATCH}, 'on'),
+
+        ],
         [
             State({'type': 'last-timestamp', 'index': MATCH}, 'data'),
             State({'type': 'frame-format', 'index': MATCH}, 'data'),
             State({'type': 'my_param', 'index': MATCH}, 'data'),
             State({'type': 'db-name', 'index': MATCH}, 'data'),
+            State({'type': 'back-buffer', 'index': MATCH}, 'data'),
 
         ],
         prevent_initial_call=True
     )
-    def update_live_data(live, ts, format,  param, dbname):
+    def update_live_data(live, legend, ts, format,  param, dbname, buffer):
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
@@ -274,25 +280,39 @@ def register_update_live_data(app):
             input_type = get_ctx_type(ctx)
             input_index = get_ctx_index(ctx)
         # print(datetime.now(),' collection.live_processing', collection.live_processing)
-        if collection.live_processing[input_index] is True:
-            raise PreventUpdate
-        else:
-            collection.live_processing[input_index] = True
-            result = select_query(dbname, ' where time >{}'.format(ts))
-
-            if result is not None:
-                result[TIME] = result.index.map(lambda x: str(x).split('+')[0])
-                result[FRAME] = result[TIME].map(lambda x: formatted_time_value(x, format))
-                # result.reset_index(drop=True, inplace=True)
-                last_nano = get_last_timestamp(result[TIME])
-                collection.data[input_index] = collection.data[input_index].append(result, ignore_index=True)
-                fig = create_figure(collection.data[input_index], param['parameter'], param['vtype'])
-                # print('last_nano',last_nano)
-                return last_nano, fig
-
-            else:
-                collection.live_processing[input_index] = False
+        if input_type =='live-interval':
+            if collection.live_processing[input_index] is True:
                 raise PreventUpdate
+            else:
+                collection.live_processing[input_index] = True
+                result = select_query(dbname, ' where time >{}'.format(ts))
+
+                if result is not None:
+                    result[TIME] = result.index.map(lambda x: str(x).split('+')[0])
+                    result[FRAME] = result[TIME].map(lambda x: formatted_time_value(x, format))
+                    # result.reset_index(drop=True, inplace=True)
+                    last_nano = get_last_timestamp(result[TIME])
+                    collection.data[input_index] = collection.data[input_index].append(result, ignore_index=True)
+                    fig = create_figure(collection.data[input_index], param['parameter'], param['vtype'])
+                    # print('last_nano',last_nano)
+                    return last_nano, fig
+
+                else:
+                    collection.live_processing[input_index] = False
+                    raise PreventUpdate
+        elif input_type == 'legend-theme':
+            fig2 = buffer
+            if legend : #dark theme
+                fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(0,0,0,0.5)'
+                fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(255,255,255,1)'
+                fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(255,255,255,1)'
+            else: # light theme
+                fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(255,255,255,0.5)'
+                fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(0,0,0,1)'
+                fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
+            return dash.no_update,fig2
+
+        raise PreventUpdate
 
 
 #############################################################################################################################################
