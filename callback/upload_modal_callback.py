@@ -109,7 +109,7 @@ def register_update_datetime_filled(app):
                   prevent_initial_call=True
     )
     def update_datetime_filled(format, name, sformat, sname):
-        return True if sformat is True and len(sname) > 0  else False
+        return True if sformat is True and sname is not None and len(sname) > 0  else False
 
 
 #############################################################################################################################################
@@ -178,27 +178,37 @@ def register_clear_dropdown(app):
 
 def register_clear_upload_content(app):
     @app.callback(Output('upload-dataset', 'contents'),
-                  Input('cancel-upload', 'n_clicks'),
+                  [Input('confirm-upload', 'n_clicks'), Input('cancel-upload', 'n_clicks')],
                   prevent_initial_call=True
     )
-    def clear_upload_upload_content(content):
+    def clear_upload_upload_content(confirm, cancel):
         return None
 #############################################################################################################################################
 
 def register_update_upload_modal(app):
     @app.callback(Output('upload-modal', 'is_open'),
-              [Input('upload-button', 'n_clicks'), Input('cancel-upload', 'n_clicks')],
+              [
+                  Input('upload-button', 'n_clicks'),
+                  Input('confirm-upload', 'n_clicks'),
+                  Input('cancel-upload', 'n_clicks'),
+              ],
               State('upload-modal', 'is_open'),
               prevent_initial_call = True)
-    def update_output(open, close, is_open):
+    def update_output(open, confirm, close, is_open):
         return not is_open
 #############################################################################################################################################
 
 def register_handle_upload_click(app):
-    @app.callback(Output('upload-toast', 'children'),
-                  Input('confirm-upload', 'n_clicks'),
-                  [State('datetime-value', 'data'), State('dt-input', 'value'), State('name-input', 'value'), State('dt-tags', 'value')],
-                  prevent_initial_call=True
+    @app.callback([
+        Output('my-toast', 'children'),
+        Output('my-toast', 'is_open'),
+        Output('my-toast', 'icon'),
+        Output('my-toast', 'header'),
+
+    ],
+       Input('confirm-upload', 'n_clicks'),
+       [State('datetime-value', 'data'), State('dt-input', 'value'), State('name-input', 'value'), State('dt-tags', 'value')],
+       prevent_initial_call=True
     )
     def update_handle_upload_click(click, dt, input, name, tags):
         dataset = collection.temp
@@ -234,4 +244,14 @@ def register_handle_upload_click(app):
         # dataset.index = pd.to_datetime(dataset.index)
         # print(dataset)
         # client.write_points(dataset, name, tag_columns=tags, protocol= 'line', numeric_precision= 'full')
-        return 1
+        msg = f'{name} is successfully added.'
+        header = 'SUCCESS'
+        return msg, True, 'success', header
+#############################################################################################################################################
+
+def register_update_dt_input_validity(app):
+    @app.callback([Output('dt-input', 'valid'), Output('dt-input', 'invalid')],
+                  Input('dt-format', 'data'),
+                  prevent_initial_call = True)
+    def update_dt_input_validity(valid):
+        return valid, not valid

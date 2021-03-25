@@ -21,7 +21,8 @@ modal = html.Div(
     [
         # dbc.Button("Select File", id="open"),
         html.Button(
-            html.P('+',className='add_btn' ),
+            # html.P('+',className='add_btn' ),
+            html.I(className="fa fa-plus fa-lg"),
             id="open",
             className='floating_area'
         ),

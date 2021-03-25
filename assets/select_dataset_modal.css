@@ -11,7 +11,7 @@
     right:100px;
     bottom:100px;
     position:fixed;
-    background-color:red;
+    background-color: rgb(222,0,0);
     border: none;
     color: white;
     text-align: center;
@@ -19,29 +19,20 @@
     cursor: pointer;
     box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12);
     z-index: 999;
+
 }
 
-.floating_area:hover {
-  background-color:blue;
-}
+
 
 .floating_area:focus {
   outline : none;
 }
 
 
-.add_btn {
-    width:20px;
-    height:20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding:0 ;
-    margin: 0 0 5px 0;
-    border: none;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    font-size: 40px;
-    font-weight: bold;
+.floating_area:hover {
+  background-color: rgb(255,0,0);
+
 }
+
+
+

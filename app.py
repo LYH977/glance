@@ -27,7 +27,8 @@ from callback.visualization_callback import \
 from callback.upload_modal_callback import register_update_preview, register_update_datetime_modifier, \
     register_update_datetime_filled, register_update_datetime_upload_btn, register_update_datetime_format, \
     register_update_form_complete, register_handle_upload_click, register_clear_dropdown, \
-    register_update_datetime_value, register_update_upload_modal, register_clear_upload_content
+    register_update_datetime_value, register_update_upload_modal, register_clear_upload_content, \
+    register_update_dt_input_validity
 
 app = dash.Dash(
     __name__,
@@ -89,6 +90,7 @@ register_clear_dropdown(app)
 register_update_datetime_value(app)
 register_update_upload_modal(app)
 register_clear_upload_content(app)
+register_update_dt_input_validity(app)
 
 
 #  dashboard callback
