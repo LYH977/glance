@@ -5,10 +5,12 @@
 .visualization-container {
     background: #46648c;
     display: inline-block;
-    padding: 20px;
+    padding: 10px 20px;
     margin: 20px;
     position:relative;
     border-radius : 10px;
+    transition: 1s;
+
 }
 
 .visualization {
@@ -39,12 +41,13 @@
 .notif-body-wrapper{
     overflow: hidden;
     background:white;
-    transition: height 0.5s ,display 0.5s, padding 1s;
+    transition: height 0.5s; /*,display 0.5s, padding 1s;*/
     margin-top: 10px;
     border-radius : 10px;
-
+    height:0;
 
 }
+
 
 .notif-body{
     white-space: pre;
@@ -70,4 +73,11 @@
 
 
 
+
+.flex {
+    display : flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
 

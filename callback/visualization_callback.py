@@ -39,11 +39,15 @@ def handleOutOfRangeNotif(celery, slider):
 def assign_style (toggle):
     if toggle:
         ostyle = {'height': '40%'}
-        nstyle = {'display': 'block', 'height': '150px'}
+        nstyle = {
+            # 'display': 'block',
+            'height': '150px'}
 
     else:
         ostyle = {'height': '15%'}
-        nstyle = {'display': 'hidden', 'height': 0, }
+        nstyle = {
+            # 'display': 'hidden',
+            'height': 0, }
     return ostyle, nstyle
 
 

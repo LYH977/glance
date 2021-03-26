@@ -82,7 +82,7 @@ def register_update_visual_container(app):
                 'icon': 'success',
                 'header': 'SUCCESS'
             }
-            return div_children
+            return div_children, toast
         raise PreventUpdate
 
 
