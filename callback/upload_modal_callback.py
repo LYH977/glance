@@ -199,13 +199,8 @@ def register_update_upload_modal(app):
 #############################################################################################################################################
 
 def register_handle_upload_click(app):
-    @app.callback([
-        Output('my-toast', 'children'),
-        Output('my-toast', 'is_open'),
-        Output('my-toast', 'icon'),
-        Output('my-toast', 'header'),
-
-    ],
+    @app.callback(
+       Output('upload-toast', 'data'),
        Input('confirm-upload', 'n_clicks'),
        [State('datetime-value', 'data'), State('dt-input', 'value'), State('name-input', 'value'), State('dt-tags', 'value')],
        prevent_initial_call=True
@@ -237,16 +232,14 @@ def register_handle_upload_click(app):
                 "time": dataset.loc[count, dt],
                 "fields" : field_obj
             })
-        # print(json_body)
         new_client.write_points(json_body, time_precision='ms')
-
-        # dataset.set_index(dt, inplace= True)
-        # dataset.index = pd.to_datetime(dataset.index)
-        # print(dataset)
-        # client.write_points(dataset, name, tag_columns=tags, protocol= 'line', numeric_precision= 'full')
-        msg = f'{name} is successfully added.'
-        header = 'SUCCESS'
-        return msg, True, 'success', header
+        toast = {
+            'children' : f'{name} is successfully added.',
+            'is_open' : True,
+            'icon' : 'success',
+            'header' : 'SUCCESS'
+        }
+        return toast
 #############################################################################################################################################
 
 def register_update_dt_input_validity(app):

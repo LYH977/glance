@@ -23,7 +23,10 @@ from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CAROUSEL, CHOROPLE
 # update visualization container by appending or removing item from array
 def register_update_visual_container(app):
     @app.callback(
-         Output('visual-collection', 'children') ,
+        [
+            Output('visual-collection', 'children'),
+            Output('dashboard-toast', 'data')
+        ],
         [ Input('create-visual', 'n_clicks'), Input({'type':'dlt-btn', 'index': ALL},'n_clicks') ],
         [
             State('visual-collection', 'children') ,
@@ -40,7 +43,7 @@ def register_update_visual_container(app):
         else:
             input_type = get_ctx_type(ctx)
 
-        if input_type == 'create-visual': # input from add button
+        if create_clicks and input_type == 'create-visual': # input from add button
             collection.temp = collection.temp.dropna()
             collection.temp.reset_index(drop=True, inplace=True)
             collection.temp[FRAME] = collection.temp[TIME].map(lambda x: formatted_time_value(x, tformat))
@@ -53,21 +56,34 @@ def register_update_visual_container(app):
                     temp.append( create_ca_img(collection.temp.loc[row, param['parameter'][CAROUSEL_CONSTANT[ITEM]]]) )
                 collection.img_container[create_clicks] = temp
             else: # other than carousel
-                # result = task.process_dataset.delay(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'], now)
-                task.process_dataset(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'], now)
+                result = task.process_dataset.delay(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'], now)
+                # task.process_dataset(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'], now)
 
             new_child = container.render_container(create_clicks, param, tformat, dbname, now)
             div_children.append(new_child)
             visual_container.append(create_clicks)
-            return div_children
+            toast = {
+                'children': f"Visualization {create_clicks} is successfully created.",
+                'is_open': True,
+                'icon': 'success',
+                'header': 'SUCCESS'
+            }
+            return div_children, toast
 
-        else: # input from delete button
+        elif deletable and input_type=='dlt-btn' : # input from delete button
             print('visual_container:', visual_container)
             delete_index = get_ctx_index(ctx)
             temp = visual_container.index(delete_index)
             del div_children[temp]
             del visual_container[temp]
+            toast = {
+                'children': f"Visualization {create_clicks} is successfully deleted.",
+                'is_open': True,
+                'icon': 'success',
+                'header': 'SUCCESS'
+            }
             return div_children
+        raise PreventUpdate
 
 
 #############################################################################################################################################

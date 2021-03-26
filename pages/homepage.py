@@ -162,7 +162,7 @@ layout = dbc.Jumbotron(
               Input('testcelery', 'n_clicks'))
 def update_output(click):
     if click is not None:
-        # lala = redis_instance.get( "new" )
+        # lala = redis_instance.hset( "new" )
         lala = redis_instance.get('new').decode("utf-8")
         print('see here:',lala)
 

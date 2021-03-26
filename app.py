@@ -14,6 +14,7 @@ from callback.select_dataset_modal_callback import \
     register_update_output_form, register_validate_sm_create, register_validate_sg_create, register_validate_bc_create, \
     register_validate_d_create, register_validate_ch_create, register_validate_ca_create, register_update_dt_dropdown, \
     register_update_chosen_dropdown, register_update_chosen_tformat
+from callback.toast_callback import register_update_toast
 
 from callback.visualization_callback import \
     register_update_figure, \
@@ -26,9 +27,9 @@ from callback.visualization_callback import \
 # meta_tags are required for the app layout to be mobile responsive
 from callback.upload_modal_callback import register_update_preview, register_update_datetime_modifier, \
     register_update_datetime_filled, register_update_datetime_upload_btn, register_update_datetime_format, \
-    register_update_form_complete, register_handle_upload_click, register_clear_dropdown, \
+    register_update_form_complete, register_clear_dropdown, \
     register_update_datetime_value, register_update_upload_modal, register_clear_upload_content, \
-    register_update_dt_input_validity
+    register_update_dt_input_validity, register_handle_upload_click
 
 app = dash.Dash(
     __name__,
@@ -85,18 +86,20 @@ register_update_datetime_filled(app)
 register_update_datetime_upload_btn(app)
 register_update_datetime_format(app)
 register_update_form_complete(app)
-register_handle_upload_click(app)
 register_clear_dropdown(app)
 register_update_datetime_value(app)
 register_update_upload_modal(app)
 register_clear_upload_content(app)
 register_update_dt_input_validity(app)
-
+register_handle_upload_click(app)
 
 #  dashboard callback
 register_update_dashboard(app)
 
 #  container callback
 register_update_visual_container(app)
+
+#  toast callback
+register_update_toast(app)
 
 server = app.server

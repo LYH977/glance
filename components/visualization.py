@@ -225,17 +225,23 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
                 n_intervals=0,
             ),
             dbc.Row([
-                # dbc.Col(html.Label(create_clicks)),
-                dcc.Input(
-                    id={'type': 'visual-title', 'index': create_clicks},
-                    type="text",
-                    value=f'Visualization {create_clicks}',
-                    maxLength=18,
-                    autoFocus= False,
-                    autoComplete= 'off',
-                    size='13',
-                    className='visual-title'
+                dbc.Col(
+                    dbc.Row([
+                        dbc.Col(dbc.Badge(create_clicks, pill=True, color="primary", className="mr-1")),
+                        dbc.Col(dcc.Input(
+                            id={'type': 'visual-title', 'index': create_clicks},
+                            type="text",
+                            value=f'Visualization {create_clicks}',
+                            maxLength=18,
+                            autoFocus=False,
+                            autoComplete='off',
+                            size='13',
+                            className='visual-title'
+                        ) )
+                        ,
+                    ])
                 ),
+
                 dbc.Col(daq.BooleanSwitch(
                     id={'type': 'live-mode', 'index': create_clicks},
                     on=False,

@@ -20,12 +20,11 @@ redis_instance = redis.StrictRedis.from_url('redis://localhost:6379')
 
 
 
-REDIS_HASH_NAME = os.environ.get("DASH_APP_NAME", "app-data")
-# print(REDIS_HASH_NAME)
-REDIS_KEYS = {
-    "DATASET": "DATASET",
-    "DATE_UPDATED": "DATE_UPDATED"
-}
+# REDIS_HASH_NAME = os.environ.get("DASH_APP_NAME", "app-data")
+# REDIS_KEYS = {
+#     "DATASET": "DATASET",
+#     "DATE_UPDATED": "DATE_UPDATED"
+# }
 
 def parse_number(value):
     if value.is_integer():
@@ -190,8 +189,7 @@ def process_dataset(create_click, dataframe, vtype, parameter, now):
     print('done obj')
     obj = json.dumps(obj, cls=plotly.utils.PlotlyJSONEncoder)
     # print(obj)
-    # redis_instance.hset(REDIS_HASH_NAME, 'new', obj  )
-    redis_instance.hset( create_click, now, obj)
+    redis_instance.set( f'{create_click}-{now}', obj, 30)
 
 
 

@@ -389,7 +389,8 @@ def register_update_celery_data(app):
             input_index = get_ctx_index(ctx)
         if input_type == 'celery-interval':
             try:
-                result = redis_instance.hget(index, now).decode("utf-8")
+                print(f'checking {index}-{now}')
+                result = redis_instance.get(f'{index}-{now}').decode("utf-8")
                 result = json.loads(result)
                 ctx = dash.callback_context
                 input_index = get_ctx_index(ctx)
@@ -399,6 +400,7 @@ def register_update_celery_data(app):
                     MINIMUM: result[str(slider)][MINIMUM]['count'],
                 }
                 # print('done bro', now)
+                print(f'done {index}-{now}')
 
                 return result, True, collapse_markup(input_index, count)
             except Exception as e:
