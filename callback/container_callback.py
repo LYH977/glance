@@ -68,16 +68,26 @@ def register_update_visual_container(app):
                 'icon': 'success',
                 'header': 'SUCCESS'
             }
+            test = str(div_children[0]).split("'type': 'my-index', 'index':")[1].split('}')[0]
+            print(type(test) )
+
             return div_children, toast
 
         elif deletable and input_type=='dlt-btn' : # input from delete button
-            print('visual_container:', visual_container)
+            # print('visual_container:', visual_container)
             delete_index = get_ctx_index(ctx)
-            temp = visual_container.index(delete_index)
-            del div_children[temp]
-            del visual_container[temp]
+            # temp = visual_container.index(delete_index)
+            # del div_children[temp]
+            # del visual_container[temp]
+            for vs, i in zip(div_children, range(len(div_children))):
+                index = int(str(vs).split("'type': 'my-index', 'index': ")[1].split('}')[0])
+                if delete_index == index:
+                    print('i',i)
+                    div_children.pop(i)
+                    break
+
             toast = {
-                'children': f"Visualization {create_clicks} is successfully deleted.",
+                'children': f"Visualization {delete_index} is successfully deleted.",
                 'is_open': True,
                 'icon': 'success',
                 'header': 'SUCCESS'
@@ -86,4 +96,3 @@ def register_update_visual_container(app):
         raise PreventUpdate
 
 
-#############################################################################################################################################

@@ -111,7 +111,7 @@ toast = html.Div(
 )
 
 layout = dbc.Jumbotron(
-    [toast,
+    [   toast,
         # html.Span(id='submit-button', n_clicks=0, className='fa fa-send'),
 
         # dcc.Store(id='testing-js', data=fig),
@@ -123,7 +123,42 @@ layout = dbc.Jumbotron(
         #             'editable': True,
         #             # 'displayModeBar': False
         #         }),
-
+        # dbc.DropdownMenu(
+        #     label=html.I(
+        #                 className="fa fa-cog fa-lg",
+        #                 id= f'setting-btn-{create_clicks}',
+        #                 n_clicks=0,
+        #                 style = {'color': 'white', 'cursor':'pointer'}
+        #             ),
+        #     children=[
+        #         dbc.DropdownMenuItem(
+        #             daq.BooleanSwitch(
+        #                 id={'type': 'legend-theme', 'index': create_clicks},
+        #                 on=False,
+        #                 color="#000000",
+        #                 label='Legend Theme'
+        #             ),
+        #             header = True
+        #         ),
+        #         dbc.DropdownMenuItem(
+        #             daq.BooleanSwitch(
+        #                 id={'type': 'live-mode', 'index': create_clicks},
+        #                 on=False,
+        #                 color="#9B51E0",
+        #                 label=f'Live Mode {create_clicks}'
+        #
+        #             )
+        #             ,
+        #             header = True
+        #         ),
+        #         dbc.DropdownMenuItem(
+        #             dbc.Button('Delete', id={'type': 'dlt-btn', 'index': create_clicks},
+        #                        color="danger", className="mr-1")
+        #             ,
+        #             header = True
+        #         ),
+        #     ],
+        # ),
         html.Button('client', id='client-btn'),
         html.P(
             "initial\n1",

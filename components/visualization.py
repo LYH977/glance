@@ -192,7 +192,6 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
         children=html.Div([
             dcc.Store(id={'type': 'my-index', 'index': create_clicks}, data=create_clicks),
             dcc.Store(id={'type': 'is-animating', 'index': create_clicks}, data = False),
-            # dcc.Store(id={'type': 'figure-type', 'index': create_clicks}, data = ftype),
             dcc.Store(id={'type': 'my_param', 'index': create_clicks}, data = param),
             dcc.Store(id={'type': 'back-buffer', 'index': create_clicks}, data = figure),
             dcc.Store(id={'type': 'frame-format', 'index': create_clicks}, data = tformat),
@@ -242,14 +241,42 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
                     ], className= 'flex'),  width = 'auto'
                 ),
                 dbc.Col(
-                    html.I(
-                        className="fa fa-cog fa-lg",
-                        id= f'setting-btn-{create_clicks}',
-                        n_clicks=0,
-                        style = {'color': 'white', 'cursor':'pointer'}
-                    )
+                    dbc.DropdownMenu(
+                        label='setting',
+                        children=[
+                            dbc.DropdownMenuItem(
+                                daq.BooleanSwitch(
+                                    id={'type': 'legend-theme', 'index': create_clicks},
+                                    on=False,
+                                    color="#000000",
+                                    label='Legend Theme'
+                                ),
+                                header=True
+                            ),
+                            dbc.DropdownMenuItem(
+                                daq.BooleanSwitch(
+                                    id={'type': 'live-mode', 'index': create_clicks},
+                                    on=False,
+                                    color="#9B51E0",
+                                    label=f'Live Mode {create_clicks}'
 
-                    ,
+                                ),
+                                header=True
+                            ),
+                            dbc.DropdownMenuItem(
+                                dbc.Button('Delete', id={'type': 'dlt-btn', 'index': create_clicks},
+                                           color="danger", className="mr-1")
+                                ,
+                                header=True
+                            ),
+                        ],
+                    ),
+                    # html.I(
+                    #     className="fa fa-cog fa-lg",
+                    #     id=f'setting-btn-{create_clicks}',
+                    #     n_clicks=0,
+                    #     style={'color': 'white', 'cursor': 'pointer'}
+                    # ),
                     width = 'auto'
                 ),
             ],
@@ -257,38 +284,37 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
                 align= 'center',
                 # className= 'top-wrapper'
             ),
-            dbc.Popover(
-                [
-                    dbc.PopoverHeader("Setting"),
-                    dbc.PopoverBody(
-                        html.Div([
-                            dbc.Row([
-                                # dbc.Col(html.Div("Legend Theme")),
-                                dbc.Col(daq.BooleanSwitch(
-                                    id={'type': 'legend-theme', 'index': create_clicks},
-                                    on=False,
-                                    color="#000000",
-                                    label='Legend Theme'
-                                )),
-                                dbc.Col(daq.BooleanSwitch(
-                                    id={'type': 'live-mode', 'index': create_clicks},
-                                    on=False,
-                                    color="#9B51E0",
-                                    label=f'Live Mode {create_clicks}'
-
-                                )),
-                                dbc.Col(dbc.Button('Delete', id={'type': 'dlt-btn', 'index': create_clicks},
-                                                   color="danger", className="mr-1")),
-
-                            ])
-                        ])
-                    ),
-                ],
-                id="focus",
-                target=f'setting-btn-{create_clicks}',
-                trigger="legacy",
-                # style={'width': 300}
-            ),
+            # dbc.Popover(
+            #     [
+            #         dbc.PopoverHeader("Setting"),
+            #         dbc.PopoverBody(
+            #             html.Div([
+            #                 dbc.Row([
+            #                     dbc.Col(daq.BooleanSwitch(
+            #                         id={'type': 'legend-theme', 'index': create_clicks},
+            #                         on=False,
+            #                         color="#000000",
+            #                         label='Legend Theme'
+            #                     )),
+            #                     dbc.Col(daq.BooleanSwitch(
+            #                         id={'type': 'live-mode', 'index': create_clicks},
+            #                         on=False,
+            #                         color="#9B51E0",
+            #                         label=f'Live Mode {create_clicks}'
+            #
+            #                     )),
+            #                     dbc.Col(dbc.Button('Delete', id={'type': 'dlt-btn', 'index': create_clicks},
+            #                                        color="danger", className="mr-1")),
+            #
+            #                 ])
+            #             ])
+            #         ),
+            #     ],
+            #     id="focus",
+            #     target=f'setting-btn-{create_clicks}',
+            #     trigger="legacy",
+            #     # style={'width': 300}
+            # ),
             dcc.Graph(
                 # responsive= False,
                 className='visualization',
@@ -386,3 +412,6 @@ def notif_badge_markup(id, number, create_clicks):
         width='auto',
         className= 'notif-badge'
     )
+
+
+
