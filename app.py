@@ -4,7 +4,7 @@ import dash_bootstrap_components as dbc
 from callback.carousel_callback import register_display_image, register_ca_update_slider, register_update_ca_play_btn, \
     register_update_ca_playing_status, register_update_ca_live_mode, register_ca_update_atmax, \
     register_ca_update_live_data
-from callback.container_callback import register_update_visual_container
+from callback.container_callback import register_update_visual_container, test
 from callback.dashboard_callback import register_update_dashboard
 
 from callback.select_dataset_modal_callback import \
@@ -102,7 +102,7 @@ register_update_visual_container(app)
 #  toast callback
 register_update_toast(app)
 
-
+test(app)
 
 
 server = app.server

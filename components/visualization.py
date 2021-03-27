@@ -183,11 +183,11 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
     figure = create_figure(collection.data[create_clicks], param['parameter'], param['vtype'])
     total_rows = len(collection.data[create_clicks].index)
     return html.Div(
+        id={'type': 'visualization-container', 'index': create_clicks},
         className='visualization-container',
         style={
             'height': screen_height* 0.72,
             'width': screen_width/2.2,
-            'position': 'relative',
                },
         children=html.Div([
             dcc.Store(id={'type': 'my-index', 'index': create_clicks}, data=create_clicks),
@@ -237,9 +237,9 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
                             size='13',
                             className='visual-title'
                         ) ,
-
                     ], className= 'flex'),  width = 'auto'
                 ),
+                html.Button('hide', id={'type': 'hide-btn', 'index': create_clicks},),
                 dbc.Col(
                     dbc.DropdownMenu(
                         label='setting',

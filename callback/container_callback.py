@@ -7,6 +7,7 @@ import dash_html_components as html
 import dash_daq as daq
 from dash.dependencies import Input, Output, ALL, State, MATCH, ALLSMALLER
 from dash.exceptions import PreventUpdate
+import time
 
 import task
 from components import visualization, select_dataset_modal, container
@@ -27,7 +28,12 @@ def register_update_visual_container(app):
             Output('visual-collection', 'children'),
             Output('dashboard-toast', 'data')
         ],
-        [ Input('create-visual', 'n_clicks'), Input({'type':'dlt-btn', 'index': ALL},'n_clicks') ],
+        [
+            Input('create-visual', 'n_clicks'),
+            # Input({'type':'dlt-btn', 'index': ALL},'n_clicks'),
+            Input({'type': 'visualization-container', 'index': ALL}, 'style'),
+
+        ],
         [
             State('visual-collection', 'children') ,
             State('last-param', 'data'),
@@ -35,7 +41,7 @@ def register_update_visual_container(app):
             State('chosen-dropdown', 'data')
         ],
         prevent_initial_call=True)
-    def update_visual_container(create_clicks, deletable, div_children, param, tformat, dbname):
+    def update_visual_container(create_clicks,  style, div_children, param, tformat, dbname):
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
@@ -68,31 +74,67 @@ def register_update_visual_container(app):
                 'icon': 'success',
                 'header': 'SUCCESS'
             }
-            test = str(div_children[0]).split("'type': 'my-index', 'index':")[1].split('}')[0]
-            print(type(test) )
+            # test = str(div_children[0]).split("'type': 'my-index', 'index':")[1].split('}')[0]
+            # print(type(test) )
 
             return div_children, toast
 
-        elif deletable and input_type=='dlt-btn' : # input from delete button
-            # print('visual_container:', visual_container)
+        # elif deletable and input_type=='dlt-btn' : # input from delete button
+        #     print(ctx.triggered[0])
+        #     delete_index = get_ctx_index(ctx)
+        #     # temp = visual_container.index(delete_index)
+        #     # del div_children[temp]
+        #     # del visual_container[temp]
+        #     for vs, i in zip(div_children, range(len(div_children))):
+        #         index = int(str(vs).split("'type': 'my-index', 'index': ")[1].split('}')[0])
+        #         if delete_index == index:
+        #             print('i',i)
+        #             div_children.pop(i)
+        #             break
+        #     toast = {
+        #         'children': f"Visualization {delete_index} is successfully deleted.",
+        #         'is_open': True,
+        #         'icon': 'success',
+        #         'header': 'SUCCESS'
+        #     }
+        #     return div_children, toast
+        elif input_type=='visualization-container' : # input from delete button
             delete_index = get_ctx_index(ctx)
             # temp = visual_container.index(delete_index)
             # del div_children[temp]
             # del visual_container[temp]
+            time.sleep(1.0)
             for vs, i in zip(div_children, range(len(div_children))):
-                index = int(str(vs).split("'type': 'my-index', 'index': ")[1].split('}')[0])
+                index = int(str(vs).split("'type': 'my-index', 'index':")[1].split('}')[0])
                 if delete_index == index:
-                    print('i',i)
                     div_children.pop(i)
                     break
-
             toast = {
                 'children': f"Visualization {delete_index} is successfully deleted.",
                 'is_open': True,
-                'icon': 'success',
+                'icon': 'info',
                 'header': 'SUCCESS'
             }
             return div_children, toast
         raise PreventUpdate
 
 
+#############################################################################################################################################
+
+# update play button label according to playing status
+
+def test(app):
+    @app.callback(
+        Output({'type': 'visualization-container', 'index': MATCH}, 'style'),
+        [Input({'type': 'dlt-btn', 'index': MATCH}, 'n_clicks')],
+        State({'type': 'visualization-container', 'index': MATCH}, 'style'),
+
+        prevent_initial_call=True
+    )
+    def update_play_btn(click, style):
+        if click is not None:
+            news = style
+            news['opacity'] = 0
+            news['transform'] = 'scale(0,0)'
+            return news
+        raise PreventUpdate

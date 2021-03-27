@@ -14,7 +14,8 @@ def create_carousel(screen_height, screen_width, create_clicks, param, maxValue,
     last_nano = get_last_timestamp(collection.temp[TIME])
 
     return html.Div(
-        className='carousel',
+        className='visualization-container ',
+        id={'type': 'visualization-container', 'index': create_clicks},
 
         style={
             'height': screen_height* 0.72,
@@ -22,6 +23,8 @@ def create_carousel(screen_height, screen_width, create_clicks, param, maxValue,
                # 'width': '500px',
                },
         children=html.Div([
+            dcc.Store(id={'type': 'my-index', 'index': create_clicks}, data=create_clicks),
+
             dcc.Store(id={'type': 'ca-is-animating', 'index': create_clicks}, data = False),
             # dcc.Store(id='ca-uuid', data = create_clicks),
             dcc.Store(id={'type': 'ca-my_param', 'index': create_clicks}, data=param),

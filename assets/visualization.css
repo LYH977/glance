@@ -9,7 +9,8 @@
     margin: 20px;
     position:relative;
     border-radius : 10px;
-    transition: 1s;
+    overflow: hidden;
+    transition: opacity 1.1s, transform 1.1s;
 
 }
 

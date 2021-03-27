@@ -9,7 +9,7 @@ layout = html.Div([
             header="Positioned toast",
             is_open=False,
             dismissable=True,
-            duration = 5000,
+            duration = 2500,
             icon="danger",
             style={"position": "fixed", "top": 10, "right": 10, "width": 350, 'z-index': 100, 'background': 'white'},
         ),
