@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 from database.dbConfig import client
 import pandas as pd
+import numexpr as ne
 
 from utils import collection
 from utils.constant import FIGURE_PARAM, STANDARD_T_FORMAT, FRAME
@@ -22,6 +23,12 @@ def select_query (measurement,  where=''):
     q = "select * from " + measurement + where
     result = client.query(q, epoch='ns')
     if measurement in result:
+        # print(result)
+        # test = pd.DataFrame(result[measurement])
+        # eq = "Latitude - Magnitude"
+        # test['Latitude'] = pd.to_numeric(test["Latitude"])
+        # see = test.eval(eq)
+        # print(see)
         return pd.DataFrame(result[measurement])
     else:
         return None

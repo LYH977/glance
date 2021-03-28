@@ -4,6 +4,8 @@ import dash_html_components as html
 from dash.dependencies import Input, Output, State
 import dash_table
 import dash
+import numexpr as ne
+import numpy as np
 from dash.exceptions import PreventUpdate
 
 from components.carousel import create_ca_img
@@ -63,13 +65,20 @@ def register_update_after_upload(app):
             input_type = ctx.triggered[0]['prop_id'].split('.')[0]
         if input_type == 'chosen-dropdown':
             if measurement is not None:
-                # q = "select * from " + measurement
-                # result = client.query(q, epoch='ns')
-                # result = select_query(measurement)
                 collection.temp = select_query(measurement)
-                # print(collection.temp)
                 if collection.temp is not None:
                     collection.temp['time'] = collection.temp.index.map(lambda x: str(x).split('+')[0])
+
+                    # eq = "A + B "
+                    # A = collection.temp['Latitude']
+                    # B = collection.temp['Longitude']
+                    # ne.evaluate(eq)
+
+                    # df = pd.DataFrame({"A": [1, 2], "B": [3, 4]})
+                    # eq = 'A +B'
+                    # print(df.eval(eq))
+
+                    # print(float(collection.temp['Latitude']) + float(collection.temp['Longitude']))
 
                 return dataset_portal_markup(measurement)
 
@@ -338,3 +347,16 @@ def register_update_chosen_tformat(app):
     )
     def update_chosen_tformat (value):
         return value
+#############################################################################################################################################
+
+#
+# def register_toggle_custom_column_collapse(app):
+#     @app.callback(
+#         Output("collapse", "is_open"),
+#         [Input("collapse-button", "n_clicks")],
+#         [State("collapse", "is_open")],
+#     )
+#     def toggle_custom_column_collapse(n, is_open):
+#         if n:
+#             return not is_open
+#         return is_open

@@ -57,6 +57,7 @@ modal = html.Div(
 
 def dataset_portal_markup(filename):
     return html.Div([
+
         html.Div(id='data-snapshot',children=snapshot_markup(filename)),
         html.Div(id='output-form'),
     ])
@@ -75,6 +76,43 @@ def snapshot_markup (filename):
                 columns=[{'name': i, 'id': i} for i in collection.temp.columns],
 
             ),
+            html.Div([
+                dbc.Button(
+                    "Open collapse",
+                    id="click-target",
+                    className="mb-3",
+                    color="primary",
+                ),
+                dbc.Popover(
+                    [
+                        dbc.PopoverHeader([
+                            "Column Name: ",
+                            dcc.Input(
+                                id='new-column',
+                                type="text",
+                                value='',
+                                maxLength=10,
+                                # autoFocus=False,
+                                # autoComplete='off',
+                                size='13',
+
+                            )
+                        ]),
+                        dbc.PopoverBody([
+                            dbc.Textarea(className="mb-3", placeholder="A Textarea",id='new-column'),
+                            dbc.Button(
+                                "Confirm",
+                                id="confirm-new-col",
+                                className="mb-3",
+                                color="primary",
+                            ),
+                        ]),
+                    ],
+                    id="click",
+                    target="click-target",
+                    trigger="click",
+                ),
+            ]),
         ]
         , style={'overflow':'auto'}),
 

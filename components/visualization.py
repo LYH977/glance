@@ -76,7 +76,8 @@ def configure_fig(fig):
 
 def convert_to_float(data, parameter, list):
     for i in list:
-        data[parameter[i]] = data[parameter[i]].astype(float)
+        # data[parameter[i]] = data[parameter[i]].astype(float)
+        data[parameter[i]] = pd.to_numeric(data[parameter[i]])
 
 
 def create_scattermap(data, parameter):
