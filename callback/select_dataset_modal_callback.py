@@ -352,12 +352,37 @@ def register_update_chosen_tformat(app):
 
 def testnew(app):
     @app.callback(
-        Output("click-target", "children"),
-        # [Input("confirm-new-col", "n_clicks")],
-        Input("new-column2", "value"),
+        Output("equation", "children"),
+        [
+            Input("new-column-name", "value"),
+            Input('operator-0', "value"),
+            Input('operator-1', "value"),
+            Input('operator-2', "value"),
+            Input('operand-0', "value"),
+            Input('operand-1', "value"),
+            Input('operand-2', "value"),
+        ],
         prevent_initial_call=True
 
     )
-    def toggle_custom_sfsd(value):
-        print(value)
-        return value
+    def toggle_custom_sfsd(name, op1, op2, op3, or1, or2, or3):
+        ctx = dash.callback_context
+        if not ctx.triggered:
+            input_type = 'No input yet'
+        else:
+            input_type = get_ctx_type(ctx)
+
+        eq = name if name is not '' else 'Equation'
+
+        operator1 = op1 if op1 is '-' else ''
+        operand1 = or1 if or1 is not None else ''
+
+        operator2 = op2 if op2 is not None else ''
+        operand2 = or2 if or2 is not None else ''
+
+        operator3 = op3 if op3 is not None else ''
+        operand3 = or3 if or3 is not None else ''
+
+        return f'{eq} = {operator1}{operand1} {operator2} {operand2} {operator3} {operand3}'
+
+

@@ -85,59 +85,52 @@ def snapshot_markup (filename):
                 ),
                 dbc.Popover(
                     [
-                        dbc.PopoverHeader([
-                            "Column Name: ",
-                            dcc.Input(
-                                id='new-column',
-                                type="text",
-                                value='12',
-                                maxLength=10,
-                                # autoFocus=False,
-                                # autoComplete='off',
-                                size='13',
-                            ),
-                            # dbc.Select(
-                            #     style={'width': '100%'},
-                            #     id='new-column2',
-                            #     options=[{"label": i, "value": i} for i in ['reiner', 'eren', 'zeke']],
-                            # )
-                        ]),
-                        dbc.PopoverBody([
-                            html.Div([
-                                html.Div([
-                                    dbc.Select(
-                                        className='operator',
-                                        id='operator',
-                                        options=[{"label": i, "value": i} for i in ['+', '-', '×', '÷']],
-                                    ),
-                                    dbc.Select(
-                                        className='operand',
-                                        id='operand',
-                                        options=[{"label": i, "value": i} for i in ['reiner', 'eren', 'zeke']],
-                                    )
-                                ], className='expression-box' )
-                            ], className='expression-wrapper' ),
-                            html.Div( '1',className = 'equation-window' ),
-                            html.Div([
-                                dbc.Button(
-                                    "Confirm",
-                                    id="confirm-new-col",
-                                    className="mb-3",
-                                    color="primary",
+                        dbc.PopoverHeader(
+                            [
+                                "Column Name: ",
+                                dcc.Input(
+                                    id='new-column-name',
+                                    type="text",
+                                    value='12',
+                                    maxLength=10,
+                                    # autoFocus=False,
+                                    # autoComplete='off',
+                                    size='13',
                                 ),
-                                dbc.Button(
-                                    "Cancel",
-                                    id="confirm-new-col",
-                                    className="mb-3",
-                                    color="danger",
-                                ),
-                            ]),
 
-                        ]),
+                            ],
+                            # style={'width':'500px'}
+                        ),
+                        dbc.PopoverBody(
+                            [
+                                html.Div([
+                                    expression_box_markup(n) for n in range(0,3)
+
+                                ], className='expression-wrapper' ),
+                                html.Div( 'Equation will appear here',className = 'equation-window', id = 'equation' ),
+                                html.Div([
+                                    dbc.Button(
+                                        "Confirm",
+                                        id="confirm-new-col",
+                                        className="mb-3",
+                                        color="primary",
+                                    ),
+                                    dbc.Button(
+                                        "Cancel",
+                                        id="confirm-new-col",
+                                        className="mb-3",
+                                        color="danger",
+                                    ),
+                                ]),
+
+                            ],
+                            # style={'maxWidth': '500px'}
+                        ),
                     ],
                     id="click",
                     target="click-target",
                     trigger="click",
+                    # style={'maxWidth':'500px'}
                 ),
             ]),
         ]
@@ -165,9 +158,6 @@ def output_form_markup(type):
     options = [ parameter_option(i, j, k) for i,j,k in unpack_parameter(FIGURE_PARAM[type]) ]
     options.append(time_format_option())
     return html.Div([
-        # dcc.Store(id='uuid', data=None),
-        # dcc.Store(id='is-filled', data = False),
-        # dcc.Store(id=CREATE_BTN_ID[type], data={'filled': False, 'parameter': parameter}),
         dcc.Store(id=SM_PARAM, data={'is_filled': False, 'parameter': parameter if type == SCATTER_MAP else None}),
         dcc.Store(id=SG_PARAM, data={'is_filled': False, 'parameter': parameter if type == SCATTER_GEO else None}),
         dcc.Store(id=D_PARAM, data={'is_filled': False, 'parameter': parameter if type == DENSITY else None}),
@@ -241,3 +231,48 @@ def dropdown_markup(measurements):
         # className="mr-3",
         style={'width': '50%', 'padding':'5px'}
     )
+
+def expression_box_markup(id):
+    operators = ['+', '-',]
+    if id != 0:
+        operators.append('×')
+        operators.append('÷')
+
+    return html.Div(
+        className='expression-box',
+        children=[
+            dbc.FormGroup(
+                [
+                    dbc.Label(f'Operator {id+1}',style={'fontSize':'10px'}  ),
+                    dbc.Select(
+                        # className='operator',
+                        id=f'operator-{id}',
+                        options=[{"label": i, "value": i} for i in operators],
+                    )
+                ],
+                # className="mr-3",
+                className='operator',
+            ),
+            dbc.FormGroup(
+                [
+                    dbc.Label(f'Operand {id + 1}', style={'fontSize':'10px'}),
+                    dbc.Select(
+                        # className='operator',
+                        id=f'operand-{id}',
+                        options=[{"label": i, "value": i} for i in collection.temp.columns],
+                    )
+                ],
+                # className="mr-3",
+                className='operand',
+            ),
+            # dbc.Select(
+            #     className='operator',
+            #     id=f'operator-{id}',
+            #     options=[{"label": i, "value": i} for i in operators],
+            # ),
+            # dbc.Select(
+            #     className='operand',
+            #     id=f'operand-{id}',
+            #     options=[{"label": i, "value": i} for i in collection.temp.columns],
+            # )
+        ], )
