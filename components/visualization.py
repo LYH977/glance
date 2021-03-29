@@ -177,7 +177,7 @@ def create_choropleth(data,parameter):
     )
     configure_fig(fig)
     return fig
-
+################################################################################################################################################
 
 def create_visualization(screen_height, screen_width, create_clicks,  param, maxValue, df_frame, tformat,dbname, now):
     last_nano = get_last_timestamp(collection.temp[TIME])
@@ -205,6 +205,7 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
             dcc.Store(id={'type': 'redis-timestamp', 'index': create_clicks}, data = now),
             dcc.Store(id={'type': 'last-total-rows', 'index': create_clicks}, data= total_rows),
             dcc.Store(id={'type': 'is-slided-up', 'index': create_clicks}, data= False),
+            dcc.Store(id={'type': 'is-slided-up', 'index': create_clicks}, data=False),
 
             dcc.Interval(
                 id={'type': 'interval', 'index': create_clicks},
@@ -285,37 +286,6 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
                 align= 'center',
                 # className= 'top-wrapper'
             ),
-            # dbc.Popover(
-            #     [
-            #         dbc.PopoverHeader("Setting"),
-            #         dbc.PopoverBody(
-            #             html.Div([
-            #                 dbc.Row([
-            #                     dbc.Col(daq.BooleanSwitch(
-            #                         id={'type': 'legend-theme', 'index': create_clicks},
-            #                         on=False,
-            #                         color="#000000",
-            #                         label='Legend Theme'
-            #                     )),
-            #                     dbc.Col(daq.BooleanSwitch(
-            #                         id={'type': 'live-mode', 'index': create_clicks},
-            #                         on=False,
-            #                         color="#9B51E0",
-            #                         label=f'Live Mode {create_clicks}'
-            #
-            #                     )),
-            #                     dbc.Col(dbc.Button('Delete', id={'type': 'dlt-btn', 'index': create_clicks},
-            #                                        color="danger", className="mr-1")),
-            #
-            #                 ])
-            #             ])
-            #         ),
-            #     ],
-            #     id="focus",
-            #     target=f'setting-btn-{create_clicks}',
-            #     trigger="legacy",
-            #     # style={'width': 300}
-            # ),
             dcc.Graph(
                 # responsive= False,
                 className='visualization',
@@ -371,7 +341,7 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
 
 
 
-
+################################################################################################################################################
 
 def collapse_markup(create_clicks, count):
     return html.Div([

@@ -349,14 +349,15 @@ def register_update_chosen_tformat(app):
         return value
 #############################################################################################################################################
 
-#
-# def register_toggle_custom_column_collapse(app):
-#     @app.callback(
-#         Output("collapse", "is_open"),
-#         [Input("collapse-button", "n_clicks")],
-#         [State("collapse", "is_open")],
-#     )
-#     def toggle_custom_column_collapse(n, is_open):
-#         if n:
-#             return not is_open
-#         return is_open
+
+def testnew(app):
+    @app.callback(
+        Output("click-target", "children"),
+        # [Input("confirm-new-col", "n_clicks")],
+        Input("new-column2", "value"),
+        prevent_initial_call=True
+
+    )
+    def toggle_custom_sfsd(value):
+        print(value)
+        return value

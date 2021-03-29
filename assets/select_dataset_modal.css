@@ -34,5 +34,42 @@
 
 }
 
+.expression-wrapper {
+    height:100;
+    background: red;
+   /* display:flex;
+    justify-content: center;
+    align-items: center;*/
+}
+
+.expression-box {
+    height:40;
+    background: yellow;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.operand {
+    height : 100% ;
+    width : 60% ;
+    padding-top: 0;
+    padding-bottom : 0;
+
+}
+
+.operator {
+    height : 100% ;
+    width : 25% ;
+    padding-top: 0;
+    padding-bottom : 0;
+
+}
+
+.equation-window {
+    width : 100% ;
+    background: green;
+    padding: 10px;
 
 
+}

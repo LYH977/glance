@@ -90,22 +90,49 @@ def snapshot_markup (filename):
                             dcc.Input(
                                 id='new-column',
                                 type="text",
-                                value='',
+                                value='12',
                                 maxLength=10,
                                 # autoFocus=False,
                                 # autoComplete='off',
                                 size='13',
-
-                            )
+                            ),
+                            # dbc.Select(
+                            #     style={'width': '100%'},
+                            #     id='new-column2',
+                            #     options=[{"label": i, "value": i} for i in ['reiner', 'eren', 'zeke']],
+                            # )
                         ]),
                         dbc.PopoverBody([
-                            dbc.Textarea(className="mb-3", placeholder="A Textarea",id='new-column'),
-                            dbc.Button(
-                                "Confirm",
-                                id="confirm-new-col",
-                                className="mb-3",
-                                color="primary",
-                            ),
+                            html.Div([
+                                html.Div([
+                                    dbc.Select(
+                                        className='operator',
+                                        id='operator',
+                                        options=[{"label": i, "value": i} for i in ['+', '-', '×', '÷']],
+                                    ),
+                                    dbc.Select(
+                                        className='operand',
+                                        id='operand',
+                                        options=[{"label": i, "value": i} for i in ['reiner', 'eren', 'zeke']],
+                                    )
+                                ], className='expression-box' )
+                            ], className='expression-wrapper' ),
+                            html.Div( '1',className = 'equation-window' ),
+                            html.Div([
+                                dbc.Button(
+                                    "Confirm",
+                                    id="confirm-new-col",
+                                    className="mb-3",
+                                    color="primary",
+                                ),
+                                dbc.Button(
+                                    "Cancel",
+                                    id="confirm-new-col",
+                                    className="mb-3",
+                                    color="danger",
+                                ),
+                            ]),
+
                         ]),
                     ],
                     id="click",

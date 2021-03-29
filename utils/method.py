@@ -25,7 +25,7 @@ def select_query (measurement,  where=''):
     if measurement in result:
         # print(result)
         # test = pd.DataFrame(result[measurement])
-        # eq = "Latitude - Magnitude"
+        # eq = "- Magnitude"
         # test['Latitude'] = pd.to_numeric(test["Latitude"])
         # see = test.eval(eq)
         # print(see)
