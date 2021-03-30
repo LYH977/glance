@@ -372,9 +372,9 @@ def testnew(app):
         else:
             input_type = get_ctx_type(ctx)
 
-        eq = name if name is not '' else 'Equation'
+        eq = name if name != '' else 'Equation'
 
-        operator1 = op1 if op1 is '-' else ''
+        operator1 = op1 if op1 == '-' else ''
         operand1 = or1 if or1 is not None else ''
 
         operator2 = op2 if op2 is not None else ''
@@ -383,6 +383,10 @@ def testnew(app):
         operator3 = op3 if op3 is not None else ''
         operand3 = or3 if or3 is not None else ''
 
-        return f'{eq} = {operator1}{operand1} {operator2} {operand2} {operator3} {operand3}'
+        operation1 = f'{operator1}{operand1}' if operand1 != '' else ''  # A/-A
+        operation2 = f'{operator2} {operand2}' if operator2 != '' and operand2 != '' else '' # +B/-B
+        operation3 = f'{operator3} {operand3}'  if operator3 != '' and operand3 != '' else ''# +C/-C
+
+        return f'{eq} = {operation1} {operation2} {operation3}'
 
 

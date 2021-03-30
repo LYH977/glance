@@ -83,6 +83,7 @@ def snapshot_markup (filename):
                     className="mb-3",
                     color="primary",
                 ),
+
                 dbc.Popover(
                     [
                         dbc.PopoverHeader(
@@ -237,7 +238,6 @@ def expression_box_markup(id):
     if id != 0:
         operators.append('×')
         operators.append('÷')
-
     return html.Div(
         className='expression-box',
         children=[
@@ -245,34 +245,47 @@ def expression_box_markup(id):
                 [
                     dbc.Label(f'Operator {id+1}',style={'fontSize':'10px'}  ),
                     dbc.Select(
-                        # className='operator',
                         id=f'operator-{id}',
                         options=[{"label": i, "value": i} for i in operators],
-                    )
+                        value = '+' if id == 0 else ''
+                    ),
+
                 ],
                 # className="mr-3",
                 className='operator',
             ),
             dbc.FormGroup(
                 [
-                    dbc.Label(f'Operand {id + 1}', style={'fontSize':'10px'}),
-                    dbc.Select(
-                        # className='operator',
-                        id=f'operand-{id}',
-                        options=[{"label": i, "value": i} for i in collection.temp.columns],
-                    )
+                    html.Div([
+                        dbc.Label(f'Operand {id + 1}', style={'fontSize': '10px'}),
+                        html.I(className="fa fa-repeat rotate-icon"),
+
+                    ]
+                        , className='operand-title'
+                    ),
+                    # dbc.Label(f'Operand {id + 1}', style={'fontSize': '10px'}),
+
+                    html.Div(
+                        id=f'operand-container-{id}',
+                        children = operand_container_markup('dropdown', id)
+                    ),
+
                 ],
-                # className="mr-3",
                 className='operand',
             ),
-            # dbc.Select(
-            #     className='operator',
-            #     id=f'operator-{id}',
-            #     options=[{"label": i, "value": i} for i in operators],
-            # ),
-            # dbc.Select(
-            #     className='operand',
-            #     id=f'operand-{id}',
-            #     options=[{"label": i, "value": i} for i in collection.temp.columns],
-            # )
         ], )
+
+def operand_container_markup(type, id):
+    if type == 'dropdown':
+        return dbc.Select(
+            id=f'operand-{id}',
+            options=[{"label": i, "value": i} for i in collection.temp.columns],
+        )
+    elif type == 'number':
+        return dbc.Input(
+            id=f'operand-{id}',
+            type = 'number',
+            autoComplete='off',
+            maxLength=8,
+            # placeholder="A large input...", bs_size="lg", className="mb-3"
+        )
