@@ -13,7 +13,7 @@ from callback.select_dataset_modal_callback import \
     register_toggle_modal, \
     register_update_output_form, register_validate_sm_create, register_validate_sg_create, register_validate_bc_create, \
     register_validate_d_create, register_validate_ch_create, register_validate_ca_create, register_update_dt_dropdown, \
-    register_update_chosen_dropdown, register_update_chosen_tformat, testnew
+    register_update_chosen_dropdown, register_update_chosen_tformat, register_update_equation, register_update_new_column
 from callback.toast_callback import register_update_toast
 
 from callback.visualization_callback import \
@@ -53,7 +53,8 @@ register_validate_ch_create(app)
 register_validate_ca_create(app)
 register_update_dt_dropdown(app)
 register_update_chosen_dropdown(app)
-testnew(app)
+register_update_equation(app)
+register_update_new_column(app)
 # visualization_callback
 register_update_figure(app)
 register_update_slider(app)

@@ -69,16 +69,6 @@ def register_update_after_upload(app):
                 if collection.temp is not None:
                     collection.temp['time'] = collection.temp.index.map(lambda x: str(x).split('+')[0])
 
-                    # eq = "A + B "
-                    # A = collection.temp['Latitude']
-                    # B = collection.temp['Longitude']
-                    # ne.evaluate(eq)
-
-                    # df = pd.DataFrame({"A": [1, 2], "B": [3, 4]})
-                    # eq = 'A +B'
-                    # print(df.eval(eq))
-
-                    # print(float(collection.temp['Latitude']) + float(collection.temp['Longitude']))
 
                 return dataset_portal_markup(measurement)
 
@@ -350,11 +340,11 @@ def register_update_chosen_tformat(app):
 #############################################################################################################################################
 
 
-def testnew(app):
+def register_update_equation(app):
     @app.callback(
-        Output("equation", "children"),
+        Output("equation-window", "children"),
         [
-            Input("new-column-name", "value"),
+            # Input("new-column-name", "value"),
             Input('operator-0', "value"),
             Input('operator-1', "value"),
             Input('operator-2', "value"),
@@ -365,14 +355,16 @@ def testnew(app):
         prevent_initial_call=True
 
     )
-    def toggle_custom_sfsd(name, op1, op2, op3, or1, or2, or3):
+    def update_equation( op1, op2, op3, or1, or2, or3):
         ctx = dash.callback_context
         if not ctx.triggered:
             input_type = 'No input yet'
         else:
             input_type = get_ctx_type(ctx)
 
-        eq = name if name != '' else 'Equation'
+        # eq = name if name != '' else 'Equation'
+        # print(op3=='')
+        # print(op3 is None )
 
         operator1 = op1 if op1 == '-' else ''
         operand1 = or1 if or1 is not None else ''
@@ -386,7 +378,62 @@ def testnew(app):
         operation1 = f'{operator1}{operand1}' if operand1 != '' else ''  # A/-A
         operation2 = f'{operator2} {operand2}' if operator2 != '' and operand2 != '' else '' # +B/-B
         operation3 = f'{operator3} {operand3}'  if operator3 != '' and operand3 != '' else ''# +C/-C
+        return f'{operation1} {operation2} {operation3}'
 
-        return f'{eq} = {operation1} {operation2} {operation3}'
 
 
+#############################################################################################################################################
+
+
+def register_update_new_column(app):
+    @app.callback(
+        [
+            Output('portal-datatable', 'data'),
+            Output('portal-datatable', 'columns'),
+
+        ] ,
+        [
+            Input("confirm-new-col", "n_clicks"),
+        ],
+        [
+            State("equation-window", "children"),
+            State("operand-type-0", "data"),
+            State("operand-type-1", "data"),
+            State("operand-type-2", "data"),
+            # State("operator-0", "value"),
+            # State("operator-1", "value"),
+            # State("operator-2", "value"),
+            State("operand-0", "value"),
+            State("operand-1", "value"),
+            State("operand-2", "value"),
+            State("new-column-name", "value"),
+
+        ],
+        prevent_initial_call=True
+    )
+    def update_new_column(click, eq, type1, type2, type3,  od1, od2, od3, name):
+        copydf = collection.temp.copy(deep=True)
+        print('here 1')
+        if type1 == 'dropdown' and od1 is not None :
+            print('here 2')
+            copydf[od1] = pd.to_numeric(copydf[od1])
+            print('here 3')
+        # print(od2=='')
+        # print(od2 is None )
+        if type2 == 'dropdown' and od2 is not None:
+            copydf[od2] = pd.to_numeric(copydf[od2])
+            print('here 5')
+        if type3 == 'dropdown' and od3 is not None:
+            copydf[od3] = pd.to_numeric(copydf[od3])
+            print('here 6')
+
+        print('eq',eq)
+
+        new_col = copydf.eval(eq)
+        collection.temp[name] = new_col
+
+        data = collection.temp.head(5).to_dict('records')
+        columns = [{'name': i, 'id': i} for i in collection.temp.columns]
+
+        # raise PreventUpdate
+        return data, columns

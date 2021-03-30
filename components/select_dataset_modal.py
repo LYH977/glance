@@ -64,7 +64,12 @@ def dataset_portal_markup(filename):
 
 
 
-
+# def portal_datatable_markup():
+#     return dash_table.DataTable(
+#         data=collection.temp.head(5).to_dict('records'),
+#         columns=[{'name': i, 'id': i} for i in collection.temp.columns],
+#
+#     )
 
 def snapshot_markup (filename):
     return html.Div([
@@ -72,8 +77,9 @@ def snapshot_markup (filename):
             html.H6(f'Filename: {filename}'),
             html.H6('Below are the first 5 rows.'),
             dash_table.DataTable(
-                data=collection.temp.head(5).to_dict('records'),
-                columns=[{'name': i, 'id': i} for i in collection.temp.columns],
+                id = 'portal-datatable',
+                data = collection.temp.head(5).to_dict('records'),
+                columns = [{'name': i, 'id': i} for i in collection.temp.columns],
 
             ),
             html.Div([
@@ -94,8 +100,6 @@ def snapshot_markup (filename):
                                     type="text",
                                     value='12',
                                     maxLength=10,
-                                    # autoFocus=False,
-                                    # autoComplete='off',
                                     size='13',
                                 ),
 
@@ -104,24 +108,11 @@ def snapshot_markup (filename):
                         ),
                         dbc.PopoverBody(
                             [
+                                html.Div([    expression_box_markup(n) for n in range(0,3)  ], className='expression-wrapper' ),
+                                html.Div( 'Equation will appear here', className = 'equation-window', id = 'equation-window' ),
                                 html.Div([
-                                    expression_box_markup(n) for n in range(0,3)
-
-                                ], className='expression-wrapper' ),
-                                html.Div( 'Equation will appear here',className = 'equation-window', id = 'equation' ),
-                                html.Div([
-                                    dbc.Button(
-                                        "Confirm",
-                                        id="confirm-new-col",
-                                        className="mb-3",
-                                        color="primary",
-                                    ),
-                                    dbc.Button(
-                                        "Cancel",
-                                        id="confirm-new-col",
-                                        className="mb-3",
-                                        color="danger",
-                                    ),
+                                    dbc.Button( "Confirm", id="confirm-new-col", className="mb-3", color="primary" ),
+                                    dbc.Button( "Reset", id="reset-new-col", className="mb-3", color="danger"  ),
                                 ]),
 
                             ],
@@ -264,7 +255,7 @@ def expression_box_markup(id):
                         , className='operand-title'
                     ),
                     # dbc.Label(f'Operand {id + 1}', style={'fontSize': '10px'}),
-
+                    dcc.Store(id=f'operand-type-{id}', data='dropdown'),
                     html.Div(
                         id=f'operand-container-{id}',
                         children = operand_container_markup('dropdown', id)
