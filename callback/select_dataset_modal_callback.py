@@ -510,3 +510,48 @@ def register_toggle_new_column_btn(app):
     )
     def toggle_new_column_btn (value):
         return True if value == '' else False
+
+#############################################################################################################################################
+
+
+def register_clear_popup_value(app):
+    @app.callback(
+        [
+            Output('new-column-name', 'value'),
+            Output('operator-0', 'value') ,
+            Output('operator-1', 'value'),
+            Output('operator-2', 'value'),
+            Output('operand-0', 'value'),
+            Output('operand-1', 'value'),
+            Output('operand-2', 'value'),
+
+        ],
+        [
+            Input("confirm-new-col", "n_clicks"),
+            Input("reset-new-col", "n_clicks"),
+
+        ],
+        prevent_initial_call=True
+    )
+    def clear_popup_value (confirm, reset):
+        return '', None, None, None, None, None, None
+
+#############################################################################################################################################
+
+
+def register_close_popup(app):
+    @app.callback(
+        Output('create-new-col-popup', 'is_open') ,
+        [
+            Input("confirm-new-col", "n_clicks"),
+            # Input("create-visual", "n_clicks"),
+            # Input("cancel-create-visual", "n_clicks"),
+
+        ],
+
+        prevent_initial_call=True
+    )
+    def toggle_new_column_btn (confirm):
+        # if value:
+        return False
+        # raise PreventUpdate

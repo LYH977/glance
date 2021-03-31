@@ -114,9 +114,9 @@ def snapshot_markup (filename):
                             # style={'maxWidth': '500px'}
                         ),
                     ],
-                    id="click",
+                    id="create-new-col-popup",
                     target="click-target",
-                    trigger="click",
+                    trigger="legacy",
                     # style={'maxWidth':'500px'}
                 ),
             ]),

@@ -4,23 +4,22 @@ import dash_bootstrap_components as dbc
 from callback.carousel_callback import register_display_image, register_ca_update_slider, register_update_ca_play_btn, \
     register_update_ca_playing_status, register_update_ca_live_mode, register_ca_update_atmax, \
     register_ca_update_live_data
+
 from callback.container_callback import register_update_visual_container, test
 from callback.dashboard_callback import register_update_dashboard
 
 from callback.select_dataset_modal_callback import \
-    register_update_after_upload, \
-    register_enable_create_btn, \
-    register_toggle_modal, \
+    register_update_after_upload, register_enable_create_btn, register_toggle_modal, \
     register_update_output_form, register_validate_sm_create, register_validate_sg_create, register_validate_bc_create, \
     register_validate_d_create, register_validate_ch_create, register_validate_ca_create, register_update_dt_dropdown, \
     register_update_chosen_dropdown, register_update_chosen_tformat, register_update_equation, \
-    register_update_new_column, register_update_operand_type, register_toggle_new_column_btn
+    register_update_new_column, register_update_operand_type, register_toggle_new_column_btn, \
+    register_clear_popup_value, register_close_popup
+
 from callback.toast_callback import register_update_toast
 
 from callback.visualization_callback import \
-    register_update_figure, \
-    register_update_slider, \
-    register_update_playing_status, \
+    register_update_figure, register_update_slider, register_update_playing_status, \
     register_update_play_btn, register_update_live_mode, register_update_live_data, register_update_atmax, \
     register_toggle_collapse, register_update_celery_data, register_update_notif_body, register_toggle_badge_color, \
     register_update_last_celery_key
@@ -58,7 +57,8 @@ register_update_equation(app)
 register_update_new_column(app)
 register_update_operand_type(app)
 register_toggle_new_column_btn(app)
-
+register_clear_popup_value(app)
+register_close_popup(app)
 
 # visualization_callback
 register_update_figure(app)
