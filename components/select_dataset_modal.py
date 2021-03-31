@@ -64,13 +64,6 @@ def dataset_portal_markup(filename):
 
 
 
-# def portal_datatable_markup():
-#     return dash_table.DataTable(
-#         data=collection.temp.head(5).to_dict('records'),
-#         columns=[{'name': i, 'id': i} for i in collection.temp.columns],
-#
-#     )
-
 def snapshot_markup (filename):
     return html.Div([
         html.Div([
@@ -89,29 +82,31 @@ def snapshot_markup (filename):
                     className="mb-3",
                     color="primary",
                 ),
-
                 dbc.Popover(
                     [
                         dbc.PopoverHeader(
                             [
-                                "Column Name: ",
                                 dcc.Input(
                                     id='new-column-name',
                                     type="text",
-                                    value='12',
                                     maxLength=10,
                                     size='13',
+                                    placeholder='Column Name'
                                 ),
+                                '= ',
+                                html.P('(Equation will appear here)', className='equation-window',
+                                         id='equation-window'),
 
                             ],
                             # style={'width':'500px'}
                         ),
                         dbc.PopoverBody(
                             [
+                                dcc.Store(id=f'operand-type', data={ 0:'dropdown', 1:'dropdown', 2:'dropdown' }),
                                 html.Div([    expression_box_markup(n) for n in range(0,3)  ], className='expression-wrapper' ),
-                                html.Div( 'Equation will appear here', className = 'equation-window', id = 'equation-window' ),
+                                # html.Div( 'Equation will appear here', className = 'equation-window', id = 'equation-window' ),
                                 html.Div([
-                                    dbc.Button( "Confirm", id="confirm-new-col", className="mb-3", color="primary" ),
+                                    dbc.Button( "Confirm", id="confirm-new-col", className="mb-3", color="primary" , disabled= True),
                                     dbc.Button( "Reset", id="reset-new-col", className="mb-3", color="danger"  ),
                                 ]),
 
@@ -249,13 +244,13 @@ def expression_box_markup(id):
                 [
                     html.Div([
                         dbc.Label(f'Operand {id + 1}', style={'fontSize': '10px'}),
-                        html.I(className="fa fa-repeat rotate-icon"),
+                        html.I(className="fa fa-list rotate-icon", id = f'operand-icon-{id}'),
 
                     ]
                         , className='operand-title'
                     ),
                     # dbc.Label(f'Operand {id + 1}', style={'fontSize': '10px'}),
-                    dcc.Store(id=f'operand-type-{id}', data='dropdown'),
+                    # dcc.Store(id=f'operand-type-{id}', data='dropdown'),
                     html.Div(
                         id=f'operand-container-{id}',
                         children = operand_container_markup('dropdown', id)

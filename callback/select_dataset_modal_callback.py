@@ -17,7 +17,7 @@ from utils import collection
 from utils.method import get_ctx_type, get_ctx_property, get_ctx_value, get_ctx_index, formatted_time_value, \
     select_query
 from components.select_dataset_modal import output_form_markup, dataset_portal_markup, dataset_portal_markup, \
-    dropdown_markup
+    dropdown_markup, operand_container_markup
 import base64
 import io
 import json
@@ -42,6 +42,18 @@ def validate_create(data):
     return {'is_filled': is_filled, 'parameter': data['parameter']}
 
 
+def toggle_operand_type(type, id):
+    if type == 'dropdown':
+        classname = "fa fa-list-ol rotate-icon"
+        type = 'number'
+        child = operand_container_markup(type, id)
+
+    else:
+        classname = "fa fa-list rotate-icon"
+        type = 'dropdown'
+        child = operand_container_markup(type, id)
+
+    return type, classname, child
 
 #############################################################################################################################################
 
@@ -225,7 +237,6 @@ def register_validate_sm_create(app):
         prevent_initial_call=True
     )
     def validate_sm_create (lat, long, size, color, name, msg, data):
-        # print(data)
         return validate_create(data)
 
 
@@ -362,9 +373,6 @@ def register_update_equation(app):
         else:
             input_type = get_ctx_type(ctx)
 
-        # eq = name if name != '' else 'Equation'
-        # print(op3=='')
-        # print(op3 is None )
 
         operator1 = op1 if op1 == '-' else ''
         operand1 = or1 if or1 is not None else ''
@@ -378,7 +386,8 @@ def register_update_equation(app):
         operation1 = f'{operator1}{operand1}' if operand1 != '' else ''  # A/-A
         operation2 = f'{operator2} {operand2}' if operator2 != '' and operand2 != '' else '' # +B/-B
         operation3 = f'{operator3} {operand3}'  if operator3 != '' and operand3 != '' else ''# +C/-C
-        return f'{operation1} {operation2} {operation3}'
+        equation = f'{operation1} {operation2} {operation3}'
+        return '(Equation will appear here)' if not equation or equation.isspace() else equation
 
 
 
@@ -390,6 +399,7 @@ def register_update_new_column(app):
         [
             Output('portal-datatable', 'data'),
             Output('portal-datatable', 'columns'),
+            Output('create-new-column-toast', 'data'),
 
         ] ,
         [
@@ -397,12 +407,7 @@ def register_update_new_column(app):
         ],
         [
             State("equation-window", "children"),
-            State("operand-type-0", "data"),
-            State("operand-type-1", "data"),
-            State("operand-type-2", "data"),
-            # State("operator-0", "value"),
-            # State("operator-1", "value"),
-            # State("operator-2", "value"),
+            State("operand-type", "data"),
             State("operand-0", "value"),
             State("operand-1", "value"),
             State("operand-2", "value"),
@@ -411,29 +416,97 @@ def register_update_new_column(app):
         ],
         prevent_initial_call=True
     )
-    def update_new_column(click, eq, type1, type2, type3,  od1, od2, od3, name):
-        copydf = collection.temp.copy(deep=True)
-        print('here 1')
-        if type1 == 'dropdown' and od1 is not None :
-            print('here 2')
-            copydf[od1] = pd.to_numeric(copydf[od1])
-            print('here 3')
-        # print(od2=='')
-        # print(od2 is None )
-        if type2 == 'dropdown' and od2 is not None:
-            copydf[od2] = pd.to_numeric(copydf[od2])
-            print('here 5')
-        if type3 == 'dropdown' and od3 is not None:
-            copydf[od3] = pd.to_numeric(copydf[od3])
-            print('here 6')
+    def update_new_column(click, eq, type,  od1, od2, od3, name):
+        if click:
+            try:
+                copydf = collection.temp.copy(deep=True)
+                if type['0'] == 'dropdown' and od1 is not None:
+                    copydf[od1] = pd.to_numeric(copydf[od1])
 
-        print('eq',eq)
+                if type['1'] == 'dropdown' and od2 is not None:
+                    copydf[od2] = pd.to_numeric(copydf[od2])
 
-        new_col = copydf.eval(eq)
-        collection.temp[name] = new_col
+                if type['2'] == 'dropdown' and od3 is not None:
+                    copydf[od3] = pd.to_numeric(copydf[od3])
+                new_col = copydf.eval(eq)
+                collection.temp[name] = new_col
+                data = collection.temp.head(5).to_dict('records')
+                columns = [{'name': i, 'id': i} for i in collection.temp.columns]
+                toast = {
+                    'children': f'{name} is successfully added.',
+                    'is_open': True,
+                    'icon': 'success',
+                    'header': 'SUCCESS'
+                }
+                return data, columns, toast
+            except Exception as e:
+                toast = {
+                    'children': e,
+                    'is_open': True,
+                    'icon': 'danger',
+                    'header': 'DANGER'
+                }
+                return  dash.no_update, dash.no_update, toast
+        raise  PreventUpdate
+#############################################################################################################################################
 
-        data = collection.temp.head(5).to_dict('records')
-        columns = [{'name': i, 'id': i} for i in collection.temp.columns]
 
-        # raise PreventUpdate
-        return data, columns
+def register_update_operand_type(app):
+    @app.callback(
+        [
+            Output('operand-icon-0', 'className'),
+            Output('operand-icon-1', 'className'),
+            Output('operand-icon-2', 'className'),
+            Output("operand-type", "data"),
+            Output('operand-container-0', 'children'),
+            Output('operand-container-1', 'children'),
+            Output('operand-container-2', 'children'),
+        ],
+        [
+            Input("operand-icon-0", "n_clicks"),
+            Input("operand-icon-1", "n_clicks"),
+            Input("operand-icon-2", "n_clicks"),
+        ],
+        [
+            State('operand-icon-0', 'className'),
+            State('operand-icon-1', 'className'),
+            State('operand-icon-2', 'className'),
+            State("operand-type", "data"),
+
+        ],
+        prevent_initial_call=True
+    )
+    def update_operand_type (click0, click1, click2, class0, class1, class2, type):
+        ctx = dash.callback_context
+        if not ctx.triggered:
+            input_type = 'No input yet'
+            input_value = None
+        else:
+            input_type = get_ctx_type(ctx)
+            input_value = get_ctx_value(ctx)
+        if input_type =="operand-icon-0":
+            type['0'], class0, child0 = toggle_operand_type(type['0'],0)
+            return class0, dash.no_update, dash.no_update, type, child0, dash.no_update, dash.no_update
+
+        elif input_type == "operand-icon-1":
+            type['1'], class1, child1 = toggle_operand_type(type['1'],1)
+            return dash.no_update, class1, dash.no_update, type, dash.no_update, child1, dash.no_update
+
+
+        elif input_type == "operand-icon-2":
+            type['2'], class2, child2 = toggle_operand_type(type['2'],2)
+            return dash.no_update, dash.no_update, class2, type, dash.no_update, dash.no_update, child2
+
+        raise PreventUpdate
+
+#############################################################################################################################################
+
+
+def register_toggle_new_column_btn(app):
+    @app.callback(
+        Output('confirm-new-col', 'disabled') ,
+        Input("new-column-name", "value"),
+        prevent_initial_call=True
+    )
+    def toggle_new_column_btn (value):
+        return True if value == '' else False

@@ -13,6 +13,9 @@ import base64
 import io
 import pandas as pd
 
+def give_toast_info(data):
+    return data['children'], data['is_open'], data['icon'], data['header']
+
 
 def register_update_toast(app):
     @app.callback(
@@ -25,11 +28,12 @@ def register_update_toast(app):
        [
            Input('upload-toast', 'data'),
            Input('dashboard-toast', 'data'),
+           Input('create-new-column-toast', 'data'),
 
        ],
        prevent_initial_call=True
     )
-    def update_toast(upload, dashboard):
+    def update_toast(upload, dashboard,new_column):
         ctx = dash.callback_context
         if not ctx.triggered:
             input_type = 'No input yet'
@@ -37,7 +41,9 @@ def register_update_toast(app):
             input_type = get_ctx_type(ctx)
 
         if input_type == 'upload-toast' and upload is not None:
-            return upload['children'], upload['is_open'], upload['icon'], upload['header']
+            return give_toast_info(upload)
         elif input_type == 'dashboard-toast' and dashboard is not None:
-            return dashboard['children'], dashboard['is_open'], dashboard['icon'], dashboard['header']
+            return give_toast_info(dashboard)
+        elif input_type == 'create-new-column-toast' and new_column is not None:
+            return give_toast_info(new_column)
         raise PreventUpdate

@@ -11,9 +11,10 @@ layout = html.Div([
             dismissable=True,
             duration = 2500,
             icon="danger",
-            style={"position": "fixed", "top": 10, "right": 10, "width": 350, 'z-index': 100, 'background': 'white'},
+            style={"position": "fixed", "top": 10, "right": 10, "width": 350, 'zIndex': 9999, 'background': 'white'},
         ),
     dcc.Store(id='dashboard-toast', data=None),
     dcc.Store(id='upload-toast', data=None),
+    dcc.Store(id='create-new-column-toast', data=None),
 
 ])
