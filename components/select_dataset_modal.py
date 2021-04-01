@@ -19,16 +19,14 @@ import pandas as pd
 
 modal = html.Div(
     [
-        # dbc.Button("Select File", id="open"),
         html.Button(
-            # html.P('+',className='add_btn' ),
             html.I(className="fa fa-plus fa-lg"),
-            id="open",
+            id="open-select-modal",
             className='floating_area'
         ),
         dcc.Store(id='last-param', data={}),
         dcc.Store(id='chosen-tformat', data= YEAR),
-
+        # dcc.Store(id='new-col-info', data={'expression': [], 'numeric_col': []}),
         dcc.Store(id='chosen-dropdown', data= None),
         dbc.Modal(
             [
@@ -76,12 +74,13 @@ def snapshot_markup (filename):
 
             ),
             html.Div([
-                dbc.Button(
-                    "Open collapse",
-                    id="click-target",
-                    className="mb-3",
-                    color="primary",
-                ),
+                # dbc.Button(
+                #     "Open collapse",
+                #     id="click-target",
+                #     className="mb-3",
+                #     color="primary",
+                # ),
+                html.I(className="fa fa-plus-square", id="click-target", style={}),
                 dbc.Popover(
                     [
                         dbc.PopoverHeader(
@@ -250,7 +249,6 @@ def expression_box_markup(id):
                         , className='operand-title'
                     ),
                     # dbc.Label(f'Operand {id + 1}', style={'fontSize': '10px'}),
-                    # dcc.Store(id=f'operand-type-{id}', data='dropdown'),
                     html.Div(
                         id=f'operand-container-{id}',
                         children = operand_container_markup('dropdown', id)

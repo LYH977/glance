@@ -179,7 +179,7 @@ def create_choropleth(data,parameter):
     return fig
 ################################################################################################################################################
 
-def create_visualization(screen_height, screen_width, create_clicks,  param, maxValue, df_frame, tformat,dbname, now):
+def create_visualization(screen_height, screen_width, create_clicks,  param, maxValue, df_frame, tformat,dbname, now, new_col):
     last_nano = get_last_timestamp(collection.temp[TIME])
     figure = create_figure(collection.data[create_clicks], param['parameter'], param['vtype'])
     total_rows = len(collection.data[create_clicks].index)
@@ -205,7 +205,7 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
             dcc.Store(id={'type': 'redis-timestamp', 'index': create_clicks}, data = now),
             dcc.Store(id={'type': 'last-total-rows', 'index': create_clicks}, data= total_rows),
             dcc.Store(id={'type': 'is-slided-up', 'index': create_clicks}, data= False),
-            dcc.Store(id={'type': 'is-slided-up', 'index': create_clicks}, data=False),
+            dcc.Store(id={'type': 'new-column-info', 'index': create_clicks}, data = new_col),
 
             dcc.Interval(
                 id={'type': 'interval', 'index': create_clicks},
@@ -241,7 +241,7 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
                         ) ,
                     ], className= 'flex'),  width = 'auto'
                 ),
-                html.Button('hide', id={'type': 'hide-btn', 'index': create_clicks},),
+                # html.Button('hide', id={'type': 'hide-btn', 'index': create_clicks},),
                 dbc.Col(
                     dbc.DropdownMenu(
                         label='setting',

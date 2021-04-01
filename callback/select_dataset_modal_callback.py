@@ -55,13 +55,17 @@ def toggle_operand_type(type, id):
 
     return type, classname, child
 
+def append_numeric_col_list(info, col):
+    if col not in info['numeric_col']:
+        info['numeric_col'].append(col)
+
 #############################################################################################################################################
 
 
 def register_update_after_upload(app):
     @app.callback(Output('dataset-portal', 'children'),
                   [
-                      Input("open", "n_clicks"),
+                      Input("open-select-modal", "n_clicks"),
                       Input("cancel-create-visual", "n_clicks"),
                       Input("create-visual", "n_clicks"),
                       Input('chosen-dropdown', 'data')
@@ -119,7 +123,7 @@ def register_update_output_form(app):
 def register_toggle_modal(app):
     @app.callback(
         Output("modal", "is_open"),
-        [Input("open", "n_clicks"), Input("cancel-create-visual", "n_clicks"),Input("create-visual", "n_clicks")],
+        [Input("open-select-modal", "n_clicks"), Input("cancel-create-visual", "n_clicks"),Input("create-visual", "n_clicks")],
         [State("modal", "is_open"), State('last-param', 'data')],
         prevent_initial_call=True
     )
@@ -188,7 +192,7 @@ def register_enable_create_btn(app):
 def register_update_dt_dropdown(app):
     @app.callback(
         Output('dataset-window', 'children') ,
-        [Input('open','n_clicks'), Input('cancel-create-visual','n_clicks'), Input('create-visual','n_clicks')],
+        [Input('open-select-modal','n_clicks'), Input('cancel-create-visual','n_clicks'), Input('create-visual','n_clicks')],
         prevent_initial_call=True
     )
     def update_dt_dropdown (open, close,create):
@@ -199,7 +203,7 @@ def register_update_dt_dropdown(app):
         else:
             input_type = get_ctx_type(ctx)
             input_value = get_ctx_value(ctx)
-        if input_type == 'open':
+        if input_type == 'open-select-modal':
             return dropdown_markup(client.get_list_measurements())
         elif input_type == 'cancel-create-visual' or 'create-visual':
             return None
@@ -404,6 +408,7 @@ def register_update_new_column(app):
         ] ,
         [
             Input("confirm-new-col", "n_clicks"),
+
         ],
         [
             State("equation-window", "children"),
@@ -417,19 +422,37 @@ def register_update_new_column(app):
         prevent_initial_call=True
     )
     def update_new_column(click, eq, type,  od1, od2, od3, name):
+
+
         if click:
+            if name in collection.temp.columns:
+                toast = {
+                    'children': 'Column name already existed!',
+                    'is_open': True,
+                    'icon': 'danger',
+                    'header': 'DANGER'
+                }
+                return dash.no_update, dash.no_update, toast
             try:
                 copydf = collection.temp.copy(deep=True)
                 if type['0'] == 'dropdown' and od1 is not None:
                     copydf[od1] = pd.to_numeric(copydf[od1])
+                    append_numeric_col_list(collection.new_col, od1)
 
                 if type['1'] == 'dropdown' and od2 is not None:
                     copydf[od2] = pd.to_numeric(copydf[od2])
+                    append_numeric_col_list(collection.new_col, od2)
 
                 if type['2'] == 'dropdown' and od3 is not None:
                     copydf[od3] = pd.to_numeric(copydf[od3])
+                    append_numeric_col_list(collection.new_col, od3)
+
                 new_col = copydf.eval(eq)
                 collection.temp[name] = new_col
+                collection.new_col['expression'].append({
+                    'name': name,
+                    'equation': eq
+                })
                 data = collection.temp.head(5).to_dict('records')
                 columns = [{'name': i, 'id': i} for i in collection.temp.columns]
                 toast = {
@@ -553,5 +576,8 @@ def register_close_popup(app):
     )
     def toggle_new_column_btn (confirm):
         # if value:
-        return False
-        # raise PreventUpdate
+        # return False
+        raise PreventUpdate
+#############################################################################################################################################
+
+

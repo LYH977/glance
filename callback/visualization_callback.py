@@ -1,6 +1,6 @@
 import json
 from datetime import datetime, timedelta
-
+import pandas as pd
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -271,11 +271,12 @@ def register_update_live_data(app):
             State({'type': 'my_param', 'index': MATCH}, 'data'),
             State({'type': 'db-name', 'index': MATCH}, 'data'),
             State({'type': 'back-buffer', 'index': MATCH}, 'data'),
+            State({'type': 'new-column-info', 'index': MATCH}, 'data'),
 
         ],
         prevent_initial_call=True
     )
-    def update_live_data(live, legend, ts, format,  param, dbname, buffer):
+    def update_live_data(live, legend, ts, format,  param, dbname, buffer, info):
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
@@ -294,11 +295,15 @@ def register_update_live_data(app):
                 if result is not None:
                     result[TIME] = result.index.map(lambda x: str(x).split('+')[0])
                     result[FRAME] = result[TIME].map(lambda x: formatted_time_value(x, format))
-                    # result.reset_index(drop=True, inplace=True)
+                    copydf = result.copy(deep=True)
+                    for col in info['numeric_col']:
+                        copydf[col] = pd.to_numeric(copydf[col])
+                    for exp in info['expression']:
+                        new_col = copydf.eval( exp['equation'])
+                        result[ exp['name'] ] = new_col
                     last_nano = get_last_timestamp(result[TIME])
                     collection.data[input_index] = collection.data[input_index].append(result, ignore_index=True)
                     fig = create_figure(collection.data[input_index], param['parameter'], param['vtype'])
-                    # print('last_nano',last_nano)
                     return last_nano, fig
 
                 else:
@@ -393,7 +398,7 @@ def register_update_celery_data(app):
             input_index = get_ctx_index(ctx)
         if input_type == 'celery-interval':
             try:
-                print(f'checking {index}-{now}')
+                # print(f'checking {index}-{now}')
                 result = redis_instance.get(f'{index}-{now}').decode("utf-8")
                 result = json.loads(result)
                 ctx = dash.callback_context

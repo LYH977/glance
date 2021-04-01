@@ -2,6 +2,9 @@ import os
 import redis
 
 temp = None
+
+new_col = {'expression': [], 'numeric_col': []}
+
 data={}
 
 visual_container = []

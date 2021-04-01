@@ -30,7 +30,6 @@ def register_update_visual_container(app):
         ],
         [
             Input('create-visual', 'n_clicks'),
-            # Input({'type':'dlt-btn', 'index': ALL},'n_clicks'),
             Input({'type': 'visualization-container', 'index': ALL}, 'style'),
 
         ],
@@ -38,7 +37,8 @@ def register_update_visual_container(app):
             State('visual-collection', 'children') ,
             State('last-param', 'data'),
             State('chosen-tformat', 'data'),
-            State('chosen-dropdown', 'data')
+            State('chosen-dropdown', 'data'),
+
         ],
         prevent_initial_call=True)
     def update_visual_container(create_clicks,  style, div_children, param, tformat, dbname):
@@ -65,7 +65,7 @@ def register_update_visual_container(app):
                 result = task.process_dataset.delay(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'], now)
                 # task.process_dataset(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'], now)
 
-            new_child = container.render_container(create_clicks, param, tformat, dbname, now)
+            new_child = container.render_container(create_clicks, param, tformat, dbname, now, collection.new_col)
             div_children.append(new_child)
             visual_container.append(create_clicks)
             toast = {
@@ -74,6 +74,7 @@ def register_update_visual_container(app):
                 'icon': 'success',
                 'header': 'SUCCESS'
             }
+            collection.new_col = {'expression': [], 'numeric_col': []}
             # test = str(div_children[0]).split("'type': 'my-index', 'index':")[1].split('}')[0]
             # print(type(test) )
 
