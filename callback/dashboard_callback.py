@@ -30,4 +30,4 @@ def register_update_dashboard(app):
         if len(children) >0:
             return None
         else:
-            return 'it is empty'
+            return 'Welcome to Glance'

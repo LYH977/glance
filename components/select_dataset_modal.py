@@ -47,6 +47,8 @@ modal = html.Div(
             backdrop='static',
             is_open=False,
             autoFocus=False,
+            # style={'background': 'red'}
+            contentClassName='select-modal-content'
 
         ),
     ],
@@ -71,15 +73,20 @@ def snapshot_markup (filename):
                 id = 'portal-datatable',
                 data = collection.temp.head(5).to_dict('records'),
                 columns = [{'name': i, 'id': i} for i in collection.temp.columns],
+                style_cell={'textAlign': 'left'},
+                style_data_conditional=[
+                    {
+                        'if': {'row_index': 'odd'},
+                        'backgroundColor': 'rgb(248, 248, 248)'
+                    }
+                ],
+                style_header={
+                    'backgroundColor': 'rgb(230, 230, 230)',
+                    'fontWeight': 'bold'
+                }
 
             ),
             html.Div([
-                # dbc.Button(
-                #     "Open collapse",
-                #     id="click-target",
-                #     className="mb-3",
-                #     color="primary",
-                # ),
                 html.I(className="fa fa-plus-square", id="click-target", style={}),
                 dbc.Popover(
                     [
@@ -92,12 +99,12 @@ def snapshot_markup (filename):
                                     size='13',
                                     placeholder='Column Name'
                                 ),
-                                '= ',
+                                html.P(' =', className='equation-window'),
                                 html.P('(Equation will appear here)', className='equation-window',
                                          id='equation-window'),
 
                             ],
-                            # style={'width':'500px'}
+                            style={'background':'grey'}
                         ),
                         dbc.PopoverBody(
                             [
@@ -110,13 +117,14 @@ def snapshot_markup (filename):
                                 ]),
 
                             ],
-                            # style={'maxWidth': '500px'}
+                            # style={'background': 'lightgrey'}
+
                         ),
                     ],
                     id="create-new-col-popup",
                     target="click-target",
                     trigger="legacy",
-                    # style={'maxWidth':'500px'}
+                    placement= 'right'
                 ),
             ]),
         ]
