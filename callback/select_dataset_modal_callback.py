@@ -115,7 +115,8 @@ def register_update_output_form(app):
         # elif input_type == 'close' or input_type == 'create':
         #     return None
         else:
-            raise PreventUpdate
+            return None
+            # raise PreventUpdate
 
 #############################################################################################################################################
 
@@ -427,7 +428,15 @@ def register_update_new_column(app):
         if click:
             if name in collection.temp.columns:
                 toast = {
-                    'children': 'Column name already existed!',
+                    'children': f"Column name '{name}' already existed! Please use another name",
+                    'is_open': True,
+                    'icon': 'danger',
+                    'header': 'DANGER'
+                }
+                return dash.no_update, dash.no_update,
+            if eq == '(Equation will appear here)':
+                toast = {
+                    'children': 'No operator/operand selected',
                     'is_open': True,
                     'icon': 'danger',
                     'header': 'DANGER'
@@ -463,8 +472,9 @@ def register_update_new_column(app):
                 }
                 return data, columns, toast
             except Exception as e:
+                print('error', e)
                 toast = {
-                    'children': e,
+                    'children': 'Something wrong with operand. Please choose column with number only',
                     'is_open': True,
                     'icon': 'danger',
                     'header': 'DANGER'
@@ -552,12 +562,39 @@ def register_clear_popup_value(app):
         [
             Input("confirm-new-col", "n_clicks"),
             Input("reset-new-col", "n_clicks"),
+            Input("exp-undo-0", "n_clicks"),
+            Input("exp-undo-1", "n_clicks"),
+            Input("exp-undo-2", "n_clicks"),
 
         ],
         prevent_initial_call=True
     )
-    def clear_popup_value (confirm, reset):
-        return '', None, None, None, None, None, None
+    def clear_popup_value (confirm, reset, undo0, undo1, undo2):
+        ctx = dash.callback_context
+        if not ctx.triggered:
+            input_type = 'No input yet'
+            # input_value = None
+        else:
+            input_type = get_ctx_type(ctx)
+            # input_value = get_ctx_value(ctx)
+        # result = {
+        #     'name': dash.no_update,
+        #     'op0': dash.no_update,
+        #     'op1': dash.no_update,
+        #     'op2': dash.no_update,
+        #     'or0': dash.no_update,
+        #     'or1': dash.no_update,
+        #     'or2': dash.no_update,
+        # }
+        if input_type == "confirm-new-col" or input_type == "reset-new-col":
+            return '', None, None, None, None, None, None
+        elif input_type == "exp-undo-0" :
+            return dash.no_update, None, dash.no_update, dash.no_update, None, dash.no_update, dash.no_update
+        elif input_type == "exp-undo-1" :
+            return dash.no_update, dash.no_update, None,  dash.no_update, dash.no_update, None, dash.no_update
+        elif input_type == "exp-undo-2" :
+            return dash.no_update, dash.no_update, dash.no_update, None, dash.no_update, dash.no_update, None
+        raise  PreventUpdate
 
 #############################################################################################################################################
 
@@ -575,9 +612,23 @@ def register_close_popup(app):
         prevent_initial_call=True
     )
     def toggle_new_column_btn (confirm):
-        # if value:
-        # return False
+        if confirm:
+            return False
         raise PreventUpdate
 #############################################################################################################################################
 
+def register_update_visual_dropdown(app):
+    @app.callback(
+        Output('visual-type', 'value') ,
+        [
+            Input("portal-datatable", "columns"),
+            # Input("create-visual", "n_clicks"),
+            # Input("cancel-create-visual", "n_clicks"),
+
+        ],
+
+        prevent_initial_call=True
+    )
+    def update_visual_dropdown (col):
+        return None
 

@@ -14,7 +14,7 @@ from callback.select_dataset_modal_callback import \
     register_validate_d_create, register_validate_ch_create, register_validate_ca_create, register_update_dt_dropdown, \
     register_update_chosen_dropdown, register_update_chosen_tformat, register_update_equation, \
     register_update_new_column, register_update_operand_type, register_toggle_new_column_btn, \
-    register_clear_popup_value, register_close_popup
+    register_clear_popup_value, register_close_popup, register_update_visual_dropdown
 
 from callback.toast_callback import register_update_toast
 
@@ -59,6 +59,7 @@ register_update_operand_type(app)
 register_toggle_new_column_btn(app)
 register_clear_popup_value(app)
 register_close_popup(app)
+register_update_visual_dropdown(app)
 
 # visualization_callback
 register_update_figure(app)

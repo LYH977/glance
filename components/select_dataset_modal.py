@@ -265,6 +265,8 @@ def expression_box_markup(id):
                 ],
                 className='operand',
             ),
+            html.I(className="fa fa-undo undo-icon", id=f'exp-undo-{id}'),
+
         ], )
 
 def operand_container_markup(type, id):

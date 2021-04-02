@@ -53,6 +53,7 @@
     margin: 0 10px;
     color: white;
     border-radius: 10px;
+    position: relative;
 }
 
 .operand {
@@ -132,5 +133,10 @@
 
 .select-modal-content {
   background: #EEF2F7;
+}
+
+.undo-icon{
+  color: lightgrey;
+
 }
 
