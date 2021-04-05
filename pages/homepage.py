@@ -21,6 +21,7 @@ import os
 import pandas as pd
 import redis
 import numpy as np
+from openpyxl import load_workbook
 
 
 # pport = 'redis-12571.c1.ap-southeast-1-1.ec2.cloud.redislabs.com:12571'
@@ -87,6 +88,7 @@ data = pd.read_csv('C:/Users/FORGE-15/PycharmProjects/glance/datasets/time-serie
 
 # df = px.data.election()
 # df.to_csv('election.csv')
+
 
 
 toast = html.Div(
@@ -238,7 +240,29 @@ app.clientside_callback(
     [Input("positioned-toast-toggle", "n_clicks")],
 )
 def open_toast(n):
+
     if n:
+        book = load_workbook('C:/Users/FORGE-15/PycharmProjects/glance/datasets/tagrget.xlsx')
+        # reference = load_workbook('C:/Users/FORGE-15/PycharmProjects/glance/datasets/newRef.xlsx')
+        sheet = book['Sheet1']
+        # refer = reference['Sheet1']
+
+        for row in range(sheet.max_row, 1, -1): # sheet.max_row + 1
+            date = sheet.cell(row, 1)
+
+            print(row, ' : ',date.value, '-', sheet.cell(row, 3).value)
+            if date.value.year == 2021:
+                sheet.delete_rows(row)
+                print(date.value, '-', sheet.cell(row, 3).value, 'deleted')
+
+            # print(date.value.year, ' - ')
+            # for r in range(2, refer.max_row + 1):
+            #     rProvince = refer.cell(r, 7)
+            #     if province.value == rProvince.value:
+            #         lat.value = refer.cell(r, 9).value
+            #         long.value = refer.cell(r, 10).value
+            #         break
+        book.save('easy.xlsx')
         return True
     return False
 

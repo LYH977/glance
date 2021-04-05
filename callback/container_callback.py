@@ -50,60 +50,55 @@ def register_update_visual_container(app):
             input_type = get_ctx_type(ctx)
 
         if create_clicks and input_type == 'create-visual': # input from add button
-            collection.temp = collection.temp.dropna()
-            collection.temp.reset_index(drop=True, inplace=True)
-            collection.temp[FRAME] = collection.temp[TIME].map(lambda x: formatted_time_value(x, tformat))
-            collection.data[create_clicks] = collection.temp
-            collection.live_processing[create_clicks] = False
-            now = datetime.now().timestamp()
-            if param['vtype'] == CAROUSEL: #  carousel
-                temp = []
-                for row in collection.temp.index:
-                    temp.append( create_ca_img(collection.temp.loc[row, param['parameter'][CAROUSEL_CONSTANT[ITEM]]]) )
-                collection.img_container[create_clicks] = temp
-            else: # other than carousel
-                result = task.process_dataset.delay(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'], now)
-                # task.process_dataset(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'], now)
+            try:
+                print('before length', len(div_children))
 
-            new_child = container.render_container(create_clicks, param, tformat, dbname, now, collection.new_col)
-            div_children.append(new_child)
-            visual_container.append(create_clicks)
-            toast = {
-                'children': f"Visualization {create_clicks} is successfully created.",
-                'is_open': True,
-                'icon': 'success',
-                'header': 'SUCCESS'
-            }
-            collection.new_col = {'expression': [], 'numeric_col': []}
-            # test = str(div_children[0]).split("'type': 'my-index', 'index':")[1].split('}')[0]
-            # print(type(test) )
+                collection.temp = collection.temp.dropna()
+                collection.temp.reset_index(drop=True, inplace=True)
+                collection.temp[FRAME] = collection.temp[TIME].map(lambda x: formatted_time_value(x, tformat))
+                collection.data[create_clicks] = collection.temp
+                collection.live_processing[create_clicks] = False
+                now = datetime.now().timestamp()
+                if param['vtype'] == CAROUSEL:  # carousel
+                    temp = []
+                    for row in collection.temp.index:
+                        temp.append(
+                            create_ca_img(collection.temp.loc[row, param['parameter'][CAROUSEL_CONSTANT[ITEM]]]))
+                    collection.img_container[create_clicks] = temp
+                else:  # other than carousel
+                    result = task.process_dataset.delay(create_clicks, collection.temp.to_dict(), param['vtype'],
+                                                        param['parameter'], now)
+                    # task.process_dataset(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'], now)
 
-            return div_children, toast
+                new_child = container.render_container(create_clicks, param, tformat, dbname, now, collection.new_col)
+                div_children.append(new_child)
+                visual_container.append(create_clicks)
+                toast = {
+                    'children': f"Visualization {create_clicks} is successfully created.",
+                    'is_open': True,
+                    'icon': 'success',
+                    'header': 'SUCCESS'
+                }
+                collection.new_col = {'expression': [], 'numeric_col': []}
+                return div_children, toast
 
-        # elif deletable and input_type=='dlt-btn' : # input from delete button
-        #     print(ctx.triggered[0])
-        #     delete_index = get_ctx_index(ctx)
-        #     # temp = visual_container.index(delete_index)
-        #     # del div_children[temp]
-        #     # del visual_container[temp]
-        #     for vs, i in zip(div_children, range(len(div_children))):
-        #         index = int(str(vs).split("'type': 'my-index', 'index': ")[1].split('}')[0])
-        #         if delete_index == index:
-        #             print('i',i)
-        #             div_children.pop(i)
-        #             break
-        #     toast = {
-        #         'children': f"Visualization {delete_index} is successfully deleted.",
-        #         'is_open': True,
-        #         'icon': 'success',
-        #         'header': 'SUCCESS'
-        #     }
-        #     return div_children, toast
+            except Exception as e:
+                print(e)
+                collection.new_col = {'expression': [], 'numeric_col': []}
+                toast = {
+                    'children': f"Error Occured. Please make sure all attributes are correctly filled. Message returned: {e}",
+                    'is_open': True,
+                    'icon': 'danger',
+                    'header': 'DANGER'
+                }
+                print('after length', len(div_children))
+                return div_children, toast
+
+
+
+
         elif input_type=='visualization-container' : # input from delete button
             delete_index = get_ctx_index(ctx)
-            # temp = visual_container.index(delete_index)
-            # del div_children[temp]
-            # del visual_container[temp]
             time.sleep(1.0)
             for vs, i in zip(div_children, range(len(div_children))):
                 index = int(str(vs).split("'type': 'my-index', 'index':")[1].split('}')[0])

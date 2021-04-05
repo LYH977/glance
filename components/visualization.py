@@ -83,7 +83,9 @@ def convert_to_float(data, parameter, list):
 def create_scattermap(data, parameter):
     convert_to_float(data, parameter, [
         SCATTER_MAP_CONSTANT[LATITUDE],
-        SCATTER_MAP_CONSTANT[LONGITUDE]
+        SCATTER_MAP_CONSTANT[LONGITUDE],
+        SCATTER_MAP_CONSTANT[SIZE]
+
     ])
     fig = px.scatter_mapbox(
         data, lat = parameter[SCATTER_MAP_CONSTANT[LATITUDE]],
@@ -209,7 +211,7 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
 
             dcc.Interval(
                 id={'type': 'interval', 'index': create_clicks},
-                interval=200,
+                interval=600,
                 n_intervals=0,
                 max_intervals=maxValue,
                 disabled=True

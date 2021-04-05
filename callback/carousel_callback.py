@@ -224,7 +224,7 @@ def register_ca_update_live_data(app):
             raise  PreventUpdate
         else:
             collection.live_processing[input_index] = True
-            result = select_query(dbname, ' where time >{}'.format(ts))
+            result = select_query(dbname, 'where time >{}'.format(ts))
 
             if result is not None:
                 result[TIME] = result.index.map(lambda x: str(x).split('+')[0])

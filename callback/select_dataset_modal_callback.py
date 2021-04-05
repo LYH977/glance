@@ -465,7 +465,7 @@ def register_update_new_column(app):
                 data = collection.temp.head(5).to_dict('records')
                 columns = [{'name': i, 'id': i} for i in collection.temp.columns]
                 toast = {
-                    'children': f'{name} is successfully added.',
+                    'children': f"Column '{name}' is successfully added.",
                     'is_open': True,
                     'icon': 'success',
                     'header': 'SUCCESS'

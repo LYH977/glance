@@ -21,16 +21,16 @@ def parse_contents(contents, filename):
     try:
         if 'csv' in filename:
             # Assume that the user uploaded a CSV file
-            collection.temp = pd.read_csv(
-                io.StringIO(decoded.decode('utf-8')))
-        elif 'xls' in filename:
+            collection.temp = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+        elif 'xls' in filename :
             # Assume that the user uploaded an data file
-            collection.temp = pd.read_data(io.BytesIO(decoded))
+            collection.temp = pd.read_excel(io.BytesIO(decoded))
     except Exception as e:
         print(e)
         return html.Div([
             'There was an error processing this file.'
         ])
+    collection.temp = collection.temp.dropna()
     return preview_markup(filename)
 
 #############################################################################################################################################
@@ -55,7 +55,8 @@ def register_update_preview(app):
                 zip(list_of_contents, list_of_names)
             ]
             options = [{"label": i, "value": i} for i in collection.temp.columns]
-            collection.temp = collection.temp.dropna()
+            # collection.temp = collection.temp.dropna()
+            # print(collection.temp)
             collection.temp = collection.temp.reset_index(drop=True)
             return children, dt_dropdown_markup(options)
         elif input_type =='upload-button':
@@ -207,6 +208,7 @@ def register_handle_upload_click(app):
     )
     def update_handle_upload_click(click, dt, input, name, tags):
         dataset = collection.temp
+        print(dataset)
         pd.options.mode.chained_assignment = None
         dataset[dt] = dataset[dt].map(lambda x : datetime.strptime(str(x), input).strftime('%Y-%m-%d %H:%M:%S.%f'))
 
