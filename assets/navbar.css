@@ -1,0 +1,20 @@
+.nav-item {
+   cursor: pointer;
+   border-radius: 50%;
+   background: rgb(80, 80, 80);
+
+}
+
+.nav-item:hover {
+   filter: brightness(120%);
+
+}
+
+.fa {
+  display: inline-block;
+  border-radius: 60px;
+  padding: 0.5em 0.6em;
+  cursor: pointer;
+
+}
+
