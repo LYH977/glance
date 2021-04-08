@@ -21,7 +21,7 @@ import os
 import pandas as pd
 import redis
 import numpy as np
-
+import gif
 
 # pport = 'redis-12571.c1.ap-southeast-1-1.ec2.cloud.redislabs.com:12571'
 # redis_instance = redis.StrictRedis(
@@ -59,20 +59,34 @@ df = pd.DataFrame(
 # task.update_data(df.to_dict())
 
 data = pd.read_csv('C:/Users/FORGE-15/PycharmProjects/glance/datasets/time-series-19-covid-combined.csv')
-# fig = px.scatter_mapbox(
-#         data, lat = 'Lat',
-#         lon = 'Long',
-#         size = 'Confirmed', size_max = 50,
-#         color = 'Deaths', color_continuous_scale = px.colors.sequential.Pinkyl,
-#         hover_name = 'Country/Region',
-#         mapbox_style = 'dark', zoom=1,
-#         animation_frame = 'Date',
-#     title='testing'
-#         # animation_group="Province/State",
-#         # width=swidth ,
-#         # hover_data=['Active', 'Confirmed']
-#         # custom_data=['Date']
-#     )
+fig = px.scatter_mapbox(
+        data, lat = 'Lat',
+        lon = 'Long',
+        size = 'Confirmed', size_max = 50,
+        color = 'Deaths', color_continuous_scale = px.colors.sequential.Pinkyl,
+        hover_name = 'Country/Region',
+        mapbox_style = 'dark', zoom=1,
+        title='testing'
+        # animation_group="Province/State",
+        # width=swidth ,
+        # hover_data=['Active', 'Confirmed']
+        # custom_data=['Date']
+    )
+fig.layout.margin.t = 0
+fig.layout.margin.b = 0
+fig.layout.margin.r = 0
+fig.layout.margin.l = 0
+fig.layout.title.pad.t = 0
+fig.layout.title.pad.b = 0
+fig.layout.title.pad.r = 0
+fig.layout.title.pad.l = 0
+fig.layout.title.font.color = 'red'
+fig.layout.title.x = 0.05
+
+
+
+
+
 # fig.layout.coloraxis.colorbar.bgcolor = 'rgba(255,255,255,0.7)'
 # fig.layout.coloraxis.colorbar.xanchor = 'right'
 # fig.layout.coloraxis.colorbar.xpad = 10
@@ -116,13 +130,13 @@ layout = dbc.Jumbotron(
 
         # dcc.Store(id='testing-js', data=fig),
         # dcc.Store(id='testing-plot', data= fig),
-        # dcc.Graph(figure = fig,config={
-        #             # 'modeBarButtonsToRemove': ['pan2d','select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox','toggleHover','toImage'],
-        #             # 'displaylogo': False,
-        #             # 'responsive': False,
-        #             'editable': True,
-        #             # 'displayModeBar': False
-        #         }),
+        dcc.Graph(figure = fig,config={
+                    # 'modeBarButtonsToRemove': ['pan2d','select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox','toggleHover','toImage'],
+                    # 'displaylogo': False,
+                    # 'responsive': False,
+                    # 'editable': True,
+                    'displayModeBar': False
+                }),
         # dbc.DropdownMenu(
         #     label=html.I(
         #                 className="fa fa-cog fa-lg",
@@ -230,7 +244,29 @@ app.clientside_callback(
 )
 
 
+@gif.frame
+def plot(data, datei):
+    fig = px.scatter_mapbox(
+        data, lat='Lat',
+        lon='Long',
+        size='Confirmed', size_max=50,
+        color='Deaths', color_continuous_scale=px.colors.sequential.Pinkyl,
+        hover_name='Country/Region',
+        mapbox_style='dark', zoom=1,
+        title=datei
 
+    )
+    fig.layout.margin.t = 0
+    fig.layout.margin.b = 0
+    fig.layout.margin.r = 0
+    fig.layout.margin.l = 0
+    fig.layout.title.pad.t = 0
+    fig.layout.title.pad.b = 0
+    fig.layout.title.pad.r = 0
+    fig.layout.title.pad.l = 0
+    fig.layout.title.font.color = 'red'
+    fig.layout.title.x = 0.05
+    return fig
 
 
 @app.callback(
@@ -239,6 +275,14 @@ app.clientside_callback(
 )
 def open_toast(n):
     if n:
+        timeframes = ['1/22/2020', '1/23/2020', '1/24/2020', '1/25/2020', '1/26/2020', '1/27/2020', '1/28/2020', ]
+        frames = []
+        for i in range(7):
+            temp = data.loc[data['Date'] == timeframes[i]]
+            frame = plot(temp, timeframes[i])
+            frames.append(frame)
+        gif.save(frames, 'example.gif', duration=100)
+
         return True
     return False
 
