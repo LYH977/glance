@@ -22,6 +22,8 @@ import pandas as pd
 import redis
 import numpy as np
 import gif
+import cv2
+from base64 import b64encode
 
 # pport = 'redis-12571.c1.ap-southeast-1-1.ec2.cloud.redislabs.com:12571'
 # redis_instance = redis.StrictRedis(
@@ -39,6 +41,7 @@ from datetime import datetime
 # dt = datetime.fromtimestamp(s).strftime('%Y-%m-%d %H:%M:%S.%f')
 # print(dt)
 from components.visualization import create_figure
+
 
 redis_instance = redis.StrictRedis.from_url(os.environ['REDIS_URL'])
 N = 100
@@ -266,6 +269,7 @@ def plot(data, datei):
     fig.layout.title.pad.l = 0
     fig.layout.title.font.color = 'red'
     fig.layout.title.x = 0.05
+    fig.write_image("yourfile.png")
     return fig
 
 
@@ -276,12 +280,50 @@ def plot(data, datei):
 def open_toast(n):
     if n:
         timeframes = ['1/22/2020', '1/23/2020', '1/24/2020', '1/25/2020', '1/26/2020', '1/27/2020', '1/28/2020', ]
+        encodings = []
         frames = []
+        # path = r'C:\Users\FORGE-15\Desktop\images\1984.PNG'
+        # img = cv2.imread(path)
+        # print(img)
+
         for i in range(7):
             temp = data.loc[data['Date'] == timeframes[i]]
-            frame = plot(temp, timeframes[i])
-            frames.append(frame)
-        gif.save(frames, 'example.gif', duration=100)
+            fig = px.scatter_mapbox(
+                temp, lat='Lat',
+                lon='Long',
+                size='Confirmed', size_max=50,
+                color='Deaths', color_continuous_scale=px.colors.sequential.Pinkyl,
+                hover_name='Country/Region',
+                mapbox_style='dark', zoom=1,
+                title=timeframes[i]
+            )
+            fig.layout.margin.t = 0
+            fig.layout.margin.b = 0
+            fig.layout.margin.r = 0
+            fig.layout.margin.l = 0
+            fig.layout.title.pad.t = 0
+            fig.layout.title.pad.b = 0
+            fig.layout.title.pad.r = 0
+            fig.layout.title.pad.l = 0
+            fig.layout.title.font.color = 'red'
+            fig.layout.title.y = 0.05
+
+            img_bytes = fig.to_image(format="png")
+            encoding = b64encode(img_bytes).decode()
+            encodings.append(encoding)
+
+        for e in encodings:
+            nparr = np.fromstring(base64.b64decode(e), np.uint8)
+            img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            height, width, layers = img.shape
+            size = (width, height)
+            frames.append(img)
+
+        pathout = 'C:/Users/FORGE-15/Downloads/test.mp4'
+        out = cv2.VideoWriter(pathout, cv2.VideoWriter_fourcc(*'mp4v'), 1 , size)
+        for i in range(len(frames)):
+            out.write(frames[i])
+        out.release()
 
         return True
     return False
