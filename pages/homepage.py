@@ -8,6 +8,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
 import plotly.express as px
+import plotly.graph_objects as go
 
 from app import app
 from dash.dependencies import Input, Output, State, ClientsideFunction
@@ -23,7 +24,8 @@ import redis
 import numpy as np
 import gif
 import cv2
-from base64 import b64encode
+
+
 
 # pport = 'redis-12571.c1.ap-southeast-1-1.ec2.cloud.redislabs.com:12571'
 # redis_instance = redis.StrictRedis(
@@ -69,7 +71,8 @@ fig = px.scatter_mapbox(
         color = 'Deaths', color_continuous_scale = px.colors.sequential.Pinkyl,
         hover_name = 'Country/Region',
         mapbox_style = 'dark', zoom=1,
-        title='testing'
+        title='testing',
+        animation_frame='Date',
         # animation_group="Province/State",
         # width=swidth ,
         # hover_data=['Active', 'Confirmed']
@@ -84,9 +87,12 @@ fig.layout.title.pad.b = 0
 fig.layout.title.pad.r = 0
 fig.layout.title.pad.l = 0
 fig.layout.title.font.color = 'red'
-fig.layout.title.x = 0.05
+fig.layout.title.y = 0.98
+fig.layout.title.x = 0.02
+# print((fig.frames))
 
-
+fig.layout.sliders[0].visible = False
+fig.layout.updatemenus[0].visible = False
 
 
 
@@ -133,49 +139,15 @@ layout = dbc.Jumbotron(
 
         # dcc.Store(id='testing-js', data=fig),
         # dcc.Store(id='testing-plot', data= fig),
-        dcc.Graph(figure = fig,config={
+        dcc.Graph(id='hp-fig', figure = fig, config={
                     # 'modeBarButtonsToRemove': ['pan2d','select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox','toggleHover','toImage'],
                     # 'displaylogo': False,
                     # 'responsive': False,
                     # 'editable': True,
                     'displayModeBar': False
                 }),
-        # dbc.DropdownMenu(
-        #     label=html.I(
-        #                 className="fa fa-cog fa-lg",
-        #                 id= f'setting-btn-{create_clicks}',
-        #                 n_clicks=0,
-        #                 style = {'color': 'white', 'cursor':'pointer'}
-        #             ),
-        #     children=[
-        #         dbc.DropdownMenuItem(
-        #             daq.BooleanSwitch(
-        #                 id={'type': 'legend-theme', 'index': create_clicks},
-        #                 on=False,
-        #                 color="#000000",
-        #                 label='Legend Theme'
-        #             ),
-        #             header = True
-        #         ),
-        #         dbc.DropdownMenuItem(
-        #             daq.BooleanSwitch(
-        #                 id={'type': 'live-mode', 'index': create_clicks},
-        #                 on=False,
-        #                 color="#9B51E0",
-        #                 label=f'Live Mode {create_clicks}'
-        #
-        #             )
-        #             ,
-        #             header = True
-        #         ),
-        #         dbc.DropdownMenuItem(
-        #             dbc.Button('Delete', id={'type': 'dlt-btn', 'index': create_clicks},
-        #                        color="danger", className="mr-1")
-        #             ,
-        #             header = True
-        #         ),
-        #     ],
-        # ),
+        html.A('Download test.mp4', download='test.mp4', href='/assets/test.mp4'),
+
         html.Button('client', id='client-btn'),
         html.P(
             "initial\n1",
@@ -216,7 +188,7 @@ def update_output(click):
     if click is not None:
         # lala = redis_instance.hset( "new" )
         lala = redis_instance.get('new').decode("utf-8")
-        print('see here:',lala)
+        # print('see here:',lala)
 
         return 'dd'
 
@@ -225,7 +197,7 @@ def update_output(click):
               Input('test2', 'n_clicks'))
 def update_output(click):
     if click is not None:
-        print('clicked test2')
+        # print('clicked test2')
         task.update_data.delay(2)
         return 'spider'
 
@@ -268,7 +240,8 @@ def plot(data, datei):
     fig.layout.title.pad.r = 0
     fig.layout.title.pad.l = 0
     fig.layout.title.font.color = 'red'
-    fig.layout.title.x = 0.05
+    fig.layout.title.y = 0.98
+    fig.layout.title.x = 0.02
     fig.write_image("yourfile.png")
     return fig
 
@@ -276,54 +249,56 @@ def plot(data, datei):
 @app.callback(
     Output("positioned-toast", "is_open"),
     [Input("positioned-toast-toggle", "n_clicks")],
+    State('hp-fig', 'figure')
 )
-def open_toast(n):
+def open_toast(n, hp_fig):
     if n:
-        timeframes = ['1/22/2020', '1/23/2020', '1/24/2020', '1/25/2020', '1/26/2020', '1/27/2020', '1/28/2020', ]
         encodings = []
         frames = []
-        # path = r'C:\Users\FORGE-15\Desktop\images\1984.PNG'
-        # img = cv2.imread(path)
-        # print(img)
 
-        for i in range(7):
-            temp = data.loc[data['Date'] == timeframes[i]]
-            fig = px.scatter_mapbox(
-                temp, lat='Lat',
-                lon='Long',
-                size='Confirmed', size_max=50,
-                color='Deaths', color_continuous_scale=px.colors.sequential.Pinkyl,
-                hover_name='Country/Region',
-                mapbox_style='dark', zoom=1,
-                title=timeframes[i]
-            )
-            fig.layout.margin.t = 0
-            fig.layout.margin.b = 0
-            fig.layout.margin.r = 0
-            fig.layout.margin.l = 0
-            fig.layout.title.pad.t = 0
-            fig.layout.title.pad.b = 0
-            fig.layout.title.pad.r = 0
-            fig.layout.title.pad.l = 0
-            fig.layout.title.font.color = 'red'
-            fig.layout.title.y = 0.05
+        # fig = px.scatter_mapbox(
+        #     data, lat='Lat',
+        #     lon='Long',
+        #     size='Confirmed', size_max=50,
+        #     color='Deaths', color_continuous_scale=px.colors.sequential.Pinkyl,
+        #     hover_name='Country/Region',
+        #     mapbox_style='dark', zoom=1,
+        #     animation_frame='Date',
+        #     title='timeframes[i]'
+        # )
+        fig.layout.margin.t = 0
+        fig.layout.margin.b = 0
+        fig.layout.margin.r = 0
+        fig.layout.margin.l = 0
+        fig.layout.title.pad.t = 0
+        fig.layout.title.pad.b = 0
+        fig.layout.title.pad.r = 0
+        fig.layout.title.pad.l = 0
+        fig.layout.title.font.color = 'red'
+        fig.layout.title.y = 0.98
+        fig.layout.title.x = 0.02
+        fig.layout.sliders[0].visible = False
+        fig.layout.updatemenus[0].visible = False
 
-            img_bytes = fig.to_image(format="png")
-            encoding = b64encode(img_bytes).decode()
-            encodings.append(encoding)
+        task.export_data.delay(hp_fig)
 
-        for e in encodings:
-            nparr = np.fromstring(base64.b64decode(e), np.uint8)
-            img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-            height, width, layers = img.shape
-            size = (width, height)
-            frames.append(img)
-
-        pathout = 'C:/Users/FORGE-15/Downloads/test.mp4'
-        out = cv2.VideoWriter(pathout, cv2.VideoWriter_fourcc(*'mp4v'), 1 , size)
-        for i in range(len(frames)):
-            out.write(frames[i])
-        out.release()
+        # temp = len(fig.frames)
+        # for i in range(5):
+        #     fig2 = go.Figure(data=fig.frames[i].data[0], layout=fig.layout)
+        #     fig2.layout.title.text = fig.frames[i].name
+        #     img_bytes = fig2.to_image(format="png")
+        #     encodings.append(img_bytes)
+        # for e in encodings:
+        #     nparr = np.fromstring(e, np.uint8)
+        #     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        #     height, width, layers = img.shape
+        #     size = (width, height)
+        #     frames.append(img)
+        # pathout = 'C:/Users/FORGE-15/Downloads/test.mp4'
+        # out = cv2.VideoWriter(pathout, cv2.VideoWriter_fourcc(*'mp4v'), 2 , size)
+        # for i in range(len(frames)):
+        #     out.write(frames[i])
+        # out.release()
 
         return True
     return False

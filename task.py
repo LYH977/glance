@@ -10,6 +10,10 @@ from celery import Celery
 import json
 import pandas as pd
 import numpy as np
+import plotly.graph_objects as go
+import random
+
+import cv2
 
 from utils.constant import FRAME, TIME, NOTIFICATION_PARAM, TAG, FIELD, SCATTER_MAP, SCATTER_GEO, SCATTER_MAP_CONSTANT, \
     NAME, LATITUDE, LONGITUDE, MAXIMUM, SCATTER_GEO_CONSTANT, MINIMUM, BAR_CHART_RACE, DENSITY, BAR_CHART_RACE_CONSTANT, \
@@ -111,6 +115,13 @@ def setup_periodic_tasks(sender, **kwargs):
         process_dataset.s(),
         name="Process Dataset",
     )
+    sender.add_periodic_task(
+        15,  # seconds
+        # an alternative to the @app.task decorator:
+        # wrap the function in the app.task function
+        export_data.s(),
+        name="Export Data",
+    )
 
 @app.task
 def process_dataset(create_click, dataframe, vtype, parameter, now):
@@ -197,17 +208,36 @@ def process_dataset(create_click, dataframe, vtype, parameter, now):
 def update_data(test):
     print("----> update_data")
     N = 100
-    df = pd.DataFrame(
-        {
-            "time": [
-                datetime.datetime.now() - datetime.timedelta(seconds=i)
-                for i in range(N)
-            ],
-            "value": np.random.randn(N),
-        }
-    )
+    df = pd.DataFrame( {"time": [datetime.datetime.now() - datetime.timedelta(seconds=i) for i in range(N) ], "value": np.random.randn(N),})
+    redis_instance.set( 'new', json.dumps( df.to_dict(), cls=plotly.utils.PlotlyJSONEncoder, )  )
 
-    redis_instance.set( 'new', json.dumps(
-            df.to_dict(),
-            cls=plotly.utils.PlotlyJSONEncoder,
-        )  )
+
+
+@app.task
+def export_data(fig):
+    r = random.randint(0,100)
+    images = []
+    frames = []
+    num_frames = len(fig['frames'])
+    for i in range(10):
+        # temp = data.loc[data['Date'] == timeframes[i]]
+        # fig['data'][0] = fig['frames'][i]['data'][0]
+        fig2 = go.Figure(data=fig['frames'][i]['data'][0], layout=fig['layout'])
+        fig2.layout.title.text = fig['frames'][i]['name']
+        img_bytes = fig2.to_image(format="png")
+        print(f'loading img {r}' )
+        images.append(img_bytes)
+
+    for im in images:
+        nparr = np.fromstring(im, np.uint8)
+        frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        height, width, layers = frame.shape
+        size = (width, height)
+        frames.append(frame)
+
+    pathout = 'assets/export/test.mp4'
+    out = cv2.VideoWriter(pathout, cv2.VideoWriter_fourcc(*'mp4v'), 2, size)
+    for i in range(len(frames)):
+        out.write(frames[i])
+    out.release()
+    print('done export')
