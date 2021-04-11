@@ -12,6 +12,7 @@ import plotly.graph_objects as go
 
 from app import app
 from dash.dependencies import Input, Output, State, ClientsideFunction
+from dash.exceptions import PreventUpdate
 
 import task
 from celery.result import AsyncResult
@@ -24,6 +25,8 @@ import redis
 import numpy as np
 import gif
 import cv2
+from dash_extensions import Download
+
 
 
 
@@ -43,8 +46,10 @@ from datetime import datetime
 # dt = datetime.fromtimestamp(s).strftime('%Y-%m-%d %H:%M:%S.%f')
 # print(dt)
 from components.visualization import create_figure
+from utils.export.export_data import export_mp4
+from utils.method import get_ctx_type
 
-
+print(int(datetime.now().timestamp()) )
 redis_instance = redis.StrictRedis.from_url(os.environ['REDIS_URL'])
 N = 100
 df = pd.DataFrame(
@@ -137,7 +142,7 @@ layout = dbc.Jumbotron(
     [   toast,
         # html.Span(id='submit-button', n_clicks=0, className='fa fa-send'),
 
-        # dcc.Store(id='testing-js', data=fig),
+        dcc.Store(id='testing-js', data=fig),
         # dcc.Store(id='testing-plot', data= fig),
         dcc.Graph(id='hp-fig', figure = fig, config={
                     # 'modeBarButtonsToRemove': ['pan2d','select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox','toggleHover','toImage'],
@@ -146,7 +151,16 @@ layout = dbc.Jumbotron(
                     # 'editable': True,
                     'displayModeBar': False
                 }),
-        html.A('Download test.mp4', download='test.mp4', href='/assets/test.mp4'),
+        html.A('Download test.mp4', id='export-link', download='test.mp4', href='/assets/test.mp4', hidden= True),
+        html.Button('export btn', id='export-btn'),
+        dcc.Store(id='export-name', data= None),
+
+        dcc.Interval(
+                id= 'export-interval',
+                interval=1000,
+                n_intervals=0,
+                disabled=True
+            ),
 
         html.Button('client', id='client-btn'),
         html.P(
@@ -247,59 +261,95 @@ def plot(data, datei):
 
 
 @app.callback(
-    Output("positioned-toast", "is_open"),
+    Output("positioned-toast", "is_open") ,
     [Input("positioned-toast-toggle", "n_clicks")],
-    State('hp-fig', 'figure')
+    prevent_initial_call=True
 )
-def open_toast(n, hp_fig):
+def open_toast(n):
     if n:
-        encodings = []
-        frames = []
-
-        # fig = px.scatter_mapbox(
-        #     data, lat='Lat',
-        #     lon='Long',
-        #     size='Confirmed', size_max=50,
-        #     color='Deaths', color_continuous_scale=px.colors.sequential.Pinkyl,
-        #     hover_name='Country/Region',
-        #     mapbox_style='dark', zoom=1,
-        #     animation_frame='Date',
-        #     title='timeframes[i]'
-        # )
-        fig.layout.margin.t = 0
-        fig.layout.margin.b = 0
-        fig.layout.margin.r = 0
-        fig.layout.margin.l = 0
-        fig.layout.title.pad.t = 0
-        fig.layout.title.pad.b = 0
-        fig.layout.title.pad.r = 0
-        fig.layout.title.pad.l = 0
-        fig.layout.title.font.color = 'red'
-        fig.layout.title.y = 0.98
-        fig.layout.title.x = 0.02
-        fig.layout.sliders[0].visible = False
-        fig.layout.updatemenus[0].visible = False
-
-        task.export_data.delay(hp_fig)
-
-        # temp = len(fig.frames)
-        # for i in range(5):
-        #     fig2 = go.Figure(data=fig.frames[i].data[0], layout=fig.layout)
-        #     fig2.layout.title.text = fig.frames[i].name
-        #     img_bytes = fig2.to_image(format="png")
-        #     encodings.append(img_bytes)
-        # for e in encodings:
-        #     nparr = np.fromstring(e, np.uint8)
-        #     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-        #     height, width, layers = img.shape
-        #     size = (width, height)
-        #     frames.append(img)
-        # pathout = 'C:/Users/FORGE-15/Downloads/test.mp4'
-        # out = cv2.VideoWriter(pathout, cv2.VideoWriter_fourcc(*'mp4v'), 2 , size)
-        # for i in range(len(frames)):
-        #     out.write(frames[i])
-        # out.release()
-
         return True
     return False
 
+
+
+@app.callback(
+    [
+        Output("export-link", "download"),
+        Output("export-link", "href"),
+        Output("export-link", "hidden"),
+        Output("export-btn", "hidden"),
+    ] ,
+    [Input("export-btn", "disabled")],
+    [State('export-name', 'data'), State('hp-fig', 'figure')],
+    prevent_initial_call=True
+
+)
+def open_toast(disabled, name, fig):
+    if disabled:
+        export_mp4(fig, name)
+        dl = f'{name}.mp4'
+        path = f'/assets/export/{dl}'
+        print('habis href')
+        return dl, path, False, True
+    else:
+        return None, None, True, dash.no_update
+
+
+@app.callback(
+    [
+        Output("export-btn", "disabled"),
+        Output("export-interval", "disabled"),
+        Output("export-name", "data"),
+    ] ,
+    [Input("export-btn", "n_clicks")],
+    State("export-btn", "disabled"),
+    prevent_initial_call=True
+)
+def open_toast(btn_click, disabled):
+    # print('called')
+    #
+    # ctx = dash.callback_context
+    # if not ctx.triggered:
+    #     input_type = 'No input yet'
+    # else:
+    #     input_type = get_ctx_type(ctx)
+
+    if  btn_click and not disabled :
+        now = int(datetime.now().timestamp())
+        print('btn part')
+        return True, False, now
+
+    raise PreventUpdate
+
+
+
+
+
+
+
+# @app.callback(
+#     Output("export-link", "hidden"),
+#     [Input("export-btn", "n_clicks"), Input("export-link", "href")],
+#     prevent_initial_call=True
+# )
+# def open_toast( click, href):
+#     ctx = dash.callback_context
+#     if not ctx.triggered:
+#         input_type = 'No input yet'
+#     else:
+#         input_type = get_ctx_type(ctx)
+#     if input_type == 'export-btn' and click:
+#         return True
+#     if input_type == 'export-link' and href:
+#         return False
+#     raise PreventUpdate
+
+
+
+@app.callback(
+    Output("export-interval", "n_intervals"),
+    [Input("export-link", "n_clicks")],
+    prevent_initial_call=True
+)
+def open_toast( click):
+    return 0

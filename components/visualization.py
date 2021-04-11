@@ -370,7 +370,10 @@ def collapse_markup(create_clicks, count):
 def notif_badge_markup(id, number, create_clicks):
     return dbc.Col(
         dbc.Button(
-            [id, dbc.Badge(number, color='light', className="ml-1", pill=True, id={'type': f'{id}-badge', 'index': create_clicks})],
+            [
+                id,
+                dbc.Badge(number, color='light', className="ml-1", pill=True, id={'type': f'{id}-badge', 'index': create_clicks})
+            ],
             color="dark",
             id={'type': f'{id}-notif', 'index': create_clicks},
         ),

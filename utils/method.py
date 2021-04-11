@@ -75,18 +75,11 @@ def unpack_parameter(param):
     id  =[]
     multi  =[]
     for p_id, p_info in param.items():
-        # print('p_id',p_id)
-        # print('p_info',p_info)
 
         label.append(p_info['label'])
         id.append(p_id)
         multi.append(p_info['multi'])
-    # print('label',label)
-    # print('id', id)
-    # print('multi',multi)
+
 
     return zip(label, id, multi)
 
-# def calculate_max_value (df):
-#     df_frame = df[FRAME].unique()
-#     return df_frame.shape[0] - 1
