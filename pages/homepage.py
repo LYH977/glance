@@ -1,34 +1,23 @@
 import datetime
-import json
 
 import dash
 
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
-import dash_table
 import plotly.express as px
-import plotly.graph_objects as go
 
 from app import app
 from dash.dependencies import Input, Output, State, ClientsideFunction
 from dash.exceptions import PreventUpdate
 
 import task
-from celery.result import AsyncResult
 
-import base64
-import io
 import os
 import pandas as pd
 import redis
 import numpy as np
 import gif
-import cv2
-from dash_extensions import Download
-
-
-
 
 # pport = 'redis-12571.c1.ap-southeast-1-1.ec2.cloud.redislabs.com:12571'
 # redis_instance = redis.StrictRedis(
@@ -45,11 +34,8 @@ from datetime import datetime
 # s= 1611918340073422000/  1000000000.0
 # dt = datetime.fromtimestamp(s).strftime('%Y-%m-%d %H:%M:%S.%f')
 # print(dt)
-from components.visualization import create_figure
 from utils.export.export_data import export_mp4
-from utils.method import get_ctx_type
 
-print(int(datetime.now().timestamp()) )
 redis_instance = redis.StrictRedis.from_url(os.environ['REDIS_URL'])
 N = 100
 df = pd.DataFrame(
@@ -151,12 +137,17 @@ layout = dbc.Jumbotron(
                     # 'editable': True,
                     'displayModeBar': False
                 }),
-        html.A('Download test.mp4', id='export-link', download='test.mp4', href='/assets/test.mp4', hidden= True),
-        html.Button('export btn', id='export-btn'),
-        dcc.Store(id='export-name', data= None),
+        html.A('Download test.mp4', id='export-test-link',
+               # download='1618159910.mp4',
+               # href='/assets/export/1618159910.mp4',
+               download='',
+               href='',
+               hidden= True),
+        html.Button('export btn', id='export-test-btn'),
+        dcc.Store(id='export-test-name', data= None),
 
         dcc.Interval(
-                id= 'export-interval',
+                id= 'export-test-interval',
                 interval=1000,
                 n_intervals=0,
                 disabled=True
@@ -270,17 +261,17 @@ def open_toast(n):
         return True
     return False
 
-
+# ############################################################################################################################################
 
 @app.callback(
     [
-        Output("export-link", "download"),
-        Output("export-link", "href"),
-        Output("export-link", "hidden"),
-        Output("export-btn", "hidden"),
+        Output("export-test-link", "download"),
+        Output("export-test-link", "href"),
+        Output("export-test-link", "hidden"),
+        Output("export-test-btn", "hidden"),
     ] ,
-    [Input("export-btn", "disabled")],
-    [State('export-name', 'data'), State('hp-fig', 'figure')],
+    [Input("export-test-btn", "disabled")],
+    [State('export-test-name', 'data'), State('hp-fig', 'figure')],
     prevent_initial_call=True
 
 )
@@ -289,7 +280,7 @@ def open_toast(disabled, name, fig):
         export_mp4(fig, name)
         dl = f'{name}.mp4'
         path = f'/assets/export/{dl}'
-        print('habis href')
+        print(f'habis href {name}')
         return dl, path, False, True
     else:
         return None, None, True, dash.no_update
@@ -297,58 +288,27 @@ def open_toast(disabled, name, fig):
 
 @app.callback(
     [
-        Output("export-btn", "disabled"),
-        Output("export-interval", "disabled"),
-        Output("export-name", "data"),
+        Output("export-test-btn", "disabled"),
+        Output("export-test-interval", "disabled"),
+        Output("export-test-name", "data"),
     ] ,
-    [Input("export-btn", "n_clicks")],
-    State("export-btn", "disabled"),
+    [Input("export-test-btn", "n_clicks")],
+    State("export-test-btn", "disabled"),
     prevent_initial_call=True
 )
 def open_toast(btn_click, disabled):
-    # print('called')
-    #
-    # ctx = dash.callback_context
-    # if not ctx.triggered:
-    #     input_type = 'No input yet'
-    # else:
-    #     input_type = get_ctx_type(ctx)
 
     if  btn_click and not disabled :
         now = int(datetime.now().timestamp())
-        print('btn part')
         return True, False, now
 
     raise PreventUpdate
 
-
-
-
-
-
-
-# @app.callback(
-#     Output("export-link", "hidden"),
-#     [Input("export-btn", "n_clicks"), Input("export-link", "href")],
-#     prevent_initial_call=True
-# )
-# def open_toast( click, href):
-#     ctx = dash.callback_context
-#     if not ctx.triggered:
-#         input_type = 'No input yet'
-#     else:
-#         input_type = get_ctx_type(ctx)
-#     if input_type == 'export-btn' and click:
-#         return True
-#     if input_type == 'export-link' and href:
-#         return False
-#     raise PreventUpdate
-
-
+# ############################################################################################################################################
 
 @app.callback(
-    Output("export-interval", "n_intervals"),
-    [Input("export-link", "n_clicks")],
+    Output("export-test-interval", "n_intervals"),
+    [Input("export-test-link", "n_clicks")],
     prevent_initial_call=True
 )
 def open_toast( click):

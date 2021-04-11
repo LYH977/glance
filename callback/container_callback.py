@@ -1,24 +1,17 @@
-import json
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
-import dash_daq as daq
-from dash.dependencies import Input, Output, ALL, State, MATCH, ALLSMALLER
+from dash.dependencies import Input, Output, ALL, State, MATCH
 from dash.exceptions import PreventUpdate
 import time
 
 import task
-from components import visualization, select_dataset_modal, container
+from components import container
 from components.carousel import create_ca_img
-from components.visualization import create_figure, collapse_markup
 from utils import collection
-from utils.collection import visual_container, redis_instance
-from utils.method import get_ctx_type, get_ctx_property, get_ctx_value, get_ctx_index, formatted_time_value, \
-    to_nanosecond_epoch, select_query, get_last_timestamp
-from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CAROUSEL, CHOROPLETH, BAR_CHART_RACE, \
-    STANDARD_T_FORMAT, FRAME, TIME, MAXIMUM, MINIMUM, CAROUSEL_CONSTANT, ITEM
+from utils.collection import visual_container
+from utils.method import get_ctx_type, get_ctx_index, formatted_time_value
+from utils.constant import CAROUSEL, FRAME, TIME, CAROUSEL_CONSTANT, ITEM
 
 
 # update visualization container by appending or removing item from array

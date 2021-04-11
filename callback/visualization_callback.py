@@ -1,22 +1,20 @@
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 import pandas as pd
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
-import dash_daq as daq
-from dash.dependencies import Input, Output, ALL, State, MATCH, ALLSMALLER
+from dash.dependencies import Input, Output, State, MATCH
 from dash.exceptions import PreventUpdate
 
 import task
-from components import visualization, select_dataset_modal, container
-from components.visualization import create_figure, collapse_markup
+from components.visual.notifications.collapse import collapse_markup
+from components.visual.visualization import create_figure
 from utils import collection
-from utils.collection import visual_container, redis_instance
-from utils.method import get_ctx_type, get_ctx_property, get_ctx_value, get_ctx_index, formatted_time_value, \
-    to_nanosecond_epoch, select_query, get_last_timestamp
-from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CAROUSEL, CHOROPLETH, BAR_CHART_RACE, \
-    STANDARD_T_FORMAT, FRAME, TIME, MAXIMUM, MINIMUM, VISUAL_HEIGHT, COLLAPSE_HEIGHT
+from utils.collection import redis_instance
+from utils.export.export_data import export_mp4
+from utils.method import get_ctx_type, get_ctx_index, formatted_time_value, \
+    select_query, get_last_timestamp
+from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CHOROPLETH, BAR_CHART_RACE, \
+    FRAME, TIME, MAXIMUM, MINIMUM
 
 
 def change_frame(ftype, fig2, value):
@@ -569,15 +567,64 @@ def register_update_last_celery_key(app):
 
 # ############################################################################################################################################
 
-# # update live interval according to live switch
-# def register_update_legend_theme(app):
-#     @app.callback(
-#         [
-#             Output({'type': 'live-interval', 'index': MATCH}, 'disabled'),
-#             Output({'type': 'play-btn', 'index': MATCH}, 'disabled'),
-#         ],
-#         [Input({'type': 'live-mode', 'index': MATCH}, 'on')],
-#         prevent_initial_call=True
-#     )
-#     def update_live_mode(live):
-#         return not live, live
+def register_export_visual(app):
+    @app.callback(
+        [
+            Output({'type': 'export-link', 'index': MATCH}, 'download'),
+            Output({'type': 'export-link', 'index': MATCH}, 'href'),
+            Output({'type': 'export-link', 'index': MATCH}, 'hidden'),
+            Output({'type': 'export-btn', 'index': MATCH}, 'hidden'),
+        ],
+        [Input({'type': 'export-btn', 'index': MATCH}, 'disabled')],
+        [
+            State({'type': 'export-name', 'index': MATCH}, 'data'),
+            State({'type': 'visualization', 'index': MATCH}, 'figure')
+        ],
+        prevent_initial_call=True
+    )
+    def export_visual(disabled, name, fig):
+        if disabled:
+            export_mp4(fig, name)
+            dl = f'{name}.mp4'
+            # path = f'/assets/export/{dl}'
+            path = f'C:/Users/FORGE-15/PycharmProjects/glance/assets/export/{dl}'
+
+            print(f'habis href {name}')
+            return dl, path, False, True
+        else:
+            return None, None, True, dash.no_update
+
+# ############################################################################################################################################
+
+def register_handle_export_btn_click(app):
+    @app.callback(
+        [
+            Output({'type': 'export-btn', 'index': MATCH}, 'disabled'),
+            Output({'type': 'export-interval', 'index': MATCH}, 'disabled'),
+            Output({'type': 'export-name', 'index': MATCH}, 'data'),
+        ],
+        [Input({'type': 'export-btn', 'index': MATCH}, 'n_clicks')],
+        [
+            State({'type': 'export-btn', 'index': MATCH}, 'disabled'),
+        ],
+        prevent_initial_call=True
+    )
+    def handle_export_btn_click(btn_click, disabled):
+        if btn_click and not disabled:
+            now = int(datetime.now().timestamp())
+            print('btn part')
+            return True, False, now
+
+        raise PreventUpdate
+
+
+# ############################################################################################################################################
+
+def register_reset_export_interval(app):
+    @app.callback(
+        Output({'type': 'export-interval', 'index': MATCH}, 'n_intervals'),
+        [Input({'type': 'export-link', 'index': MATCH}, 'n_clicks')],
+        prevent_initial_call=True
+    )
+    def reset_export_interval(click):
+        return 0
