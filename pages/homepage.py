@@ -279,7 +279,8 @@ def open_toast(disabled, name, fig):
     if disabled:
         export_mp4(fig, name)
         dl = f'{name}.mp4'
-        path = f'/assets/export/{dl}'
+        # path = f'/assets/export/{dl}'
+        path =  app.get_asset_url(f'export/{dl}')
         print(f'habis href {name}')
         return dl, path, False, True
     else:

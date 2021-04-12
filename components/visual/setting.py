@@ -43,20 +43,27 @@ def setting_markup(create_clicks):
                                 html.Div([
                                     dbc.Button(
                                         'Generate MP4',
-                                        id = {'type': 'export-btn', 'index': create_clicks},
-                                        color = "info",
-                                        className = "mr-1"
+                                        id={'type': 'export-btn', 'index': create_clicks},
+                                        color="info",
+                                        className="mr-1"
                                     ),
+
+                                ]),
+                                header = True,
+                            ),
+                            dbc.DropdownMenuItem(
                                     html.A(
                                         'Download MP4',
-                                        id = {'type': 'export-link', 'index': create_clicks},
-                                        download = '',
-                                        href = '', #/assets/test.mp4
-                                        hidden = True
+                                        id={'type': 'export-link', 'index': create_clicks},
+                                        download='1618213227.mp4',
+                                        href='/assets/export/1618213227.mp4',  # /assets/test.mp4
+                                        style= {'width':'50%'},
                                     ),
-                                ]),
-
-                                header = True
+                                # header=True,
+                                className= 'export-link',
+                                style= {'display': 'none'},
+                                id = {'type': 'export-link-wrapper', 'index': create_clicks},
                             ),
+
                         ],
                     )

@@ -23,7 +23,10 @@ def configure_fig(fig):
     fig.layout.margin.l = 0
     fig.layout.updatemenus[0].showactive = True
     fig.layout.title.y = 0.98
-    fig.layout.title.x = 0.02
+    fig.layout.title.x = 0.9
+    fig.layout.title.text = fig['frames'][0]['name']
+    fig.layout.title.font.color = 'red'
+
     fig['layout']['uirevision'] = 1
     # fig.layout.autosize = False
 

@@ -18,16 +18,18 @@ from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CHOROPLETH, BAR_CH
 
 
 def change_frame(ftype, fig2, value):
-    if ftype == SCATTER_MAP:
-        fig2['data'][0] = fig2['frames'][value]['data'][0]
-    elif ftype == SCATTER_GEO:
-        fig2['data'] = fig2['frames'][value]['data']
-    elif ftype == BAR_CHART_RACE:
-        fig2['data'][0] = fig2['frames'][value]['data'][0]
-    elif ftype == DENSITY:
-        fig2['data'][0] = fig2['frames'][value]['data'][0]
-    elif ftype == CHOROPLETH:
-        fig2['data'][0] = fig2['frames'][value]['data'][0]
+    # if ftype == SCATTER_MAP:
+    #     fig2['data'][0] = fig2['frames'][value]['data'][0]
+    # elif ftype == SCATTER_GEO:
+    #     fig2['data'] = fig2['frames'][value]['data']
+    # elif ftype == BAR_CHART_RACE:
+    #     fig2['data'][0] = fig2['frames'][value]['data'][0]
+    # elif ftype == DENSITY:
+    #     fig2['data'][0] = fig2['frames'][value]['data'][0]
+    # elif ftype == CHOROPLETH:
+    #     fig2['data'][0] = fig2['frames'][value]['data'][0]
+    fig2['data'][0] = fig2['frames'][value]['data'][0]
+    fig2['layout']['title']['text'] = fig2['frames'][value]['name']
 
 def handleOutOfRangeNotif(celery, slider):
     length = len(celery)
@@ -572,7 +574,7 @@ def register_export_visual(app):
         [
             Output({'type': 'export-link', 'index': MATCH}, 'download'),
             Output({'type': 'export-link', 'index': MATCH}, 'href'),
-            Output({'type': 'export-link', 'index': MATCH}, 'hidden'),
+            Output({'type': 'export-link-wrapper', 'index': MATCH}, 'style'),
             Output({'type': 'export-btn', 'index': MATCH}, 'hidden'),
         ],
         [Input({'type': 'export-btn', 'index': MATCH}, 'disabled')],
@@ -587,12 +589,12 @@ def register_export_visual(app):
             export_mp4(fig, name)
             dl = f'{name}.mp4'
             # path = f'/assets/export/{dl}'
-            path = f'C:/Users/FORGE-15/PycharmProjects/glance/assets/export/{dl}'
+            path = app.get_asset_url(f'export/{dl}')
 
             print(f'habis href {name}')
-            return dl, path, False, True
+            return dl, path, {'display': 'block'}, True
         else:
-            return None, None, True, dash.no_update
+            return None, None, {'display': 'none'}, dash.no_update
 
 # ############################################################################################################################################
 

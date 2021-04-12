@@ -44,7 +44,10 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
             dbc.Row(
                 [
                     dbc.Col( name_section_markup(create_clicks),  width = 'auto'),
+
                     dbc.Col( setting_markup(create_clicks), width = 'auto' ),
+
+
                 ],
                 justify="around",
                 align= 'center',
@@ -56,11 +59,12 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
                 figure = figure,
                 config={
                     'modeBarButtonsToRemove': ['pan2d','select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox','toggleHover'],
-                    # 'displaylogo': False,
+                    'displaylogo': False,
                     # 'responsive': False,
                     # 'displayModeBar': False
                 }
             ),
+
             html.Div(
                 id={'type': 'option-wrapper', 'index': create_clicks},
                 className= 'option-wrapper',

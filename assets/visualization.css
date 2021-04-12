@@ -88,3 +88,28 @@
     align-items: center;
 }
 
+.export-link {
+    margin: 10px;
+    background: green;
+    outline: none;
+    width: auto;
+    border-radius: 5px;
+}
+.export-link a {
+    color: white;
+    text-decoration: none;
+}
+
+.export-link:hover {
+    background: green;
+    border-style: none;
+    outline: none;
+    filter: brightness(90%);
+
+}
+
+.export-link:focus {
+    border-style: none;
+    outline: none;
+}
+
