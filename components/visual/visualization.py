@@ -58,7 +58,11 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
                 id={'type': 'visualization', 'index': create_clicks},
                 figure = figure,
                 config={
-                    'modeBarButtonsToRemove': ['pan2d','select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox','toggleHover'],
+                    'modeBarButtonsToRemove': [
+                        'pan2d','select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox','toggleHover',
+                        'zoom2d','zoomIn2d', 'zoomOut2d',  'autoScale2d', 'resetScale2d', 'toggleSpikelines',
+                        'hoverClosestCartesian', 'hoverCompareCartesian', 'zoomInGeo', 'zoomOutGeo', 'hoverClosestGeo', 'resetGeo'
+                    ],
                     'displaylogo': False,
                     # 'responsive': False,
                     # 'displayModeBar': False
