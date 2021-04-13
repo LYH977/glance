@@ -61,6 +61,7 @@ def register_update_figure(app):
         [
             Input({'type': 'anim-slider', 'index': MATCH}, 'value'),
             Input({'type': 'legend-theme', 'index': MATCH}, 'on'),
+            Input({'type': 'mapbox-type', 'index': MATCH}, 'value'),
         ],
         [
             State({'type': 'my_param', 'index': MATCH}, 'data'),
@@ -70,7 +71,7 @@ def register_update_figure(app):
 
         ],
         prevent_initial_call=True)
-    def update_figure(value,legend, param, atmax, live, new_fig):
+    def update_figure(value,legend,mapbox, param, atmax, live, new_fig):
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
@@ -78,7 +79,6 @@ def register_update_figure(app):
         else:
             input_type = get_ctx_type(ctx)
             input_index = get_ctx_index(ctx)
-        # fig2 = new_fig
         if input_type == 'anim-slider':
             fig2 = new_fig
             val = value
@@ -87,18 +87,26 @@ def register_update_figure(app):
                 val = new_max - 1
             change_frame(param['vtype'], fig2, val)
             return fig2
+
         elif input_type == 'legend-theme':
             fig2 = new_fig
             if legend : #dark theme
-                fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(0,0,0,0.5)'
+                fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(0,0,0,0.75)'
                 fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(255,255,255,1)'
                 fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(255,255,255,1)'
             else: # light theme
-                fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(255,255,255,0.5)'
+                fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(255,255,255,0.75)'
                 fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(0,0,0,1)'
                 fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
             change_frame(param['vtype'], fig2, value)
             return fig2
+
+        elif input_type == 'mapbox-type':
+            fig2 = new_fig
+            fig2['layout']['mapbox']['style'] = mapbox
+            change_frame(param['vtype'], fig2, value)
+            return fig2
+
         else:
             raise PreventUpdate
 
@@ -263,6 +271,7 @@ def register_update_live_data(app):
         [
             Input({'type': 'live-interval', 'index': MATCH}, 'n_intervals'),
             Input({'type': 'legend-theme', 'index': MATCH}, 'on'),
+            Input({'type': 'mapbox-type', 'index': MATCH}, 'value'),
 
         ],
         [
@@ -276,7 +285,7 @@ def register_update_live_data(app):
         ],
         prevent_initial_call=True
     )
-    def update_live_data(live, legend, ts, format,  param, dbname, buffer, info):
+    def update_live_data(live, legend,mapbox,  ts, format,  param, dbname, buffer, info):
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
@@ -285,41 +294,44 @@ def register_update_live_data(app):
             input_type = get_ctx_type(ctx)
             input_index = get_ctx_index(ctx)
         # print(datetime.now(),' collection.live_processing', collection.live_processing)
-        if input_type =='live-interval':
-            if collection.live_processing[input_index] is True:
-                raise PreventUpdate
-            else:
-                collection.live_processing[input_index] = True
-                result = select_query(dbname, ' where time >{}'.format(ts))
+        if input_type =='live-interval' and collection.live_processing[input_index] is False:
+            # if collection.live_processing[input_index] is True:
+            #     raise PreventUpdate
+            # else:
+            collection.live_processing[input_index] = True
+            result = select_query(dbname, ' where time >{}'.format(ts))
+            if result is not None:
+                result[TIME] = result.index.map(lambda x: str(x).split('+')[0])
+                result[FRAME] = result[TIME].map(lambda x: formatted_time_value(x, format))
+                copydf = result.copy(deep=True)
+                for col in info['numeric_col']:
+                    copydf[col] = pd.to_numeric(copydf[col])
+                for exp in info['expression']:
+                    new_col = copydf.eval( exp['equation'])
+                    result[ exp['name'] ] = new_col
+                last_nano = get_last_timestamp(result[TIME])
+                collection.data[input_index] = collection.data[input_index].append(result, ignore_index=True)
+                fig = create_figure(collection.data[input_index], param['parameter'], param['vtype'])
+                return last_nano, fig
+            collection.live_processing[input_index] = False
+            raise PreventUpdate
 
-                if result is not None:
-                    result[TIME] = result.index.map(lambda x: str(x).split('+')[0])
-                    result[FRAME] = result[TIME].map(lambda x: formatted_time_value(x, format))
-                    copydf = result.copy(deep=True)
-                    for col in info['numeric_col']:
-                        copydf[col] = pd.to_numeric(copydf[col])
-                    for exp in info['expression']:
-                        new_col = copydf.eval( exp['equation'])
-                        result[ exp['name'] ] = new_col
-                    last_nano = get_last_timestamp(result[TIME])
-                    collection.data[input_index] = collection.data[input_index].append(result, ignore_index=True)
-                    fig = create_figure(collection.data[input_index], param['parameter'], param['vtype'])
-                    return last_nano, fig
-
-                else:
-                    collection.live_processing[input_index] = False
-                    raise PreventUpdate
         elif input_type == 'legend-theme':
             fig2 = buffer
             if legend : #dark theme
-                fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(0,0,0,0.5)'
+                fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(0,0,0,0.75)'
                 fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(255,255,255,1)'
                 fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(255,255,255,1)'
             else: # light theme
-                fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(255,255,255,0.5)'
+                fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(255,255,255,0.75)'
                 fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(0,0,0,1)'
                 fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
             return dash.no_update,fig2
+
+        elif input_type == 'mapbox-type':
+            fig2 = buffer
+            fig2['layout']['mapbox']['style'] = mapbox
+            return dash.no_update, fig2
 
         raise PreventUpdate
 

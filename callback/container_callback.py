@@ -24,7 +24,6 @@ def register_update_visual_container(app):
         [
             Input('create-visual', 'n_clicks'),
             Input({'type': 'visualization-container', 'index': ALL}, 'style'),
-
         ],
         [
             State('visual-collection', 'children') ,
@@ -117,7 +116,7 @@ def register_update_visual_container(app):
 
 # update play button label according to playing status
 
-def test(app):
+def register_delete_animation(app):
     @app.callback(
         Output({'type': 'visualization-container', 'index': MATCH}, 'style'),
         [Input({'type': 'dlt-btn', 'index': MATCH}, 'n_clicks')],
@@ -125,7 +124,7 @@ def test(app):
 
         prevent_initial_call=True
     )
-    def update_play_btn(click, style):
+    def delete_animation(click, style):
         if click is not None:
             news = style
             news['opacity'] = 0

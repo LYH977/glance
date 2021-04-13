@@ -78,6 +78,8 @@ fig.layout.title.pad.b = 0
 fig.layout.title.pad.r = 0
 fig.layout.title.pad.l = 0
 fig.layout.title.font.color = 'red'
+fig.layout.title.font.size = 50
+
 fig.layout.title.y = 0.98
 fig.layout.title.x = 0.02
 # print((fig.frames))

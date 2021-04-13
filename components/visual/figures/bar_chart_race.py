@@ -12,9 +12,12 @@ def create_bar_chart_race(data, parameter):
         value_column = parameter[BAR_CHART_RACE_CONSTANT[VALUE]],
         time_column = FRAME
     )
-    fig = race_plot.plot(title = 'Top 10 Crops from 1961 to 2018',
-                             item_label = 'Top 10 crops',
-                             value_label = 'Production quantity (tonnes)',
-                             frame_duration = 800)
+    fig = race_plot.plot(
+        title = 'Top 10 Crops from 1961 to 2018',
+        item_label = 'Top 10 crops',
+        value_label = 'Production quantity (tonnes)',
+        frame_duration = 800
+    )
+
     configure_fig(fig)
     return fig

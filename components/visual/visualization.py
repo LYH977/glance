@@ -45,7 +45,7 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
                 [
                     dbc.Col( name_section_markup(create_clicks),  width = 'auto'),
 
-                    dbc.Col( setting_markup(create_clicks), width = 'auto' ),
+                    dbc.Col( setting_markup(create_clicks, param['vtype']), width = 'auto' ),
 
 
                 ],
