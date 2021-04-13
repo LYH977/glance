@@ -129,7 +129,8 @@ toast = html.Div(
 layout = dbc.Jumbotron(
     [   toast,
         # html.Span(id='submit-button', n_clicks=0, className='fa fa-send'),
-
+        dcc.Download(id="new-download"),
+        html.Button('test new dl btn', id='new-dl-btn'),
         dcc.Store(id='testing-js', data=fig),
         # dcc.Store(id='testing-plot', data= fig),
         dcc.Graph(id='hp-fig', figure = fig, config={
@@ -316,3 +317,13 @@ def open_toast(btn_click, disabled):
 )
 def open_toast( click):
     return 0
+
+# ############################################################################################################################################
+
+@app.callback(
+    Output("new-download", "data"),
+    [Input("new-dl-btn", "n_clicks")],
+    prevent_initial_call=True
+)
+def open_toast( click):
+    return dcc.send_file('./assets/export/1618304344.mp4')

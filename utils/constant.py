@@ -24,7 +24,7 @@ TAG = 'TAG'
 FIELD = 'FIELD'
 
 SCATTER_MAP = 'Scatter Map'
-SCATTER_GEO = 'Scatter Geo'
+# SCATTER_GEO = 'Scatter Geo'
 BAR_CHART_RACE = 'Bar Chart Race'
 DENSITY = 'Density'
 CHOROPLETH = 'Choropleth'
@@ -54,7 +54,7 @@ MINIMUM = 'MINIMUM'
 
 CREATE_BTN_ID = {
     SCATTER_MAP: SM_PARAM,
-    SCATTER_GEO: SG_PARAM,
+    # SCATTER_GEO: SG_PARAM,
     BAR_CHART_RACE: BC_PARAM,
     DENSITY: D_PARAM,
     CHOROPLETH: CH_PARAM,
@@ -82,14 +82,14 @@ SCATTER_MAP_CONSTANT = {
 
 
 
-SCATTER_GEO_CONSTANT = {
-    LATITUDE : 'sg_latitude',
-    LONGITUDE: 'sg_longitude',
-    SIZE: 'sg_size',
-    COLOR: 'sg_color',
-    NAME: 'sg_name',
-    MESSAGE: 'sg_message',
-}
+# SCATTER_GEO_CONSTANT = {
+#     LATITUDE : 'sg_latitude',
+#     LONGITUDE: 'sg_longitude',
+#     SIZE: 'sg_size',
+#     COLOR: 'sg_color',
+#     NAME: 'sg_name',
+#     MESSAGE: 'sg_message',
+# }
 
 
 
@@ -130,14 +130,14 @@ SCATTER_MAP_PARAM = {
     SCATTER_MAP_CONSTANT[MESSAGE]: { 'label':'Additional Message', 'value': [] , 'multi': True},
 }
 
-SCATTER_GEO_PARAM = {
-    SCATTER_GEO_CONSTANT[LATITUDE]: { 'label':'Latitude*', 'value': None , 'multi': False},
-    SCATTER_GEO_CONSTANT[LONGITUDE]: { 'label':'Longitude*', 'value': None , 'multi': False},
-    SCATTER_GEO_CONSTANT[SIZE]: { 'label':'Size*', 'value': None, 'multi': False },
-    SCATTER_GEO_CONSTANT[COLOR]: { 'label':'Color*', 'value': None, 'multi': False },
-    SCATTER_GEO_CONSTANT[NAME]: { 'label':'Name*', 'value': None , 'multi': False},
-    SCATTER_GEO_CONSTANT[MESSAGE]: { 'label':'Additional Message', 'value': [] , 'multi': True},
-}
+# SCATTER_GEO_PARAM = {
+#     SCATTER_GEO_CONSTANT[LATITUDE]: { 'label':'Latitude*', 'value': None , 'multi': False},
+#     SCATTER_GEO_CONSTANT[LONGITUDE]: { 'label':'Longitude*', 'value': None , 'multi': False},
+#     SCATTER_GEO_CONSTANT[SIZE]: { 'label':'Size*', 'value': None, 'multi': False },
+#     SCATTER_GEO_CONSTANT[COLOR]: { 'label':'Color*', 'value': None, 'multi': False },
+#     SCATTER_GEO_CONSTANT[NAME]: { 'label':'Name*', 'value': None , 'multi': False},
+#     SCATTER_GEO_CONSTANT[MESSAGE]: { 'label':'Additional Message', 'value': [] , 'multi': True},
+# }
 
 BAR_CHART_RACE_PARAM = {
     BAR_CHART_RACE_CONSTANT[ITEM] : { 'label':'Item*', 'value': None , 'multi': False},
@@ -168,7 +168,7 @@ CAROUSEL_PARAM = {
 
 FIGURE_PARAM = {
     SCATTER_MAP : SCATTER_MAP_PARAM,
-    SCATTER_GEO : SCATTER_GEO_PARAM,
+    # SCATTER_GEO : SCATTER_GEO_PARAM,
     BAR_CHART_RACE : BAR_CHART_RACE_PARAM,
     DENSITY : DENSITY_PARAM,
     CHOROPLETH : CHOROPLETH_PARAM,
@@ -181,10 +181,10 @@ SCATTER_MAP_NOTIF = {
     FIELD: [ SCATTER_MAP_CONSTANT[SIZE], SCATTER_MAP_CONSTANT[COLOR] ]
 }
 
-SCATTER_GEO_NOTIF = {
-    TAG: [  SCATTER_GEO_CONSTANT[LATITUDE], SCATTER_GEO_CONSTANT[LONGITUDE], SCATTER_GEO_CONSTANT[NAME]  ],
-    FIELD: [ SCATTER_GEO_CONSTANT[SIZE], SCATTER_GEO_CONSTANT[COLOR] ]
-}
+# SCATTER_GEO_NOTIF = {
+#     TAG: [  SCATTER_GEO_CONSTANT[LATITUDE], SCATTER_GEO_CONSTANT[LONGITUDE], SCATTER_GEO_CONSTANT[NAME]  ],
+#     FIELD: [ SCATTER_GEO_CONSTANT[SIZE], SCATTER_GEO_CONSTANT[COLOR] ]
+# }
 
 BAR_CHART_RACE_NOTIF = {
     TAG: [BAR_CHART_RACE_CONSTANT[ITEM]],
@@ -209,7 +209,7 @@ CAROUSEL_NOTIF = {
 
 NOTIFICATION_PARAM = {
     SCATTER_MAP: SCATTER_MAP_NOTIF,
-    SCATTER_GEO: SCATTER_GEO_NOTIF,
+    # SCATTER_GEO: SCATTER_GEO_NOTIF,
     BAR_CHART_RACE: BAR_CHART_RACE_NOTIF,
     DENSITY: DENSITY_NOTIF,
     CHOROPLETH: CHOROPLETH_NOTIF,

@@ -2,7 +2,7 @@
 import plotly.express as px
 
 from components.visual.figures.configuration import configure_fig
-from utils.constant import CHOROPLETH_CONSTANT, LOCATIONS, COLOR, NAME, FRAME, MESSAGE
+from utils.constant import CHOROPLETH_CONSTANT, LOCATIONS, COLOR, NAME, FRAME, MESSAGE, CHOROPLETH
 
 
 def create_choropleth(data,parameter):
@@ -19,5 +19,5 @@ def create_choropleth(data,parameter):
         # hover_data=['Active', 'Confirmed']
         # custom_data=['Date']
     )
-    configure_fig(fig)
+    configure_fig(fig, CHOROPLETH)
     return fig

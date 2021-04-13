@@ -96,7 +96,7 @@ def register_update_visual_container(app):
             # temp = visual_container.index(delete_index)
             # del div_children[temp]
             # del visual_container[temp]
-            time.sleep(1.0)
+            time.sleep(0.7) # wait for delete animation
             for vs, i in zip(div_children, range(len(div_children))):
                 index = int(str(vs).split("'type': 'my-index', 'index':")[1].split('}')[0])
                 if delete_index == index:

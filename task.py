@@ -15,8 +15,8 @@ import random
 
 import cv2
 
-from utils.constant import FRAME, TIME, NOTIFICATION_PARAM, TAG, FIELD, SCATTER_MAP, SCATTER_GEO, SCATTER_MAP_CONSTANT, \
-    NAME, LATITUDE, LONGITUDE, MAXIMUM, SCATTER_GEO_CONSTANT, MINIMUM, BAR_CHART_RACE, DENSITY, BAR_CHART_RACE_CONSTANT, \
+from utils.constant import FRAME, TIME, NOTIFICATION_PARAM, TAG, FIELD, SCATTER_MAP,  SCATTER_MAP_CONSTANT, \
+    NAME, LATITUDE, LONGITUDE, MAXIMUM,  MINIMUM, BAR_CHART_RACE, DENSITY, BAR_CHART_RACE_CONSTANT, \
     ITEM, DENSITY_CONSTANT, CHOROPLETH, CHOROPLETH_CONSTANT, LOCATIONS
 
 app = Celery("Celery App", broker='redis://localhost:6379' ,backend='redis://localhost:6379')
@@ -52,17 +52,17 @@ def extract_extrema(vtype,  ma, df, parameter, col, type):
             field = field
         )
 
-    elif vtype ==  SCATTER_GEO:
-        field = parse_number(df.loc[ma, col])
-        name = df.loc[ma, parameter[SCATTER_GEO_CONSTANT[NAME]]]
-        msg = "{type} *{column}* : **{field}**, by `{name}({lat},{long})`".format(
-            type = type,
-            name = name,
-            lat = df.loc[ma, parameter[SCATTER_GEO_CONSTANT[LATITUDE]]],
-            long = df.loc[ma, parameter[SCATTER_GEO_CONSTANT[LONGITUDE]]],
-            column = col,
-            field = field,
-        )
+    # elif vtype ==  SCATTER_GEO:
+    #     field = parse_number(df.loc[ma, col])
+    #     name = df.loc[ma, parameter[SCATTER_GEO_CONSTANT[NAME]]]
+    #     msg = "{type} *{column}* : **{field}**, by `{name}({lat},{long})`".format(
+    #         type = type,
+    #         name = name,
+    #         lat = df.loc[ma, parameter[SCATTER_GEO_CONSTANT[LATITUDE]]],
+    #         long = df.loc[ma, parameter[SCATTER_GEO_CONSTANT[LONGITUDE]]],
+    #         column = col,
+    #         field = field,
+    #     )
     elif vtype == BAR_CHART_RACE:
         field = parse_number(df.loc[ma, col])
         name = df.loc[ma, parameter[BAR_CHART_RACE_CONSTANT[ITEM]]]

@@ -13,7 +13,7 @@ from utils.collection import redis_instance
 from utils.export.export_data import export_mp4
 from utils.method import get_ctx_type, get_ctx_index, formatted_time_value, \
     select_query, get_last_timestamp
-from utils.constant import SCATTER_MAP, SCATTER_GEO, DENSITY, CHOROPLETH, BAR_CHART_RACE, \
+from utils.constant import SCATTER_MAP,  DENSITY, CHOROPLETH, BAR_CHART_RACE, \
     FRAME, TIME, MAXIMUM, MINIMUM
 
 
@@ -39,15 +39,10 @@ def handleOutOfRangeNotif(celery, slider):
 def assign_style (toggle):
     if toggle:
         ostyle = {'height': '40%'}
-        nstyle = {
-            # 'display': 'block',
-            'height': '150px'}
-
+        nstyle = { 'height': '150px'}
     else:
         ostyle = {'height': '15%'}
-        nstyle = {
-            # 'display': 'hidden',
-            'height': 0, }
+        nstyle = {  'height': 0, }
     return ostyle, nstyle
 
 
@@ -107,8 +102,7 @@ def register_update_figure(app):
             change_frame(param['vtype'], fig2, value)
             return fig2
 
-        else:
-            raise PreventUpdate
+        raise PreventUpdate
 
 ############################################################################################################################################## update slider according to interval
 def register_update_slider(app):

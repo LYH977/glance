@@ -152,7 +152,7 @@ def register_enable_create_btn(app):
         [Output('create-visual', 'disabled'),  Output('last-param', 'data')] ,
         [
             Input(SM_PARAM,'data'),
-            Input(SG_PARAM, 'data'),
+            # Input(SG_PARAM, 'data'),
             Input(D_PARAM, 'data'),
             Input(CH_PARAM, 'data'),
             Input(CA_PARAM, 'data'),
@@ -162,7 +162,7 @@ def register_enable_create_btn(app):
         State('visual-type', 'value'),
         prevent_initial_call=True
     )
-    def enable_create_btn (sm, sg, d, ch, ca, bc, create, vtype):
+    def enable_create_btn (sm,  d, ch, ca, bc, create, vtype):
         ctx = dash.callback_context
         if not ctx.triggered:
             input_type = 'No input yet'
@@ -248,23 +248,23 @@ def register_validate_sm_create(app):
 #############################################################################################################################################
 
 
-def register_validate_sg_create(app):
-    @app.callback(
-        Output(SG_PARAM, 'data') ,
-        [
-            Input("sg_latitude", "value"),
-            Input("sg_longitude", "value"),
-            Input("sg_size", "value"),
-            Input("sg_color", "value"),
-            Input("sg_name", "value"),
-            # Input("sg_frame", "value"),
-            Input("sg_message", "value"),
-        ],
-        State(SG_PARAM, 'data'),
-        prevent_initial_call=True
-    )
-    def validate_sg_create (lat, long, size, color, name, msg, data):
-        return validate_create(data)
+# def register_validate_sg_create(app):
+#     @app.callback(
+#         Output(SG_PARAM, 'data') ,
+#         [
+#             Input("sg_latitude", "value"),
+#             Input("sg_longitude", "value"),
+#             Input("sg_size", "value"),
+#             Input("sg_color", "value"),
+#             Input("sg_name", "value"),
+#             # Input("sg_frame", "value"),
+#             Input("sg_message", "value"),
+#         ],
+#         State(SG_PARAM, 'data'),
+#         prevent_initial_call=True
+#     )
+#     def validate_sg_create (lat, long, size, color, name, msg, data):
+#         return validate_create(data)
 
 
 #############################################################################################################################################

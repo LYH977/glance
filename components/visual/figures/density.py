@@ -1,7 +1,7 @@
 import plotly.express as px
 
 from components.visual.figures.configuration import configure_fig, convert_to_float
-from utils.constant import DENSITY_CONSTANT, LATITUDE, LONGITUDE, Z, MESSAGE, FRAME
+from utils.constant import DENSITY_CONSTANT, LATITUDE, LONGITUDE, Z, MESSAGE, FRAME, DENSITY
 
 
 def create_density(data, parameter):
@@ -23,5 +23,5 @@ def create_density(data, parameter):
         mapbox_style = "dark",
         # height= 200
     )
-    configure_fig(fig)
+    configure_fig(fig, DENSITY)
     return fig

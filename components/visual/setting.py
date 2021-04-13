@@ -9,13 +9,15 @@ from utils.constant import MAPBOX_TYPES, SCATTER_MAP, CHOROPLETH, DENSITY
 def setting_markup(create_clicks, type):
     hasLegend = [SCATTER_MAP, DENSITY, CHOROPLETH]
     hasMapbox = [SCATTER_MAP, DENSITY]
+    hide_legend = not type in hasLegend
+    hide_mapbox = not type in hasMapbox
 
     return dbc.DropdownMenu(
         label = 'setting',
         children = [
-            legend_theme_markup(create_clicks) if type in hasLegend else None,
+            legend_theme_markup(create_clicks, hide_legend) ,
 
-            mapbox_type_markup(create_clicks) if type in hasMapbox else None,
+            mapbox_type_markup(create_clicks, hide_mapbox) ,
 
             live_mode_markup(create_clicks),
 
@@ -30,7 +32,7 @@ def setting_markup(create_clicks, type):
 
 
 
-def legend_theme_markup(create_clicks):
+def legend_theme_markup(create_clicks, hidden):
     return html.Div([
         dbc.DropdownMenuItem(
             daq.BooleanSwitch(
@@ -42,7 +44,7 @@ def legend_theme_markup(create_clicks):
             header=True
         ),
         dbc.DropdownMenuItem(divider=True),
-    ])
+    ],hidden = hidden)
 
 def live_mode_markup(create_clicks):
     return html.Div([
@@ -100,7 +102,7 @@ def download_btn_markup(create_clicks):
         id={'type': 'export-link-wrapper', 'index': create_clicks},
     )
 
-def mapbox_type_markup(create_clicks):
+def mapbox_type_markup(create_clicks, hidden):
     return html.Div([
         dbc.DropdownMenuItem(
             dbc.Row([
@@ -117,4 +119,4 @@ def mapbox_type_markup(create_clicks):
         ),
         dbc.DropdownMenuItem(divider=True),
 
-    ])
+    ],hidden =hidden)

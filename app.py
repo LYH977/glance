@@ -10,7 +10,7 @@ from callback.dashboard_callback import register_update_dashboard
 
 from callback.select_dataset_modal_callback import \
     register_update_after_upload, register_enable_create_btn, register_toggle_modal, \
-    register_update_output_form, register_validate_sm_create, register_validate_sg_create, register_validate_bc_create, \
+    register_update_output_form, register_validate_sm_create,  register_validate_bc_create, \
     register_validate_d_create, register_validate_ch_create, register_validate_ca_create, register_update_dt_dropdown, \
     register_update_chosen_dropdown, register_update_chosen_tformat, register_update_equation, \
     register_update_new_column, register_update_operand_type, register_toggle_new_column_btn, \
@@ -47,7 +47,6 @@ register_enable_create_btn(app)
 register_update_chosen_tformat(app)
 register_update_output_form(app)
 register_validate_sm_create(app)
-register_validate_sg_create(app)
 register_validate_bc_create(app)
 register_validate_d_create(app)
 register_validate_ch_create(app)

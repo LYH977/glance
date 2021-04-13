@@ -1,6 +1,9 @@
 import pandas as pd
 
-def configure_fig(fig):
+from utils.constant import BAR_CHART_RACE
+
+
+def configure_fig(fig, type):
     fig.layout.sliders[0].visible = False
     fig.layout.updatemenus[0].visible = False
     fig.layout.updatemenus[0].buttons[0].args[1]["frame"]["duration"] = 200
@@ -17,10 +20,13 @@ def configure_fig(fig):
     fig.layout.coloraxis.colorbar.title.font.color = 'rgba(0,0,0,1)' #'rgba(255,255,255,1)'
     fig.layout.coloraxis.colorbar.tickfont.color = 'rgba(0,0,0,1)' #'rgba(255,255,255,1)'
 
-    # fig.layout.margin.t = 0
-    # fig.layout.margin.b = 0
-    # fig.layout.margin.r = 0
-    # fig.layout.margin.l = 0
+    if type != BAR_CHART_RACE: #other than bar chart race
+        fig.layout.margin.t = 0
+        fig.layout.margin.b = 0
+        fig.layout.margin.r = 0
+        fig.layout.margin.l = 0
+    else:                       # when bar chart race is chosen
+        fig.layout.margin.t = 50
     fig.layout.updatemenus[0].showactive = True
     fig.layout.title.y = 0.98
     fig.layout.title.x = 0.9
