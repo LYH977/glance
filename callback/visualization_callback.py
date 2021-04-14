@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 import pandas as pd
 import dash
-from dash.dependencies import Input, Output, State, MATCH
+from dash.dependencies import Input, Output, State, MATCH, ClientsideFunction
 from dash.exceptions import PreventUpdate
 
 import task
@@ -18,16 +18,6 @@ from utils.constant import SCATTER_MAP,  DENSITY, CHOROPLETH, BAR_CHART_RACE, \
 
 
 def change_frame(ftype, fig2, value):
-    # if ftype == SCATTER_MAP:
-    #     fig2['data'][0] = fig2['frames'][value]['data'][0]
-    # elif ftype == SCATTER_GEO:
-    #     fig2['data'] = fig2['frames'][value]['data']
-    # elif ftype == BAR_CHART_RACE:
-    #     fig2['data'][0] = fig2['frames'][value]['data'][0]
-    # elif ftype == DENSITY:
-    #     fig2['data'][0] = fig2['frames'][value]['data'][0]
-    # elif ftype == CHOROPLETH:
-    #     fig2['data'][0] = fig2['frames'][value]['data'][0]
     fig2['data'][0] = fig2['frames'][value]['data'][0]
     fig2['layout']['title']['text'] = fig2['frames'][value]['name']
 
@@ -49,60 +39,91 @@ def assign_style (toggle):
 #############################################################################################################################################
 
 
-# update  figure according to slider
 def register_update_figure(app):
-    @app.callback(
+    app.clientside_callback(
+        ClientsideFunction(
+            namespace='clientside',
+            function_name='update_figure'
+        ),
         Output({'type': 'visualization', 'index': MATCH}, 'figure'),
-        [
-            Input({'type': 'anim-slider', 'index': MATCH}, 'value'),
-            Input({'type': 'legend-theme', 'index': MATCH}, 'on'),
-            Input({'type': 'mapbox-type', 'index': MATCH}, 'value'),
-        ],
-        [
-            State({'type': 'my_param', 'index': MATCH}, 'data'),
-            State({'type': 'at-max', 'index': MATCH}, 'data'),
-            State({'type': 'live-mode', 'index': MATCH}, 'on'),
-            State({'type': 'back-buffer', 'index': MATCH}, 'data'),
+        Input({'type': 'anim-slider', 'index': MATCH}, 'value'),
+        Input({'type': 'legend-theme', 'index': MATCH}, 'on'),
+        Input({'type': 'mapbox-type', 'index': MATCH}, 'value'),
+        State({'type': 'my_param', 'index': MATCH}, 'data'),
+        State({'type': 'at-max', 'index': MATCH}, 'data'),
+        State({'type': 'live-mode', 'index': MATCH}, 'on'),
+        State({'type': 'back-buffer', 'index': MATCH}, 'data'),
+        State({'type': 'visualization', 'index': MATCH}, 'figure'),
+        prevent_initial_call=True
+    )
 
-        ],
-        prevent_initial_call=True)
-    def update_figure(value,legend,mapbox, param, atmax, live, new_fig):
-        ctx = dash.callback_context
-        input_index = None
-        if not ctx.triggered:
-            input_type = 'No input yet'
-        else:
-            input_type = get_ctx_type(ctx)
-            input_index = get_ctx_index(ctx)
-        if input_type == 'anim-slider':
-            fig2 = new_fig
-            val = value
-            if live and atmax:
-                new_max = len(new_fig['frames'])
-                val = new_max - 1
-            change_frame(param['vtype'], fig2, val)
-            return fig2
+    # @app.callback(
+    #     Output({'type': 'visualization', 'index': MATCH}, 'figure'),
+    #     [
+    #         Input({'type': 'anim-slider', 'index': MATCH}, 'value'),
+    #         Input({'type': 'legend-theme', 'index': MATCH}, 'on'),
+    #         Input({'type': 'mapbox-type', 'index': MATCH}, 'value'),
+    #     ],
+    #     [
+    #         State({'type': 'my_param', 'index': MATCH}, 'data'),
+    #         State({'type': 'at-max', 'index': MATCH}, 'data'),
+    #         State({'type': 'live-mode', 'index': MATCH}, 'on'),
+    #         State({'type': 'back-buffer', 'index': MATCH}, 'data'),
+    #         State({'type': 'visualization', 'index': MATCH}, 'figure'),
+    #
+    #     ],
+    #     prevent_initial_call=True)
+    # def update_figure(value,legend,mapbox, param, atmax, live, new_fig, old_fig):
+    #     ctx = dash.callback_context
+    #     if not ctx.triggered:
+    #         input_type = 'No input yet'
+    #     else:
+    #         input_type = get_ctx_type(ctx)
+    #     if input_type == 'anim-slider':
+    #         fig2 = new_fig
+    #         val = value
+    #         if live and atmax:
+    #             new_max = len(new_fig['frames'])
+    #             val = new_max - 1
+    #         change_frame(param['vtype'], fig2, val)
+    #         return fig2
+    #
+    #     elif input_type == 'legend-theme':
+    #         fig2 = new_fig
+    #         if legend : #dark theme
+    #             fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(0,0,0,0.75)'
+    #             fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(255,255,255,1)'
+    #             fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(255,255,255,1)'
+    #
+    #         else: # light theme
+    #             fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(255,255,255,0.75)'
+    #             fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(0,0,0,1)'
+    #             fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
+    #         change_frame(param['vtype'], fig2, value)
+    #         return fig2
+    #
+    #     elif input_type == 'mapbox-type':
+    #         fig2 = new_fig
+    #         fig2['layout']['mapbox']['style'] = mapbox
+    #         change_frame(param['vtype'], fig2, value)
+    #         return fig2
+    #
+    #     raise PreventUpdate
 
-        elif input_type == 'legend-theme':
-            fig2 = new_fig
-            if legend : #dark theme
-                fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(0,0,0,0.75)'
-                fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(255,255,255,1)'
-                fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(255,255,255,1)'
-            else: # light theme
-                fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(255,255,255,0.75)'
-                fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(0,0,0,1)'
-                fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
-            change_frame(param['vtype'], fig2, value)
-            return fig2
 
-        elif input_type == 'mapbox-type':
-            fig2 = new_fig
-            fig2['layout']['mapbox']['style'] = mapbox
-            change_frame(param['vtype'], fig2, value)
-            return fig2
 
-        raise PreventUpdate
+
+
+
+
+
+
+
+
+
+
+
+
 
 ############################################################################################################################################## update slider according to interval
 def register_update_slider(app):
@@ -594,7 +615,6 @@ def register_export_visual(app):
         if disabled:
             export_mp4(fig, name)
             dl = f'{name}.mp4'
-            # path = f'/assets/export/{dl}'
             path = app.get_asset_url(f'export/{dl}')
 
             print(f'habis href {name}')

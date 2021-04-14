@@ -49,13 +49,13 @@ def formatted_time_value(time, tformat):
     return datetime.strptime(time, STANDARD_T_FORMAT).strftime(tformat)
 
 def get_ctx_type(ctx):
-    props_id = ctx.triggered[0]['prop_id'].split('.')[0]
-    if props_id[0] =='{':
-        temp = json.loads(props_id)
-        obj = temp['type']
+    obj = ctx.triggered[0]['prop_id'].split('.')[0]
+    if obj[0] =='{':
+        temp = json.loads(obj)
+        type = temp['type']
     else:
-        obj = props_id
-    return obj
+        type = obj
+    return type
 
 
 def get_ctx_index(ctx):

@@ -1,40 +1,21 @@
 import datetime
-
 import dash
-
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.express as px
-
 from app import app
-from dash.dependencies import Input, Output, State, ClientsideFunction
+from dash.dependencies import Input, Output, State, ClientsideFunction, MATCH
 from dash.exceptions import PreventUpdate
-
 import task
-
 import os
 import pandas as pd
 import redis
 import numpy as np
-import gif
-
-# pport = 'redis-12571.c1.ap-southeast-1-1.ec2.cloud.redislabs.com:12571'
-# redis_instance = redis.StrictRedis(
-#     host=pport,
-#     port=12571,
-#     password='EGXMBmAkHnhFTLYKGAUEGPdYwf0cZpDC'
-# )
 from datetime import datetime
-
-# dt_obj = datetime.strptime('20.12.2016 09:38:42,76', '%d.%m.%Y %H:%M:%S,%f')
-# millisec = dt_obj.timestamp() * 1000
-# print(millisec)
-
-# s= 1611918340073422000/  1000000000.0
-# dt = datetime.fromtimestamp(s).strftime('%Y-%m-%d %H:%M:%S.%f')
-# print(dt)
 from utils.export.export_data import export_mp4
+
+
 
 redis_instance = redis.StrictRedis.from_url(os.environ['REDIS_URL'])
 N = 100
@@ -47,12 +28,7 @@ df = pd.DataFrame(
         "value": np.random.randn(N),
     }
 )
-# redis_instance.set( "new", '12' )
-# redis_instance.hdel(
-#     task.REDIS_HASH_NAME, 'last'
-#     )
 
-# task.update_data(df.to_dict())
 
 data = pd.read_csv('C:/Users/FORGE-15/PycharmProjects/glance/datasets/time-series-19-covid-combined.csv')
 fig = px.scatter_mapbox(
@@ -64,10 +40,6 @@ fig = px.scatter_mapbox(
         mapbox_style = 'dark', zoom=1,
         title='testing',
         animation_frame='Date',
-        # animation_group="Province/State",
-        # width=swidth ,
-        # hover_data=['Active', 'Confirmed']
-        # custom_data=['Date']
     )
 fig.layout.margin.t = 0
 fig.layout.margin.b = 0
@@ -89,20 +61,7 @@ fig.layout.updatemenus[0].visible = False
 
 
 
-# fig.layout.coloraxis.colorbar.bgcolor = 'rgba(255,255,255,0.7)'
-# fig.layout.coloraxis.colorbar.xanchor = 'right'
-# fig.layout.coloraxis.colorbar.xpad = 10
-# fig.layout.coloraxis.colorbar.x = 1
-# fig.layout.coloraxis.colorbar.title.font.color = 'rgba(255,0,0,1)'
-# fig.layout.coloraxis.colorbar.tickfont.color= 'rgba(255,0,0,1)'
-# fig.layout.coloraxis.colorbar.len = 1
-# fig.layout.coloraxis.colorbar.yanchor = 'bottom'
 
-# fig.layout.coloraxis.colorbar.bordercolor = '#333'
-
-
-# df = px.data.election()
-# df.to_csv('election.csv')
 
 
 toast = html.Div(
@@ -141,8 +100,6 @@ layout = dbc.Jumbotron(
                     'displayModeBar': False
                 }),
         html.A('Download test.mp4', id='export-test-link',
-               # download='1618159910.mp4',
-               # href='/assets/export/1618159910.mp4',
                download='',
                href='',
                hidden= True),
@@ -156,11 +113,13 @@ layout = dbc.Jumbotron(
                 disabled=True
             ),
 
-        html.Button('client', id='client-btn'),
+        html.Button('client', id={'type': 'client-btn', 'index': 1}),
+        html.Button('simulator', id={'type': 'sim-btn', 'index': 1}),
+
         html.P(
             "initial\n1",
             className="lead",
-            id='client-p',
+            id={'type': 'client-p', 'index': 1},
             style={"whiteSpace": "pre"}
         ),
         html.Button('test2', id='test2'),
@@ -219,39 +178,12 @@ app.clientside_callback(
         namespace='clientside',
         function_name='second_function'
     ),
-    Output('client-p', 'children'),
-    Input('client-btn', 'n_clicks'),
-    State('testing-js', 'data'),
+    Output({'type': 'client-p', 'index': MATCH}, 'children'),
+    Input({'type': 'client-btn', 'index': MATCH}, 'n_clicks'),
+    Input({'type': 'sim-btn', 'index': MATCH}, 'n_clicks'),
     prevent_initial_call=True
-
 )
 
-
-@gif.frame
-def plot(data, datei):
-    fig = px.scatter_mapbox(
-        data, lat='Lat',
-        lon='Long',
-        size='Confirmed', size_max=50,
-        color='Deaths', color_continuous_scale=px.colors.sequential.Pinkyl,
-        hover_name='Country/Region',
-        mapbox_style='dark', zoom=1,
-        title=datei
-
-    )
-    fig.layout.margin.t = 0
-    fig.layout.margin.b = 0
-    fig.layout.margin.r = 0
-    fig.layout.margin.l = 0
-    fig.layout.title.pad.t = 0
-    fig.layout.title.pad.b = 0
-    fig.layout.title.pad.r = 0
-    fig.layout.title.pad.l = 0
-    fig.layout.title.font.color = 'red'
-    fig.layout.title.y = 0.98
-    fig.layout.title.x = 0.02
-    fig.write_image("yourfile.png")
-    return fig
 
 
 @app.callback(
