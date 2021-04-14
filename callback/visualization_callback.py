@@ -17,14 +17,15 @@ from utils.constant import SCATTER_MAP,  DENSITY, CHOROPLETH, BAR_CHART_RACE, \
     FRAME, TIME, MAXIMUM, MINIMUM
 
 
-def change_frame(ftype, fig2, value):
-    fig2['data'][0] = fig2['frames'][value]['data'][0]
-    fig2['layout']['title']['text'] = fig2['frames'][value]['name']
+# def change_frame(ftype, fig2, value):
+#     fig2['data'][0] = fig2['frames'][value]['data'][0]
+#     fig2['layout']['title']['text'] = fig2['frames'][value]['name']
 
 def handleOutOfRangeNotif(celery, slider):
     length = len(celery)
     if slider > length - 1:
         return True
+    return False
 
 def assign_style (toggle):
     if toggle:
@@ -46,82 +47,20 @@ def register_update_figure(app):
             function_name='update_figure'
         ),
         Output({'type': 'visualization', 'index': MATCH}, 'figure'),
-        Input({'type': 'anim-slider', 'index': MATCH}, 'value'),
-        Input({'type': 'legend-theme', 'index': MATCH}, 'on'),
-        Input({'type': 'mapbox-type', 'index': MATCH}, 'value'),
-        State({'type': 'my_param', 'index': MATCH}, 'data'),
-        State({'type': 'at-max', 'index': MATCH}, 'data'),
-        State({'type': 'live-mode', 'index': MATCH}, 'on'),
-        State({'type': 'back-buffer', 'index': MATCH}, 'data'),
-        State({'type': 'visualization', 'index': MATCH}, 'figure'),
+        [
+            Input({'type': 'anim-slider', 'index': MATCH}, 'value'),
+            Input({'type': 'legend-theme', 'index': MATCH}, 'on'),
+            Input({'type': 'mapbox-type', 'index': MATCH}, 'value'),
+        ],
+        [
+            State({'type': 'my_param', 'index': MATCH}, 'data'),
+            State({'type': 'at-max', 'index': MATCH}, 'data'),
+            State({'type': 'live-mode', 'index': MATCH}, 'on'),
+            State({'type': 'back-buffer', 'index': MATCH}, 'data'),
+            # State({'type': 'visualization', 'index': MATCH}, 'figure'),
+        ],
         prevent_initial_call=True
     )
-
-    # @app.callback(
-    #     Output({'type': 'visualization', 'index': MATCH}, 'figure'),
-    #     [
-    #         Input({'type': 'anim-slider', 'index': MATCH}, 'value'),
-    #         Input({'type': 'legend-theme', 'index': MATCH}, 'on'),
-    #         Input({'type': 'mapbox-type', 'index': MATCH}, 'value'),
-    #     ],
-    #     [
-    #         State({'type': 'my_param', 'index': MATCH}, 'data'),
-    #         State({'type': 'at-max', 'index': MATCH}, 'data'),
-    #         State({'type': 'live-mode', 'index': MATCH}, 'on'),
-    #         State({'type': 'back-buffer', 'index': MATCH}, 'data'),
-    #         State({'type': 'visualization', 'index': MATCH}, 'figure'),
-    #
-    #     ],
-    #     prevent_initial_call=True)
-    # def update_figure(value,legend,mapbox, param, atmax, live, new_fig, old_fig):
-    #     ctx = dash.callback_context
-    #     if not ctx.triggered:
-    #         input_type = 'No input yet'
-    #     else:
-    #         input_type = get_ctx_type(ctx)
-    #     if input_type == 'anim-slider':
-    #         fig2 = new_fig
-    #         val = value
-    #         if live and atmax:
-    #             new_max = len(new_fig['frames'])
-    #             val = new_max - 1
-    #         change_frame(param['vtype'], fig2, val)
-    #         return fig2
-    #
-    #     elif input_type == 'legend-theme':
-    #         fig2 = new_fig
-    #         if legend : #dark theme
-    #             fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(0,0,0,0.75)'
-    #             fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(255,255,255,1)'
-    #             fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(255,255,255,1)'
-    #
-    #         else: # light theme
-    #             fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(255,255,255,0.75)'
-    #             fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(0,0,0,1)'
-    #             fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
-    #         change_frame(param['vtype'], fig2, value)
-    #         return fig2
-    #
-    #     elif input_type == 'mapbox-type':
-    #         fig2 = new_fig
-    #         fig2['layout']['mapbox']['style'] = mapbox
-    #         change_frame(param['vtype'], fig2, value)
-    #         return fig2
-    #
-    #     raise PreventUpdate
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -248,13 +187,13 @@ def register_update_atmax(app):
         prevent_initial_call=True
     )
     def update_atmax(slider, smax):
-        ctx = dash.callback_context
-        input_index = None
-        if not ctx.triggered:
-            input_type = 'No input yet'
-        else:
-            input_type = get_ctx_type(ctx)
-            input_index = get_ctx_index(ctx)
+        # ctx = dash.callback_context
+        # input_index = None
+        # if not ctx.triggered:
+        #     input_type = 'No input yet'
+        # else:
+        #     input_type = get_ctx_type(ctx)
+        #     input_index = get_ctx_index(ctx)
         return True if slider == smax else False
 
 
@@ -308,13 +247,9 @@ def register_update_live_data(app):
         else:
             input_type = get_ctx_type(ctx)
             input_index = get_ctx_index(ctx)
-        # print(datetime.now(),' collection.live_processing', collection.live_processing)
         if input_type =='live-interval' and collection.live_processing[input_index] is False:
-            # if collection.live_processing[input_index] is True:
-            #     raise PreventUpdate
-            # else:
             collection.live_processing[input_index] = True
-            result = select_query(dbname, ' where time >{}'.format(ts))
+            result = select_query(dbname, 'where time >{}'.format(ts))
             if result is not None:
                 result[TIME] = result.index.map(lambda x: str(x).split('+')[0])
                 result[FRAME] = result[TIME].map(lambda x: formatted_time_value(x, format))
@@ -417,12 +352,12 @@ def register_update_celery_data(app):
     )
     def update_celery_data(interval,rows, slider, index, now):
         ctx = dash.callback_context
-        input_index = None
+        # input_index = None
         if not ctx.triggered:
             input_type = 'No input yet'
         else:
             input_type = get_ctx_type(ctx)
-            input_index = get_ctx_index(ctx)
+            # input_index = get_ctx_index(ctx)
         if input_type == 'celery-interval':
             try:
                 # print(f'checking {index}-{now}')
@@ -436,12 +371,12 @@ def register_update_celery_data(app):
                     MINIMUM: result[str(slider)][MINIMUM]['count'],
                 }
                 # print('done bro', now)
-                print(f'done {index}-{now}')
-
+                # print(f'done {index}-{now}')
                 return result, True, collapse_markup(input_index, count)
             except Exception as e:
                 print('celery', e)
                 return dash.no_update, False, dash.no_update
+
         elif input_type == 'last-total-rows':
             # print('started bro', now)
             return dash.no_update, False, dash.no_update
@@ -452,60 +387,81 @@ def register_update_celery_data(app):
 
 # update lcelery data according to interval
 def register_update_notif_body(app):
-    @app.callback(
+    app.clientside_callback(
+        ClientsideFunction(
+            namespace='clientside',
+            function_name='update_notif_body'
+        ),
         [
             Output({'type': 'notif-body', 'index': MATCH}, 'children'),
             Output({'type': f'{MAXIMUM}-badge', 'index': MATCH}, 'children'),
-            Output({'type': f'{MINIMUM}-badge', 'index': MATCH}, 'children'),
-
+            Output({'type': f'{MINIMUM}-badge', 'index': MATCH}, 'children')
         ],
+
         [
             Input({'type': 'celery-data', 'index': MATCH}, 'data'),
             Input({'type': 'anim-slider', 'index': MATCH}, 'value'),
-            Input({'type': 'last-notif-click', 'index': MATCH}, 'data')
+            Input({'type': 'last-notif-click', 'index': MATCH}, 'data'),
         ],
+
         [
             State({'type': 'anim-slider', 'index': MATCH}, 'value'),
             State({'type': 'last-notif-click', 'index': MATCH}, 'data'),
-            # State({'type': 'celery-data', 'index': MATCH}, 'data'),
-
-        ],
-
+            # State({'type': 'notif-body', 'index': MATCH}, 'children'),
+            # State({'type': f'{MAXIMUM}-badge', 'index': MATCH}, 'children'),
+            # State({'type': f'{MINIMUM}-badge', 'index': MATCH}, 'children'),
+         ],
         prevent_initial_call=True
     )
-    def update_notif_body(cdata, slider, itype, cvalue, stype):
-        if stype is None:
-            raise PreventUpdate
-        ctx = dash.callback_context
-        input_index = None
-        if not ctx.triggered:
-            input_type = 'No input yet'
-        else:
-            input_type = get_ctx_type(ctx)
-            input_index = get_ctx_index(ctx)
-        # df_frame = collection.data[input_index][FRAME].unique()
-        type = stype.split('-')[0]
 
-        if input_type == 'celery-data':
-            if handleOutOfRangeNotif(cdata, slider):
-                return 'Loading...', '-', '-'
-            notif = cdata[str(cvalue)][type]['data'] if type != '' else ''
-            return notif, cdata[str(cvalue)][MAXIMUM]['count'], cdata[str(cvalue)][MINIMUM]['count']
 
-        elif input_type == 'anim-slider' and cdata is not None:
-            if handleOutOfRangeNotif(cdata, slider):
-                return 'Loading...', '-', '-'
-            notif = cdata[str(slider)][type]['data'] if type != '' else ''
-            return notif, cdata[str(slider)][MAXIMUM]['count'], cdata[str(slider)][MINIMUM]['count']
-
-        elif input_type == 'last-notif-click':
-            if handleOutOfRangeNotif(cdata, slider):
-                return 'Loading...', '-', '-'
-            notif = cdata[str(slider)][type]['data'] if type != '' else ''
-            return notif, cdata[str(slider)][MAXIMUM]['count'], cdata[str(slider)][MINIMUM]['count']
-
-        else:
-            raise PreventUpdate
+    # @app.callback(
+    #     [
+    #         Output({'type': 'notif-body', 'index': MATCH}, 'children'),
+    #         Output({'type': f'{MAXIMUM}-badge', 'index': MATCH}, 'children'),
+    #         Output({'type': f'{MINIMUM}-badge', 'index': MATCH}, 'children'),
+    #
+    #     ],
+    #     [
+    #         Input({'type': 'celery-data', 'index': MATCH}, 'data'),
+    #         Input({'type': 'anim-slider', 'index': MATCH}, 'value'),
+    #         Input({'type': 'last-notif-click', 'index': MATCH}, 'data')
+    #     ],
+    #     [
+    #         State({'type': 'anim-slider', 'index': MATCH}, 'value'),
+    #         State({'type': 'last-notif-click', 'index': MATCH}, 'data'),
+    #         # State({'type': 'notif-body', 'index': MATCH}, 'children'),
+    #         # State({'type': f'{MAXIMUM}-badge', 'index': MATCH}, 'children'),
+    #         # State({'type': f'{MINIMUM}-badge', 'index': MATCH}, 'children'),
+    #     ],
+    #
+    #     prevent_initial_call=True
+    # )
+    # def update_notif_body(cdata, slider, itype, cvalue, stype):
+    #     if stype is None:
+    #         raise PreventUpdate
+    #     ctx = dash.callback_context
+    #     if not ctx.triggered:
+    #         input_type = 'No input yet'
+    #     else:
+    #         input_type = get_ctx_type(ctx)
+    #
+    #     if handleOutOfRangeNotif(cdata, slider):
+    #         return 'Loading...', '-', '-'
+    #     type = stype.split('-')[0]
+    #     if input_type == 'celery-data':
+    #         notif = cdata[str(cvalue)][type]['data'] if type != '' else ''
+    #         return notif, cdata[str(cvalue)][MAXIMUM]['count'], cdata[str(cvalue)][MINIMUM]['count']
+    #
+    #     elif input_type == 'anim-slider' and cdata is not None:
+    #         notif = cdata[str(slider)][type]['data'] if type != '' else ''
+    #         return notif, cdata[str(slider)][MAXIMUM]['count'], cdata[str(slider)][MINIMUM]['count']
+    #
+    #     elif input_type == 'last-notif-click':
+    #         notif = cdata[str(slider)][type]['data'] if type != '' else ''
+    #         return notif, cdata[str(slider)][MAXIMUM]['count'], cdata[str(slider)][MINIMUM]['count']
+    #
+    #     raise PreventUpdate
 
 
 #############################################################################################################################################

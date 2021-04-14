@@ -20,7 +20,7 @@ def get_last_timestamp(param):
     return to_nanosecond_epoch(temp)
 
 def select_query (measurement,  where=''):
-    q = "select * from " + measurement + where
+    q = f'select * from "{measurement}" {where}'
     result = client.query(q, epoch='ns')
     if measurement in result:
         # print(result)
