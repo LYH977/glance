@@ -11,8 +11,14 @@ from utils.constant import FIGURE_PARAM, STANDARD_T_FORMAT, FRAME
 def reset_var():
     collection.data = {}
     collection.img_container = {}
-    collection.visual_container = []
+    # collection.visual_container = []
     collection.temp = None
+
+def remove_from_collection(index):
+    collection.data.pop(index, None)
+    collection.img_container.pop(index, None)
+    collection.live_processing.pop(index, None)
+    # collection.visual_container = []
 
 def get_last_timestamp(param):
     last_time = param.iloc[-1]

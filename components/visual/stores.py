@@ -28,5 +28,7 @@ def stores_markup(create_clicks, param, figure, tformat,  initial_frame, dbname,
         dcc.Store(id = {'type': 'last-total-rows', 'index': create_clicks}, data = total_rows),
         dcc.Store(id = {'type': 'is-slided-up', 'index': create_clicks}, data = False),
         dcc.Store(id = {'type': 'new-column-info', 'index': create_clicks}, data = new_col),
-        dcc.Store(id= {'type': 'export-name', 'index': create_clicks}, data=None),
+        dcc.Store(id= {'type': 'export-name', 'index': create_clicks}, data = None),
+        # dcc.Store(id={'type': 'max-frame', 'index': create_clicks}, data = max_frame),
+
     ])

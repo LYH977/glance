@@ -9,8 +9,7 @@ import task
 from components import container
 from components.carousel import create_ca_img
 from utils import collection
-from utils.collection import visual_container
-from utils.method import get_ctx_type, get_ctx_index, formatted_time_value
+from utils.method import get_ctx_type, get_ctx_index, formatted_time_value, remove_from_collection
 from utils.constant import CAROUSEL, FRAME, TIME, CAROUSEL_CONSTANT, ITEM
 
 
@@ -59,7 +58,7 @@ def register_update_visual_container(app):
 
             new_child = container.render_container(create_clicks, param, tformat, dbname, now, collection.new_col)
             div_children.append(new_child)
-            visual_container.append(create_clicks)
+            # visual_container.append(create_clicks)
             toast = {
                 'children': f"Visualization {create_clicks} is successfully created.",
                 'is_open': True,
@@ -67,40 +66,16 @@ def register_update_visual_container(app):
                 'header': 'SUCCESS'
             }
             collection.new_col = {'expression': [], 'numeric_col': []}
-            # test = str(div_children[0]).split("'type': 'my-index', 'index':")[1].split('}')[0]
-            # print(type(test) )
-
             return div_children, toast
 
-        # elif deletable and input_type=='dlt-btn' : # input from delete button
-        #     print(ctx.triggered[0])
-        #     delete_index = get_ctx_index(ctx)
-        #     # temp = visual_container.index(delete_index)
-        #     # del div_children[temp]
-        #     # del visual_container[temp]
-        #     for vs, i in zip(div_children, range(len(div_children))):
-        #         index = int(str(vs).split("'type': 'my-index', 'index': ")[1].split('}')[0])
-        #         if delete_index == index:
-        #             print('i',i)
-        #             div_children.pop(i)
-        #             break
-        #     toast = {
-        #         'children': f"Visualization {delete_index} is successfully deleted.",
-        #         'is_open': True,
-        #         'icon': 'success',
-        #         'header': 'SUCCESS'
-        #     }
-        #     return div_children, toast
-        elif input_type=='visualization-container' : # input from delete button
+        elif input_type=='visualization-container' : # input from delete action
             delete_index = get_ctx_index(ctx)
-            # temp = visual_container.index(delete_index)
-            # del div_children[temp]
-            # del visual_container[temp]
             time.sleep(0.7) # wait for delete animation
             for vs, i in zip(div_children, range(len(div_children))):
                 index = int(str(vs).split("'type': 'my-index', 'index':")[1].split('}')[0])
                 if delete_index == index:
                     div_children.pop(i)
+                    remove_from_collection(delete_index)
                     break
             toast = {
                 'children': f"Visualization {delete_index} is successfully deleted.",

@@ -38,11 +38,17 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
 
         large_params_function: function(param) {   return param;  },
 
+
+
         second_function: function(param, sim) {
             triggered = window.dash_clientside.callback_context.triggered[0]
             console.log('here', get_ctx_type(triggered))
             return param;
         },
+
+
+
+
 
         update_figure: function(value, legend, mapbox, param, atmax, live, new_fig) {
             triggered = window.dash_clientside.callback_context.triggered[0]
@@ -87,13 +93,12 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
         },
 
 
+
+
+
+
+
         update_notif_body: function(cdata, slider, itype){
-//            console.log('start here')
-//             console.log({itype})
-//            if(!itype){
-//                console.log('throw here ', itype)
-//                throw window.dash_clientside.PreventUpdate
-//            }
             triggered = window.dash_clientside.callback_context.triggered[0]
             if(!triggered)
                 throw window.dash_clientside.PreventUpdate
@@ -103,12 +108,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
             type = itype.split('-')[0]
 
             input_type = get_ctx_type(triggered)
-
-//            console.log('check 1 ', cdata)
-//            console.log({type})
-
             if(input_type == 'celery-data'){
-
                 notif = (type.length > 0) ? cdata[slider][type]['data'] : ''
                 return [notif, cdata[slider][MAXIMUM]['count'], cdata[slider][MINIMUM]['count'] ]
             }

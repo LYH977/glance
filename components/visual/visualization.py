@@ -20,16 +20,17 @@ from utils.method import get_last_timestamp
 
 access_token = os.environ['MAP_TOKEN']
 px.set_mapbox_access_token(access_token)
-# root = tk.Tk()
-# swidth = root.winfo_screenwidth()
-# data_url = 'https://shahinrostami.com/datasets/time-series-19-covid-combined.csv'
-# data = pd.read_csv(data_url)
-#
+
 
 def create_visualization(screen_height, screen_width, create_clicks,  param, maxValue, df_frame, tformat,dbname, now, new_col):
     # last_nano = get_last_timestamp(collection.temp[TIME])
     figure = create_figure(collection.data[create_clicks], param['parameter'], param['vtype'])
     # total_rows = len(collection.data[create_clicks].index)
+
+    print('collection.data ', collection.data)
+    print('collection.img_container ', collection.img_container)
+    print('collection.live_processing ', collection.live_processing)
+
     return html.Div(
         id={'type': 'visualization-container', 'index': create_clicks},
         className='visualization-container',

@@ -504,7 +504,6 @@ def register_update_last_celery_key(app):
             current_rows = len(collection.data[input_index].index)
             if interval != 0  and interval % 5 == 0 and last_rows < current_rows:
                 now = datetime.now().timestamp()
-                # print(now,' interval: ', interval, )
                 result = task.process_dataset.delay(input_index, collection.data[input_index].to_dict(), param['vtype'], param['parameter'], now)
                 return current_rows, now
 
