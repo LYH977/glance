@@ -3,7 +3,7 @@ import dash_bootstrap_components as dbc
 
 from callback.carousel_callback import register_display_image, register_ca_update_slider, register_update_ca_play_btn, \
     register_update_ca_playing_status, register_update_ca_live_mode, register_ca_update_atmax, \
-    register_ca_update_live_data
+    register_ca_update_live_data, register_reset_ca_slider_n_interval
 
 from callback.container_callback import register_update_visual_container, register_delete_animation
 from callback.dashboard_callback import register_update_dashboard
@@ -23,7 +23,7 @@ from callback.visualization_callback import \
     register_update_play_btn, register_update_live_mode, register_update_live_data, register_update_atmax, \
     register_toggle_collapse, register_update_celery_data, register_update_notif_body, register_toggle_badge_color, \
     register_update_last_celery_key, register_export_visual, register_handle_export_btn_click, \
-    register_reset_export_interval
+    register_reset_export_interval, register_reset_slider_n_interval
 
 # meta_tags are required for the app layout to be mobile responsive
 from callback.upload_modal_callback import register_update_preview, register_update_datetime_modifier, \
@@ -65,6 +65,7 @@ register_update_visual_dropdown(app)
 register_update_figure(app)
 register_update_slider(app)
 register_update_playing_status(app)
+register_reset_slider_n_interval(app)
 register_update_play_btn(app)
 register_toggle_modal(app)
 register_update_live_mode(app)
@@ -84,6 +85,7 @@ register_display_image(app)
 register_ca_update_slider(app)
 register_update_ca_play_btn(app)
 register_update_ca_playing_status(app)
+register_reset_ca_slider_n_interval(app)
 register_update_ca_live_mode(app)
 register_ca_update_atmax(app)
 register_ca_update_live_data(app)

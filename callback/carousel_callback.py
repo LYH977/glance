@@ -108,7 +108,7 @@ def register_update_ca_playing_status(app):
     @app.callback(
         [
             Output({'type':'ca-is-animating', 'index': MATCH}, 'data'),
-            Output({'type':'ca-interval', 'index': MATCH}, 'n_intervals'),
+            # Output({'type':'ca-interval', 'index': MATCH}, 'n_intervals'),
             Output({'type':'ca-slider-label', 'index': MATCH}, 'children')
         ],
         [
@@ -136,22 +136,42 @@ def register_update_ca_playing_status(app):
         if input_type== 'ca-anim-slider': #input from slider
             return \
                 False if playing is True and s_value != interval or s_value == maxValue else dash.no_update,\
-                dash.no_update, \
                 df_date[s_value]
         elif  input_type== 'ca-play-btn':#input from play btn
             return \
                 not playing, \
-                s_value if s_value != maxValue else 0, \
                 dash.no_update
         elif  input_type== 'ca-live-mode':#input from play btn
             return \
                 False if live is True else dash.no_update , \
-                dash.no_update, \
                 dash.no_update
         else:
             raise PreventUpdate
-
 #############################################################################################################################################
+
+def register_reset_ca_slider_n_interval(app):
+    @app.callback(
+        Output({'type': 'ca-interval', 'index': MATCH}, 'n_intervals'),
+        Input({'type': 'ca-play-btn', 'index': MATCH}, 'n_clicks'),
+        State({'type': 'ca-anim-slider', 'index': MATCH}, 'value'),
+
+        prevent_initial_call=True
+    )
+    def reset_slider_n_interval(play, slider):
+        ctx = dash.callback_context
+        input_index = None
+        if not ctx.triggered:
+            input_type = 'No input yet'
+        else:
+            input_type = get_ctx_type(ctx)
+            input_index = get_ctx_index(ctx)
+        df_date = collection.data[input_index][FRAME].unique()
+        maxValue = df_date.shape[0] - 1
+        return slider if slider != maxValue else 0
+#############################################################################################################################################
+
+
+
 
 # update live interval according to live switch
 def register_update_ca_live_mode(app):

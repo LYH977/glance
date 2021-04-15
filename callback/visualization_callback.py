@@ -128,7 +128,7 @@ def register_update_playing_status(app):
     @app.callback(
         [
             Output({'type': 'is-animating', 'index': MATCH}, 'data'),
-            Output({'type': 'interval', 'index': MATCH}, 'n_intervals'),
+            # Output({'type': 'interval', 'index': MATCH}, 'n_intervals'),
             Output({'type': 'slider-label', 'index': MATCH}, 'children'),
         ],
         [
@@ -151,30 +151,53 @@ def register_update_playing_status(app):
         else:
             input_type = get_ctx_type(ctx)
             input_index = get_ctx_index(ctx)
-        # print('param', param)
         df_frame = collection.data[input_index][FRAME].unique()
         maxValue = df_frame.shape[0] - 1
         if input_type == 'anim-slider':  # input from slider
             label = df_frame[s_value]
+
+            if playing is True and s_value != interval:
+                print('1st condition true: ', s_value, ' and ',interval)
+            if  s_value == maxValue:
+                print('2nd condition true')
+
             return \
                 False if playing is True and s_value != interval or s_value == maxValue else dash.no_update, \
-                dash.no_update, \
                 label
 
         elif input_type == 'play-btn':  # input from play btn
             return \
                 not playing, \
-                s_value if s_value != maxValue else 0, \
                 dash.no_update
+
         elif input_type == 'live-mode':  # input from play btn
             return \
                 False if live is True else dash.no_update, \
-                dash.no_update, \
                 dash.no_update
+
+        raise PreventUpdate
+
+#############################################################################################################################################
+
+def register_reset_slider_n_interval(app):
+    @app.callback(
+        Output({'type': 'interval', 'index': MATCH}, 'n_intervals'),
+        Input({'type': 'play-btn', 'index': MATCH}, 'n_clicks'),
+        State({'type': 'anim-slider', 'index': MATCH}, 'value'),
+
+        prevent_initial_call=True
+    )
+    def reset_slider_n_interval(play, slider):
+        ctx = dash.callback_context
+        input_index = None
+        if not ctx.triggered:
+            input_type = 'No input yet'
         else:
-            raise PreventUpdate
-
-
+            input_type = get_ctx_type(ctx)
+            input_index = get_ctx_index(ctx)
+        df_frame = collection.data[input_index][FRAME].unique()
+        maxValue = df_frame.shape[0] - 1
+        return slider if slider != maxValue else 0
 #############################################################################################################################################
 
 # update live interval according to live switch
@@ -187,13 +210,6 @@ def register_update_atmax(app):
         prevent_initial_call=True
     )
     def update_atmax(slider, smax):
-        # ctx = dash.callback_context
-        # input_index = None
-        # if not ctx.triggered:
-        #     input_type = 'No input yet'
-        # else:
-        #     input_type = get_ctx_type(ctx)
-        #     input_index = get_ctx_index(ctx)
         return True if slider == smax else False
 
 
@@ -404,64 +420,9 @@ def register_update_notif_body(app):
             Input({'type': 'last-notif-click', 'index': MATCH}, 'data'),
         ],
 
-        [
-            State({'type': 'anim-slider', 'index': MATCH}, 'value'),
-            State({'type': 'last-notif-click', 'index': MATCH}, 'data'),
-            # State({'type': 'notif-body', 'index': MATCH}, 'children'),
-            # State({'type': f'{MAXIMUM}-badge', 'index': MATCH}, 'children'),
-            # State({'type': f'{MINIMUM}-badge', 'index': MATCH}, 'children'),
-         ],
         prevent_initial_call=True
     )
 
-
-    # @app.callback(
-    #     [
-    #         Output({'type': 'notif-body', 'index': MATCH}, 'children'),
-    #         Output({'type': f'{MAXIMUM}-badge', 'index': MATCH}, 'children'),
-    #         Output({'type': f'{MINIMUM}-badge', 'index': MATCH}, 'children'),
-    #
-    #     ],
-    #     [
-    #         Input({'type': 'celery-data', 'index': MATCH}, 'data'),
-    #         Input({'type': 'anim-slider', 'index': MATCH}, 'value'),
-    #         Input({'type': 'last-notif-click', 'index': MATCH}, 'data')
-    #     ],
-    #     [
-    #         State({'type': 'anim-slider', 'index': MATCH}, 'value'),
-    #         State({'type': 'last-notif-click', 'index': MATCH}, 'data'),
-    #         # State({'type': 'notif-body', 'index': MATCH}, 'children'),
-    #         # State({'type': f'{MAXIMUM}-badge', 'index': MATCH}, 'children'),
-    #         # State({'type': f'{MINIMUM}-badge', 'index': MATCH}, 'children'),
-    #     ],
-    #
-    #     prevent_initial_call=True
-    # )
-    # def update_notif_body(cdata, slider, itype, cvalue, stype):
-    #     if stype is None:
-    #         raise PreventUpdate
-    #     ctx = dash.callback_context
-    #     if not ctx.triggered:
-    #         input_type = 'No input yet'
-    #     else:
-    #         input_type = get_ctx_type(ctx)
-    #
-    #     if handleOutOfRangeNotif(cdata, slider):
-    #         return 'Loading...', '-', '-'
-    #     type = stype.split('-')[0]
-    #     if input_type == 'celery-data':
-    #         notif = cdata[str(cvalue)][type]['data'] if type != '' else ''
-    #         return notif, cdata[str(cvalue)][MAXIMUM]['count'], cdata[str(cvalue)][MINIMUM]['count']
-    #
-    #     elif input_type == 'anim-slider' and cdata is not None:
-    #         notif = cdata[str(slider)][type]['data'] if type != '' else ''
-    #         return notif, cdata[str(slider)][MAXIMUM]['count'], cdata[str(slider)][MINIMUM]['count']
-    #
-    #     elif input_type == 'last-notif-click':
-    #         notif = cdata[str(slider)][type]['data'] if type != '' else ''
-    #         return notif, cdata[str(slider)][MAXIMUM]['count'], cdata[str(slider)][MINIMUM]['count']
-    #
-    #     raise PreventUpdate
 
 
 #############################################################################################################################################
