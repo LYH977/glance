@@ -78,6 +78,26 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                     fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(0,0,0,1)'
                     fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
                 }
+
+
+//                fig2['layout']['coloraxis']['colorscale'][0][1] = 'rgb(243, 231, 155)'
+//                fig2['layout']['coloraxis']['colorscale'][1][1] = 'rgb(250, 196, 132)'
+//                fig2['layout']['coloraxis']['colorscale'][2][1] = 'rgb(248, 160, 126)'
+//                fig2['layout']['coloraxis']['colorscale'][3][1] = 'rgb(235, 127, 134)'
+//                fig2['layout']['coloraxis']['colorscale'][4][1] = 'rgb(206, 102, 147)'
+//                fig2['layout']['coloraxis']['colorscale'][5][1] = 'rgb(160, 89, 160)'
+//                fig2['layout']['coloraxis']['colorscale'][6][1] = 'rgb(92, 83, 165)'
+
+                 fig2['layout']['coloraxis']['colorscale'][0][1] = '#440154'
+                fig2['layout']['coloraxis']['colorscale'][1][1] = '#48186a'
+                fig2['layout']['coloraxis']['colorscale'][2][1] = '#472d7b'
+                fig2['layout']['coloraxis']['colorscale'][3][1] = '#424086'
+                fig2['layout']['coloraxis']['colorscale'][4][1] = '#3b528b'
+                fig2['layout']['coloraxis']['colorscale'][5][1] = '#33638d'
+                fig2['layout']['coloraxis']['colorscale'][6][1] = '#2c728e'
+
+
+
                 change_frame(param['vtype'], fig2, value)
                 return fig2
             }

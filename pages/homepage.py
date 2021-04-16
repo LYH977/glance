@@ -14,6 +14,7 @@ import redis
 import numpy as np
 from datetime import datetime
 from utils.export.export_data import export_mp4
+from plotly import graph_objects as go
 
 
 
@@ -58,8 +59,6 @@ fig.layout.title.x = 0.02
 
 fig.layout.sliders[0].visible = False
 fig.layout.updatemenus[0].visible = False
-
-
 
 
 

@@ -13,8 +13,10 @@ def create_scattermap(data, parameter):
     fig = px.scatter_mapbox(
         data, lat = parameter[SCATTER_MAP_CONSTANT[LATITUDE]],
         lon = parameter[SCATTER_MAP_CONSTANT[LONGITUDE]],
-        size = parameter[SCATTER_MAP_CONSTANT[SIZE]], size_max = 50,
-        color = parameter[SCATTER_MAP_CONSTANT[COLOR]], color_continuous_scale = px.colors.sequential.Pinkyl,
+        size = parameter[SCATTER_MAP_CONSTANT[SIZE]],
+        size_max = 50,
+        color = parameter[SCATTER_MAP_CONSTANT[COLOR]],
+        color_continuous_scale = px.colors.sequential.Pinkyl,
         hover_name = parameter[SCATTER_MAP_CONSTANT[NAME]],
         mapbox_style = 'dark', zoom=1,
         animation_frame = FRAME,

@@ -2,6 +2,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_daq as daq
 import dash_bootstrap_components as dbc
+import plotly.express as px
 
 from utils.constant import MAPBOX_TYPES, SCATTER_MAP, CHOROPLETH, DENSITY
 
@@ -18,6 +19,8 @@ def setting_markup(create_clicks, type):
             legend_theme_markup(create_clicks, hide_legend) ,
 
             mapbox_type_markup(create_clicks, hide_mapbox) ,
+
+            color_scale_markup(create_clicks, hide_mapbox),
 
             live_mode_markup(create_clicks),
 
@@ -112,11 +115,26 @@ def mapbox_type_markup(create_clicks, hidden):
                     options=[{"label": t, "value": t} for t in MAPBOX_TYPES],
                     value='dark'
                 )),
-
             ]),
-
             header=True
         ),
         dbc.DropdownMenuItem(divider=True),
+    ],hidden =hidden)
 
+
+def color_scale_markup(create_clicks, hidden):
+    colorscales = px.colors.named_colorscales()
+    return html.Div([
+        dbc.DropdownMenuItem(
+            dbc.Row([
+                dbc.Col(dbc.Label("Color Scale")),
+                dbc.Col(dbc.Select(
+                    id={'type': 'color-scale', 'index': create_clicks},
+                    options=[{"label": c, "value": c} for c in colorscales],
+                    value='pinkyl'
+                )),
+            ]),
+            header=True
+        ),
+        dbc.DropdownMenuItem(divider=True),
     ],hidden =hidden)

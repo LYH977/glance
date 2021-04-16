@@ -18,6 +18,7 @@ def create_density(data, parameter):
         hover_data=parameter[DENSITY_CONSTANT[MESSAGE]],
         radius = 10,
         center = dict(lat = 0, lon = 180),
+        color_continuous_scale=px.colors.sequential.Pinkyl,
         zoom = 0,
         animation_frame = FRAME,
         mapbox_style = "dark",

@@ -528,6 +528,7 @@ def register_export_visual(app):
         prevent_initial_call=True
     )
     def export_visual(disabled, name, fig):
+        # print(fig)
         if disabled:
             export_mp4(fig, name)
             dl = f'{name}.mp4'
@@ -535,8 +536,7 @@ def register_export_visual(app):
 
             print(f'habis href {name}')
             return dl, path, {'display': 'block'}, True
-        else:
-            return None, None, {'display': 'none'}, dash.no_update
+        return None, None, {'display': 'none'}, dash.no_update
 
 # ############################################################################################################################################
 

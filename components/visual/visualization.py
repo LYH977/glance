@@ -27,9 +27,6 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
     figure = create_figure(collection.data[create_clicks], param['parameter'], param['vtype'])
     # total_rows = len(collection.data[create_clicks].index)
 
-    print('collection.data ', collection.data)
-    print('collection.img_container ', collection.img_container)
-    print('collection.live_processing ', collection.live_processing)
 
     return html.Div(
         id={'type': 'visualization-container', 'index': create_clicks},
