@@ -3,6 +3,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_daq as daq
 import dash_bootstrap_components as dbc
+import plotly.express as px
 
 from utils import collection
 from utils.constant import TIME
@@ -12,6 +13,7 @@ from utils.method import get_last_timestamp
 def stores_markup(create_clicks, param, figure, tformat,  initial_frame, dbname, now,  new_col):
     last_nano = get_last_timestamp(collection.temp[TIME])
     total_rows = len(collection.data[create_clicks].index)
+    color = px.colors.convert_colors_to_same_type(px.colors.sequential.Pinkyl)
     return html.Div([
         dcc.Store(id = {'type': 'my-index', 'index': create_clicks}, data = create_clicks),
         dcc.Store(id = {'type': 'is-animating', 'index': create_clicks}, data = False),
@@ -29,6 +31,6 @@ def stores_markup(create_clicks, param, figure, tformat,  initial_frame, dbname,
         dcc.Store(id = {'type': 'is-slided-up', 'index': create_clicks}, data = False),
         dcc.Store(id = {'type': 'new-column-info', 'index': create_clicks}, data = new_col),
         dcc.Store(id= {'type': 'export-name', 'index': create_clicks}, data = None),
-        # dcc.Store(id={'type': 'max-frame', 'index': create_clicks}, data = max_frame),
+        dcc.Store(id={'type': 'chosen-color-scale', 'index': create_clicks}, data = {'name' : 'Pinkyl', 'value' : color}),
 
     ])

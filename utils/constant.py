@@ -220,3 +220,32 @@ COLLAPSE_HEIGHT = 150
 VISUAL_HEIGHT = 300
 
 MAPBOX_TYPES = [ 'streets',  'light', 'dark', 'satellite', 'satellite-streets']
+
+SEQUENTIAL_COLOR = [
+'Aggrnyl' ,'Agsunset',
+ 'Blackbody' ,  'Bluered', 'Blues',   'Blugrn',  'Bluyl',   'Brwnyl', 'BuGn','BuPu','Burg','Burgyl',
+'Cividis',
+'Darkmint',
+ 'Electric','Emrld',
+'GnBu','Greens',  'Greys',
+ 'Hot',
+'Inferno',
+'Jet',
+'Magenta', 'Magma', 'Mint',
+'OrRd','Oranges', 'Oryel',
+'Peach',   'Pinkyl',  'Plasma',  'Plotly3', 'PuBu','PuBuGn',  'PuRd','Purp','Purples', 'Purpor',
+'Rainbow', 'RdBu', 'RdPu','Redor',   'Reds',
+'Sunset',  'Sunsetdark',
+ 'Teal','Tealgrn', 'Turbo',
+'Viridis',
+'YlGn','YlGnBu',  'YlorBr',  'YlorRd',
+'algae',   'amp',
+'deep', 'dense',
+ 'gray',
+'haline',
+'ice',
+'matter',
+'solar',   'speed',
+'tempo','thermal', 'turbid',
+
+]

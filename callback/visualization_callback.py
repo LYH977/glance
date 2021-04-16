@@ -4,6 +4,7 @@ import pandas as pd
 import dash
 from dash.dependencies import Input, Output, State, MATCH, ClientsideFunction
 from dash.exceptions import PreventUpdate
+import plotly.express as px
 
 import task
 from components.visual.notifications.collapse import collapse_markup
@@ -51,6 +52,7 @@ def register_update_figure(app):
             Input({'type': 'anim-slider', 'index': MATCH}, 'value'),
             Input({'type': 'legend-theme', 'index': MATCH}, 'on'),
             Input({'type': 'mapbox-type', 'index': MATCH}, 'value'),
+            Input({'type': 'chosen-color-scale', 'index': MATCH}, 'data'),
         ],
         [
             State({'type': 'my_param', 'index': MATCH}, 'data'),
@@ -62,7 +64,25 @@ def register_update_figure(app):
         prevent_initial_call=True
     )
 
+#############################################################################################################################################
 
+# update play button label according to playing status
+
+def register_update_color_scale(app):
+    @app.callback(
+        Output({'type': 'chosen-color-scale', 'index': MATCH}, 'data'),
+        Input({'type': 'color-scale-dropdown', 'index': MATCH}, 'value'),
+        State({'type': 'chosen-color-scale', 'index': MATCH}, 'data'),
+        prevent_initial_call=True
+    )
+    def update_color_scale(dropdown, chosen):
+        if dropdown == chosen['name']:
+            raise PreventUpdate
+        chosen_color = eval(f'px.colors.sequential.{dropdown}')
+        formatted_scale, scale = px.colors.convert_colors_to_same_type(chosen_color)
+        colorscale = px.colors.make_colorscale(formatted_scale, scale=scale)
+        # print(colorscale)
+        return {'name': dropdown, 'value': colorscale}
 
 ############################################################################################################################################## update slider according to interval
 def register_update_slider(app):
@@ -242,6 +262,7 @@ def register_update_live_data(app):
             Input({'type': 'live-interval', 'index': MATCH}, 'n_intervals'),
             Input({'type': 'legend-theme', 'index': MATCH}, 'on'),
             Input({'type': 'mapbox-type', 'index': MATCH}, 'value'),
+            Input({'type': 'chosen-color-scale', 'index': MATCH}, 'data'),
 
         ],
         [
@@ -255,7 +276,7 @@ def register_update_live_data(app):
         ],
         prevent_initial_call=True
     )
-    def update_live_data(live, legend,mapbox,  ts, format,  param, dbname, buffer, info):
+    def update_live_data(live, legend,mapbox, colorscale, ts, format,  param, dbname, buffer, info):
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
@@ -297,6 +318,11 @@ def register_update_live_data(app):
         elif input_type == 'mapbox-type':
             fig2 = buffer
             fig2['layout']['mapbox']['style'] = mapbox
+            return dash.no_update, fig2
+
+        elif input_type == 'chosen-color-scale':
+            fig2 = buffer
+            fig2['layout']['coloraxis']['colorscale'] = colorscale['value']
             return dash.no_update, fig2
 
         raise PreventUpdate

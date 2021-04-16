@@ -23,7 +23,7 @@ from callback.visualization_callback import \
     register_update_play_btn, register_update_live_mode, register_update_live_data, register_update_atmax, \
     register_toggle_collapse, register_update_celery_data, register_update_notif_body, register_toggle_badge_color, \
     register_update_last_celery_key, register_export_visual, register_handle_export_btn_click, \
-    register_reset_export_interval, register_reset_slider_n_interval
+    register_reset_export_interval, register_reset_slider_n_interval, register_update_color_scale
 
 # meta_tags are required for the app layout to be mobile responsive
 from callback.upload_modal_callback import register_update_preview, register_update_datetime_modifier, \
@@ -63,6 +63,7 @@ register_update_visual_dropdown(app)
 
 # visualization_callback
 register_update_figure(app)
+register_update_color_scale(app)
 register_update_slider(app)
 register_update_playing_status(app)
 register_reset_slider_n_interval(app)

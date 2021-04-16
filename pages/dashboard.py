@@ -7,13 +7,13 @@ import plotly.express as px
 # px.colors.sequential.
 
 # print('pltlys scale', px.colors.sequential.a )
-print('sequential ', px.colors.PLOTLY_SCALES.keys() )
-viridis_colors, scale = px.colors.convert_colors_to_same_type(px.colors.PLOTLY_SCALES["Viridis"])
-colorscale = px.colors.make_colorscale(viridis_colors, scale=scale)
-print('viridis_colors', viridis_colors)
-print('scale', scale)
-print('colorscale', colorscale)
-print('----------------------')
+# print('sequential ', px.colors.PLOTLY_SCALES.keys() )
+# viridis_colors, scale = px.colors.convert_colors_to_same_type(px.colors.sequential.Pinkyl)
+# colorscale = px.colors.make_colorscale(viridis_colors, scale=scale)
+# print('viridis_colors', viridis_colors)
+# print('scale', scale)
+# print('colorscale', colorscale)
+# print('----------------------')
 
 layout = html.Div([
     html.Div('Welcome to Glance', id='empty-scene', className='empty-scene'),

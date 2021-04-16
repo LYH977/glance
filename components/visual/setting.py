@@ -4,7 +4,7 @@ import dash_daq as daq
 import dash_bootstrap_components as dbc
 import plotly.express as px
 
-from utils.constant import MAPBOX_TYPES, SCATTER_MAP, CHOROPLETH, DENSITY
+from utils.constant import MAPBOX_TYPES, SCATTER_MAP, CHOROPLETH, DENSITY, SEQUENTIAL_COLOR
 
 
 def setting_markup(create_clicks, type):
@@ -123,15 +123,14 @@ def mapbox_type_markup(create_clicks, hidden):
 
 
 def color_scale_markup(create_clicks, hidden):
-    colorscales = px.colors.named_colorscales()
     return html.Div([
         dbc.DropdownMenuItem(
             dbc.Row([
                 dbc.Col(dbc.Label("Color Scale")),
                 dbc.Col(dbc.Select(
-                    id={'type': 'color-scale', 'index': create_clicks},
-                    options=[{"label": c, "value": c} for c in colorscales],
-                    value='pinkyl'
+                    id={'type': 'color-scale-dropdown', 'index': create_clicks},
+                    options=[{"label": c, "value": c} for c in SEQUENTIAL_COLOR],
+                    value='Pinkyl'
                 )),
             ]),
             header=True
