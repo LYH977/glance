@@ -23,10 +23,7 @@ px.set_mapbox_access_token(access_token)
 
 
 def create_visualization(screen_height, screen_width, create_clicks,  param, maxValue, df_frame, tformat,dbname, now, new_col):
-    # last_nano = get_last_timestamp(collection.temp[TIME])
     figure = create_figure(collection.data[create_clicks], param['parameter'], param['vtype'])
-    # total_rows = len(collection.data[create_clicks].index)
-
 
     return html.Div(
         id={'type': 'visualization-container', 'index': create_clicks},
@@ -36,55 +33,54 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
             'width': screen_width/2.2,
                },
         children=html.Div([
-            stores_markup(create_clicks, param, figure, tformat,  df_frame[0], dbname, now,  new_col),
-            intervals_markup(create_clicks, maxValue),
-
-            dbc.Row(
-                [
-                    dbc.Col( name_section_markup(create_clicks),  width = 'auto'),
-
-                    dbc.Col( setting_markup(create_clicks, param['vtype']), width = 'auto' ),
-
-
-                ],
-                justify="around",
-                align= 'center',
-            ),
-            dcc.Graph(
-                # responsive= False,
-                className='visualization',
-                id={'type': 'visualization', 'index': create_clicks},
-                figure = figure,
-                config={
-                    'modeBarButtonsToRemove': [
-                        'pan2d','select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox','toggleHover',
-                        'zoom2d','zoomIn2d', 'zoomOut2d',  'autoScale2d', 'resetScale2d', 'toggleSpikelines',
-                        'hoverClosestCartesian', 'hoverCompareCartesian', 'zoomInGeo', 'zoomOutGeo', 'hoverClosestGeo', 'resetGeo'
+            html.Div(),
+            html.Div([
+                stores_markup(create_clicks, param, figure, tformat, df_frame[0], dbname, now, new_col),
+                intervals_markup(create_clicks, maxValue),
+                dbc.Row(
+                    [
+                        dbc.Col(name_section_markup(create_clicks), width='auto'),
+                        dbc.Col(setting_markup(create_clicks, param['vtype']), width='auto'),
                     ],
-                    'displaylogo': False,
-                    # 'responsive': False,
-                    # 'displayModeBar': False
-                }
-            ),
-
-            html.Div(
-                id={'type': 'option-wrapper', 'index': create_clicks},
-                className= 'option-wrapper',
-                style={ 'height': '15%', },#40% including card body
-                children=[
-                    controls_markup(create_clicks, maxValue, df_frame[0]),
-                    html.Div(
-                        id={'type': "loading-notif-output", 'index': create_clicks},
-                        children=dbc.Spinner(
-                            color="light",
-                            type="grow"
+                    justify="around",
+                    align='center',
+                ),
+                dcc.Graph(
+                    className='visualization',
+                    id={'type': 'visualization', 'index': create_clicks},
+                    figure=figure,
+                    config={
+                        'modeBarButtonsToRemove': [
+                            'pan2d', 'select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox',
+                            'toggleHover',
+                            'zoom2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toggleSpikelines',
+                            'hoverClosestCartesian', 'hoverCompareCartesian', 'zoomInGeo', 'zoomOutGeo',
+                            'hoverClosestGeo', 'resetGeo'
+                        ],
+                        'displaylogo': False,
+                        # 'responsive': False,
+                        # 'displayModeBar': False
+                    }
+                ),
+                html.Div(
+                    id={'type': 'option-wrapper', 'index': create_clicks},
+                    className='option-wrapper',
+                    style={'height': '15%', },  # 40% including card body
+                    children=[
+                        controls_markup(create_clicks, maxValue, df_frame[0]),
+                        html.Div(
+                            id={'type': "loading-notif-output", 'index': create_clicks},
+                            children=dbc.Spinner(
+                                color="light",
+                                type="grow"
+                            ),
                         ),
-                    ),
-                ]
-            ),
+                    ]
+                ),
+            ],className= 'visual-box'),
 
-        ],className= 'visual-box '
-        ),
+
+        ] , style={'position':'relative', 'height':'100%', 'width':'100%'}       ),
     )
 
 

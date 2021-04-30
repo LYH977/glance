@@ -1,16 +1,17 @@
 from datetime import datetime
-
 import dash
 from dash.dependencies import Input, Output, ALL, State, MATCH
 from dash.exceptions import PreventUpdate
 import time
-
 import task
 from components import container
 from components.carousel import create_ca_img
 from utils import collection
 from utils.method import get_ctx_type, get_ctx_index, formatted_time_value, remove_from_collection
 from utils.constant import CAROUSEL, FRAME, TIME, CAROUSEL_CONSTANT, ITEM
+
+
+
 
 
 # update visualization container by appending or removing item from array
@@ -58,7 +59,6 @@ def register_update_visual_container(app):
 
             new_child = container.render_container(create_clicks, param, tformat, dbname, now, collection.new_col)
             div_children.append(new_child)
-            # visual_container.append(create_clicks)
             toast = {
                 'children': f"Visualization {create_clicks} is successfully created.",
                 'is_open': True,

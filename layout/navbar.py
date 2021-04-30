@@ -3,23 +3,35 @@ import dash_core_components as dcc
 import dash_html_components as html
 import base64
 
+def upload_btn_markup():
+    return dbc.NavItem(
+        dbc.NavLink(
+            html.I(className="fa fa-upload"),
+            id='upload-button',
+            n_clicks=0
+        ),
+        active=True,
+        className='nav-item'
+    )
 
+def adjust_btn_markup():
+    return dbc.NavItem(
+        dbc.NavLink(
+            html.I(className="fa fa-arrows-alt", id='adjust-svg'),
+            id='adjust-button',
+            n_clicks=0
+        ),
+        active=True,
+        id = 'adjust-wrapper',
+        className='nav-item'
+    )
 
 navbar = dbc.NavbarSimple(
     children=[
+        dcc.Store(id = 'is-adjusting', data = False),
         dcc.Location(id='url', refresh=False),
-        # dbc.NavItem(dbc.NavLink("Home", href="/pages/home"),active=True),
-        # dbc.NavItem(dbc.NavLink("Visualization", href="/pages/visualization"), active=True),
-        # dbc.NavItem(dbc.NavLink("old", href="/pages/upload"), active=True),
-        dbc.NavItem(
-            dbc.NavLink(
-                html.I(className="fa fa-upload"),
-                id='upload-button',
-                n_clicks=0
-            ),
-            active=True ,
-            className='nav-item'
-        ),
+        adjust_btn_markup(),
+        upload_btn_markup(),
 
     ],
     brand="Glance",

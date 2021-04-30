@@ -7,6 +7,7 @@ from callback.carousel_callback import register_display_image, register_ca_updat
 
 from callback.container_callback import register_update_visual_container, register_delete_animation
 from callback.dashboard_callback import register_update_dashboard
+from callback.navbar_callback import register_update_adjust_btn_color, register_toggle_is_adjusting_status
 
 from callback.select_dataset_modal_callback import \
     register_update_after_upload, register_enable_create_btn, register_toggle_modal, \
@@ -111,11 +112,14 @@ register_update_dashboard(app)
 
 #  container callback
 register_update_visual_container(app)
+register_delete_animation(app)
 
 #  toast callback
 register_update_toast(app)
 
-register_delete_animation(app)
+#navbar callback
+register_update_adjust_btn_color(app)
+register_toggle_is_adjusting_status(app)
 
 
 server = app.server

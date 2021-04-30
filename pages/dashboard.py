@@ -15,14 +15,14 @@ import plotly.express as px
 # print('colorscale', colorscale)
 # print('----------------------')
 
-layout = html.Div([
-    html.Div('Welcome to Glance', id='empty-scene', className='empty-scene'),
-    html.Div(id = 'visual-collection', children=[], className='visual-collection' ),
-    select_dataset_modal.modal
-, ], style={
-    'position':'relative',
-    # 'background':'#242444'
-    }
+layout = html.Div(
+    [
+        html.Div('Welcome to Glance', id='empty-scene', className='empty-scene'),
+        html.Div(id = 'visual-collection', children=[], className='visual-collection' ),
+        select_dataset_modal.modal
+    ]
+    ,className='main-container'
+
 )
 
 
