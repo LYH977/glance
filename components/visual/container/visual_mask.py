@@ -12,6 +12,5 @@ def visual_mask_markup(create_clicks):
             html.I(className="fa fa-arrow-left", id={'type': 'left-arrow', 'index': create_clicks}, ),
             html.Div(create_clicks, className= 'id-circle'),
             html.I(className="fa fa-arrow-right", id={'type': 'right-arrow', 'index': create_clicks}, ),
-
         ]
     )

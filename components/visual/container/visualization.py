@@ -18,25 +18,29 @@ def create_visualization(screen_height, screen_width, create_clicks,  param, max
     figure = create_figure(collection.data[create_clicks], param['parameter'], param['vtype'])
 
     return html.Div(
-        id={'type': 'visualization-stage', 'index': create_clicks},
-        className='visualization-stage',
-        style={
-            'height': screen_height * 0.72,
-            'width': screen_width / 2.2,
-        },
-        children =
-            html.Div(
+        # id={'type': 'visualization-stage', 'index': create_clicks},
+        # className='visualization-stage',
+        # style={
+        #     'height': screen_height * 0.72,
+        #     'width': screen_width / 2.2,
+        # },
+        # children =
+        #     html.Div(
                 id={'type': 'visualization-container', 'index': create_clicks},
                 className='visualization-container',
+                style={
+                        'height': screen_height * 0.72,
+                        'width': screen_width / 2.2,
+                    },
                 children=html.Div([
                     visual_mask_markup(create_clicks),
                     visual_box_markup(create_clicks, param, figure, tformat, df_frame[0], dbname, now, new_col, maxValue),
 
-                ]),
+                ], style={'position':'relative', 'height':'100%', 'width':'100%'}   ),
             )
 
 
-    )
+    # )
 
 
 

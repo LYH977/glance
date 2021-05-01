@@ -50,7 +50,7 @@ def register_toggle_mask_interface(app):
     @app.callback(
         [
             Output({'type': 'visual-mask', 'index': ALL}, 'style'),
-            Output({'type': 'visualization-stage', 'index': ALL}, 'style'),
+            Output({'type': 'visualization-container', 'index': ALL}, 'style'),
         ],
         Input('is-adjusting', 'data'),
         [
@@ -64,8 +64,8 @@ def register_toggle_mask_interface(app):
         if total ==0:
             raise PreventUpdate
         if status is True:
-            mask_style= {'zIndex':22}
-            container_style = {'height':'300px', 'width':'300px'}
+            mask_style= {'zIndex':25}
+            container_style = {'height':'200px', 'width':'200px'}
         else:
             mask_style = {'zIndex': 19}
             container_style = {'height':resolution['height']* 0.72, 'width':resolution['width']/2.2}

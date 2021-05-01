@@ -23,7 +23,8 @@ def register_update_visual_container(app):
         ],
         [
             Input('create-visual', 'n_clicks'),
-            Input({'type': 'visualization-container', 'index': ALL}, 'style'),
+            # Input({'type': 'visualization-container', 'index': ALL}, 'style'),
+            Input({'type': 'dlt-btn', 'index': ALL}, 'n_clicks')
         ],
         [
             State('visual-collection', 'children') ,
@@ -33,7 +34,7 @@ def register_update_visual_container(app):
 
         ],
         prevent_initial_call=True)
-    def update_visual_container(create_clicks,  style, div_children, param, tformat, dbname):
+    def update_visual_container(create_clicks,  dlt_btn, div_children, param, tformat, dbname):
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
@@ -68,9 +69,25 @@ def register_update_visual_container(app):
             collection.new_col = {'expression': [], 'numeric_col': []}
             return div_children, toast
 
-        elif input_type=='visualization-container' : # input from delete action
+        # elif input_type=='visualization-container' : # input from delete action
+        #     delete_index = get_ctx_index(ctx)
+        #     time.sleep(0.7) # wait for delete animation
+        #     for vs, i in zip(div_children, range(len(div_children))):
+        #         index = int(str(vs).split("'type': 'my-index', 'index':")[1].split('}')[0])
+        #         if delete_index == index:
+        #             div_children.pop(i)
+        #             remove_from_collection(delete_index)
+        #             break
+        #     toast = {
+        #         'children': f"Visualization {delete_index} is successfully deleted.",
+        #         'is_open': True,
+        #         'icon': 'info',
+        #         'header': 'SUCCESS'
+        #     }
+        #     return div_children, toast
+        elif input_type=='dlt-btn' : # input from delete action
             delete_index = get_ctx_index(ctx)
-            time.sleep(0.7) # wait for delete animation
+            # time.sleep(0.7) # wait for delete animation
             for vs, i in zip(div_children, range(len(div_children))):
                 index = int(str(vs).split("'type': 'my-index', 'index':")[1].split('}')[0])
                 if delete_index == index:
@@ -84,6 +101,7 @@ def register_update_visual_container(app):
                 'header': 'SUCCESS'
             }
             return div_children, toast
+
         raise PreventUpdate
 
 
@@ -91,18 +109,18 @@ def register_update_visual_container(app):
 
 # update play button label according to playing status
 
-def register_delete_animation(app):
-    @app.callback(
-        Output({'type': 'visualization-container', 'index': MATCH}, 'style'),
-        [Input({'type': 'dlt-btn', 'index': MATCH}, 'n_clicks')],
-        State({'type': 'visualization-container', 'index': MATCH}, 'style'),
-
-        prevent_initial_call=True
-    )
-    def delete_animation(click, style):
-        if click is not None:
-            news = style
-            news['opacity'] = 0
-            news['transform'] = 'scale(0,0)'
-            return news
-        raise PreventUpdate
+# def register_delete_animation(app):
+#     @app.callback(
+#         Output({'type': 'visualization-container', 'index': MATCH}, 'style'),
+#         [Input({'type': 'dlt-btn', 'index': MATCH}, 'n_clicks')],
+#         State({'type': 'visualization-container', 'index': MATCH}, 'style'),
+#
+#         prevent_initial_call=True
+#     )
+#     def delete_animation(click, style):
+#         if click is not None:
+#             news = style
+#             news['opacity'] = 0
+#             news['transform'] = 'scale(0,0)'
+#             return news
+#         raise PreventUpdate
