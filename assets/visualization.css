@@ -2,10 +2,8 @@
     box-sizing: border-box;
 }
 
-.visualization-container {
+.visualization-stage {
     background: #46648c;
-    display: inline-block;
-    padding: 10px 20px;
     margin: 20px;
     position:relative;
     border-radius : 10px;
@@ -14,10 +12,57 @@
 
 }
 
+
+.visualization-container {
+    background: red;
+
+    display: inline-block;
+    padding: 10px 20px;
+    position:relative;
+    border-radius : 10px;
+    overflow: hidden;
+    transition: opacity 1.1s, transform 1.1s;
+    height: 100%;
+    width: 100%;
+    z-index: 20;
+}
+
 .visual-box {
     height: 100%;
     width: 100%;
     position: relative;
+    z-index: 20;
+
+}
+
+.visual-mask {
+    background: green;
+
+    position:absolute;
+    height: 100%;
+    width: 100%;
+    top:0;
+    left:0;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
+
+.id-circle {
+   border-radius : 50%;
+   height : 50px;
+   width : 50px;
+   background: blue;
+   color: white;
+   display : flex;
+   justify-content: center;
+   align-items: center;
+   font-size: 150%;
+   font-weight: bold;
 }
 
 .visualization {
@@ -62,9 +107,9 @@
     width : 100%;
     padding: 10px;
     overflow: auto;
-
-
 }
+
+
 
 
 .option-wrapper {
@@ -73,7 +118,7 @@
     transition: height 0.5s;
     background:#46648c;
     position:absolute;
-    z-index: 99
+    z-index: 21
 }
 
 
@@ -82,11 +127,17 @@
 
 
 .flex {
+
     display : flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
 }
+
+
+
+
+
 
 .export-link {
     margin: 10px;

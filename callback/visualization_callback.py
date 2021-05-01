@@ -7,8 +7,8 @@ from dash.exceptions import PreventUpdate
 import plotly.express as px
 
 import task
+from components.visual.figures.figure_method import create_figure
 from components.visual.notifications.collapse import collapse_markup
-from components.visual.visualization import create_figure
 from utils import collection
 from utils.collection import redis_instance
 from utils.export.export_data import export_mp4

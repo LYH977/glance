@@ -1,7 +1,7 @@
 import tkinter as tk
 
 from components.carousel import create_carousel
-from components.visual.visualization import create_visualization
+from components.visual.container.visualization import create_visualization
 from utils import collection
 from utils.constant import CAROUSEL, FRAME
 

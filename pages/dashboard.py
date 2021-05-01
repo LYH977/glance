@@ -1,6 +1,8 @@
 import dash_html_components as html
 from components import select_dataset_modal
 import plotly.express as px
+import dash_core_components as dcc
+import tkinter as tk
 
 # from callback import upload_modal_callback
 # from database import dbConfig
@@ -14,9 +16,13 @@ import plotly.express as px
 # print('scale', scale)
 # print('colorscale', colorscale)
 # print('----------------------')
+root = tk.Tk()
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
 
 layout = html.Div(
     [
+        dcc.Store('resolution', data={'height':screen_height, 'width':screen_width}),
         html.Div('Welcome to Glance', id='empty-scene', className='empty-scene'),
         html.Div(id = 'visual-collection', children=[], className='visual-collection' ),
         select_dataset_modal.modal
