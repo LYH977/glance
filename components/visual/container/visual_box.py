@@ -26,6 +26,7 @@ def visual_box_markup(create_clicks, param, figure, tformat, first_frame, dbname
             dcc.Graph(
                 className='visualization',
                 id={'type': 'visualization', 'index': create_clicks},
+                style={'opacity':1},
                 figure=figure,
                 config={
                     'modeBarButtonsToRemove': [

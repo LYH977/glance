@@ -42,7 +42,6 @@ def register_toggle_is_adjusting_status(app):
         prevent_initial_call=True
     )
     def toggle_is_adjusting_status(click, status):
-        print('status:', status)
         return True if status is False else False
 
 #############################################################################################################################################
@@ -51,6 +50,7 @@ def register_toggle_mask_interface(app):
         [
             Output({'type': 'visual-mask', 'index': ALL}, 'style'),
             Output({'type': 'visualization-container', 'index': ALL}, 'style'),
+            Output({'type': 'visualization', 'index': ALL}, 'style'),
         ],
         Input('is-adjusting', 'data'),
         [
@@ -64,11 +64,21 @@ def register_toggle_mask_interface(app):
         if total ==0:
             raise PreventUpdate
         if status is True:
-            mask_style= {'zIndex':25}
+            mask_style= {
+                'zIndex':25,
+            }
             container_style = {'height':'200px', 'width':'200px'}
+            visual_style = {'opacity': 0.0}
         else:
-            mask_style = {'zIndex': 19}
+            mask_style = {'zIndex': 19,
+            'transitionProperty': 'z-index',
+                'transitionDuration': '0.1s',
+                'transitionDelay': '0.7s',
+                          }
             container_style = {'height':resolution['height']* 0.72, 'width':resolution['width']/2.2}
+            visual_style = {'opacity': 1.0}
+
 
         return [mask_style for i in range(0, total)],\
-               [container_style for i in range(0, total)]
+               [container_style for i in range(0, total)], \
+               [visual_style for i in range(0, total)],

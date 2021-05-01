@@ -598,3 +598,14 @@ def register_reset_export_interval(app):
     )
     def reset_export_interval(click):
         return 0
+
+# ############################################################################################################################################
+
+# def register_adjust_visual_position(app):
+#     @app.callback(
+#         Output({'type': 'export-interval', 'index': MATCH}, 'n_intervals'),
+#         Input({'type': 'dlt-btn', 'index': ALL}, 'n_clicks'),
+#         prevent_initial_call=True
+#     )
+#     def adjust_visual_position(click):
+#         return 0

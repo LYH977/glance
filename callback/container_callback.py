@@ -7,7 +7,7 @@ import task
 from components import container
 from components.carousel import create_ca_img
 from utils import collection
-from utils.method import get_ctx_type, get_ctx_index, formatted_time_value, remove_from_collection
+from utils.method import get_ctx_type, get_ctx_index, formatted_time_value, remove_from_collection, swapPositions
 from utils.constant import CAROUSEL, FRAME, TIME, CAROUSEL_CONSTANT, ITEM
 
 
@@ -24,7 +24,10 @@ def register_update_visual_container(app):
         [
             Input('create-visual', 'n_clicks'),
             # Input({'type': 'visualization-container', 'index': ALL}, 'style'),
-            Input({'type': 'dlt-btn', 'index': ALL}, 'n_clicks')
+            Input({'type': 'dlt-btn', 'index': ALL}, 'n_clicks'),
+            Input({'type': 'left-arrow', 'index': ALL}, 'n_clicks'),
+            Input({'type': 'right-arrow', 'index': ALL}, 'n_clicks')
+
         ],
         [
             State('visual-collection', 'children') ,
@@ -34,7 +37,7 @@ def register_update_visual_container(app):
 
         ],
         prevent_initial_call=True)
-    def update_visual_container(create_clicks,  dlt_btn, div_children, param, tformat, dbname):
+    def update_visual_container(create_clicks,  dlt_btn, left, right ,div_children, param, tformat, dbname):
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
@@ -69,22 +72,6 @@ def register_update_visual_container(app):
             collection.new_col = {'expression': [], 'numeric_col': []}
             return div_children, toast
 
-        # elif input_type=='visualization-container' : # input from delete action
-        #     delete_index = get_ctx_index(ctx)
-        #     time.sleep(0.7) # wait for delete animation
-        #     for vs, i in zip(div_children, range(len(div_children))):
-        #         index = int(str(vs).split("'type': 'my-index', 'index':")[1].split('}')[0])
-        #         if delete_index == index:
-        #             div_children.pop(i)
-        #             remove_from_collection(delete_index)
-        #             break
-        #     toast = {
-        #         'children': f"Visualization {delete_index} is successfully deleted.",
-        #         'is_open': True,
-        #         'icon': 'info',
-        #         'header': 'SUCCESS'
-        #     }
-        #     return div_children, toast
         elif input_type=='dlt-btn' : # input from delete action
             delete_index = get_ctx_index(ctx)
             # time.sleep(0.7) # wait for delete animation
@@ -102,6 +89,27 @@ def register_update_visual_container(app):
             }
             return div_children, toast
 
+        elif input_type == 'left-arrow' :
+            target_index = get_ctx_index(ctx)
+            for vs, i in zip(div_children, range(len(div_children))):
+                index = int(str(vs).split("'type': 'my-index', 'index':")[1].split('}')[0])
+                if target_index == index:
+                    if i == 0:
+                        raise PreventUpdate
+                    div_children = swapPositions(div_children, i, i-1)
+                    break
+            return div_children, dash.no_update
+
+        elif input_type == 'right-arrow' :
+            target_index = get_ctx_index(ctx)
+            for vs, i in zip(div_children, range(len(div_children))):
+                index = int(str(vs).split("'type': 'my-index', 'index':")[1].split('}')[0])
+                if target_index == index:
+                    if i == len(div_children) -1:
+                        raise PreventUpdate
+                    div_children = swapPositions(div_children, i, i+1)
+                    break
+            return div_children, dash.no_update
         raise PreventUpdate
 
 
