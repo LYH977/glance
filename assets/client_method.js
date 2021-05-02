@@ -33,6 +33,27 @@ const handle_out_of_range_notif = ( celery, slider )=>{
     return false
 }
 
+
+const insert_marker = () =>{
+ return {
+//    coloraxis: "coloraxis",
+    hovertemplate: 'test',
+    lat: [45],
+    lon: [-75],
+    marker: {'size': 20, 'symbol': ['bus']},
+    mode: 'markers',
+//    text: ['Bus'],
+    textposition: 'bottom right',
+//    subplot: 'mapbox',
+    type: 'scattermapbox'
+}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+
+
+
 window.dash_clientside = Object.assign({}, window.dash_clientside, {
     clientside: {
 
@@ -92,18 +113,13 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
             else if(input_type == 'chosen-color-scale'){
                 fig2 = JSON.parse(JSON.stringify(new_fig))
                 fig2['layout']['coloraxis']['colorscale'] = colorscale['value']
+                console.log(fig2)
+                fig2['data'][1] = insert_marker()
                 change_frame(param['vtype'], fig2, value)
                 return fig2
             }
-
             throw window.dash_clientside.PreventUpdate
-
         },
-
-
-
-
-
 
 
         update_notif_body: function(cdata, slider, itype){

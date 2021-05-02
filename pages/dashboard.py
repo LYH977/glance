@@ -1,9 +1,14 @@
 import dash_html_components as html
+import os
+import plotly.graph_objects as go
+
+from geopy import Point
+
 from components import select_dataset_modal
 import plotly.express as px
 import dash_core_components as dcc
 import tkinter as tk
-
+from geopy.geocoders import MapBox
 # from callback import upload_modal_callback
 # from database import dbConfig
 # px.colors.sequential.
@@ -19,6 +24,23 @@ import tkinter as tk
 root = tk.Tk()
 screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenheight()
+access_token = os.environ['MAP_TOKEN']
+
+# testMapbox = MapBox(access_token)
+#
+# lala = testMapbox.geocode(query="menara ocbc", exactly_one=True, )
+# print(lala.longitude)
+# print(lala.latitude)
+# print(lala.address)
+
+
+# fig = go.Figure(go.Scattermapbox(
+#     mode="markers+text+lines",
+#     lon=[-75, -80, -50], lat=[45, 20, -20],
+#     marker={'size': 20, 'symbol': ["bus", "harbor", "airport"]},
+#     text=["Bus", "Harbor", "airport"], textposition="bottom right"))
+#
+# print(fig)
 
 layout = html.Div(
     [

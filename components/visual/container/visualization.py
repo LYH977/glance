@@ -2,6 +2,7 @@ import plotly.express as px
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
+import plotly.graph_objects as go
 
 import os
 
@@ -14,9 +15,11 @@ access_token = os.environ['MAP_TOKEN']
 px.set_mapbox_access_token(access_token)
 
 
+
 def create_visualization(screen_height, screen_width, create_clicks,  param, maxValue, df_frame, tformat,dbname, now, new_col):
     figure = create_figure(collection.data[create_clicks], param['parameter'], param['vtype'])
 
+    # figure['data'][1] = fig['data']
     return html.Div(
         # id={'type': 'visualization-stage', 'index': create_clicks},
         # className='visualization-stage',

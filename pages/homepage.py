@@ -31,36 +31,48 @@ df = pd.DataFrame(
 )
 
 
-data = pd.read_csv('C:/Users/FORGE-15/PycharmProjects/glance/datasets/time-series-19-covid-combined.csv')
-fig = px.scatter_mapbox(
-        data, lat = 'Lat',
-        lon = 'Long',
-        size = 'Confirmed', size_max = 50,
-        color = 'Deaths', color_continuous_scale = px.colors.sequential.Pinkyl,
-        hover_name = 'Country/Region',
-        mapbox_style = 'dark', zoom=1,
-        title='testing',
-        animation_frame='Date',
-    )
-fig.layout.margin.t = 0
-fig.layout.margin.b = 0
-fig.layout.margin.r = 0
-fig.layout.margin.l = 0
-fig.layout.title.pad.t = 0
-fig.layout.title.pad.b = 0
-fig.layout.title.pad.r = 0
-fig.layout.title.pad.l = 0
-fig.layout.title.font.color = 'red'
-fig.layout.title.font.size = 50
+# data = pd.read_csv('C:/Users/FORGE-15/PycharmProjects/glance/datasets/time-series-19-covid-combined.csv')
+# fig = px.scatter_mapbox(
+#         data, lat = 'Lat',
+#         lon = 'Long',
+#         size = 'Confirmed', size_max = 50,
+#         color = 'Deaths', color_continuous_scale = px.colors.sequential.Pinkyl,
+#         hover_name = 'Country/Region',
+#         mapbox_style = 'dark', zoom=1,
+#         title='testing',
+#         animation_frame='Date',
+#     )
+# fig.layout.margin.t = 0
+# fig.layout.margin.b = 0
+# fig.layout.margin.r = 0
+# fig.layout.margin.l = 0
+# fig.layout.title.pad.t = 0
+# fig.layout.title.pad.b = 0
+# fig.layout.title.pad.r = 0
+# fig.layout.title.pad.l = 0
+# fig.layout.title.font.color = 'red'
+# fig.layout.title.font.size = 50
+#
+# fig.layout.title.y = 0.98
+# fig.layout.title.x = 0.02
+# # print((fig.frames))
+#
+# fig.layout.sliders[0].visible = False
+# fig.layout.updatemenus[0].visible = False
+access_token = os.environ['MAP_TOKEN']
 
-fig.layout.title.y = 0.98
-fig.layout.title.x = 0.02
-# print((fig.frames))
+fig = go.Figure(go.Scattermapbox(
+    mode = "markers+text+lines",
+    lon = [-75, -80, -50], lat = [45, 20, -20],
+    marker = {'size': 20, 'symbol': ["marker", "harbor", "airport"]},
+    text = ["Bus", "Harbor", "airport"],textposition = "bottom right"))
 
-fig.layout.sliders[0].visible = False
-fig.layout.updatemenus[0].visible = False
-
-
+fig.update_layout(
+    mapbox = {
+        'accesstoken': access_token,
+        'style': "dark", 'zoom': 0.7},
+    showlegend = True
+)
 
 
 toast = html.Div(
@@ -188,9 +200,11 @@ app.clientside_callback(
 @app.callback(
     Output("positioned-toast", "is_open") ,
     [Input("positioned-toast-toggle", "n_clicks")],
+    State("hp-fig", "figure"),
     prevent_initial_call=True
 )
-def open_toast(n):
+def open_toast(n,figure):
+    print(figure)
     if n:
         return True
     return False

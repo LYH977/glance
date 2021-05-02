@@ -8,7 +8,7 @@ from callback.carousel_callback import register_display_image, register_ca_updat
 from callback.container_callback import register_update_visual_container
 from callback.dashboard_callback import register_update_dashboard
 from callback.navbar_callback import register_update_adjust_btn_color, register_toggle_is_adjusting_status, \
-    register_toggle_mask_interface
+    register_toggle_mask_interface, register_disable_floating_btn
 
 from callback.select_dataset_modal_callback import \
     register_update_after_upload, register_enable_create_btn, register_toggle_modal, \
@@ -120,10 +120,9 @@ register_update_toast(app)
 
 #navbar callback
 register_toggle_mask_interface(app)
-
 register_update_adjust_btn_color(app)
 register_toggle_is_adjusting_status(app)
-
+register_disable_floating_btn(app)
 
 server = app.server
 

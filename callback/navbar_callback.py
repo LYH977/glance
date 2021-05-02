@@ -78,7 +78,16 @@ def register_toggle_mask_interface(app):
             container_style = {'height':resolution['height']* 0.72, 'width':resolution['width']/2.2}
             visual_style = {'opacity': 1.0}
 
-
         return [mask_style for i in range(0, total)],\
                [container_style for i in range(0, total)], \
                [visual_style for i in range(0, total)],
+
+#############################################################################################################################################
+def register_disable_floating_btn(app):
+    @app.callback(
+        Output('open-select-modal', 'hidden'),
+        Input('is-adjusting', 'data'),
+        prevent_initial_call=True
+    )
+    def disable_floating_btn(status):
+        return True if status is True else False
