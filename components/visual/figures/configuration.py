@@ -8,6 +8,7 @@ def configure_fig(fig, type):
     fig.layout.updatemenus[0].visible = False
     fig.layout.updatemenus[0].buttons[0].args[1]["frame"]["duration"] = 200
     fig.layout.updatemenus[0].buttons[0].args[1]["transition"]["duration"] = 200
+    fig.layout.updatemenus[0].showactive = True
 
     fig.layout.coloraxis.colorbar.len = 0.5
     fig.layout.coloraxis.colorbar.yanchor = 'bottom'
@@ -16,7 +17,7 @@ def configure_fig(fig, type):
     fig.layout.coloraxis.colorbar.thickness = 10
 
     #white theme legend
-    fig.layout.coloraxis.colorbar.bgcolor = 'rgba(255,255,255,0.75)' #'rgba(0,0,0,0.5)'
+    fig.layout.coloraxis.colorbar.bgcolor = 'rgba(255,255,255,1)' #'rgba(0,0,0,0.5)'
     fig.layout.coloraxis.colorbar.title.font.color = 'rgba(0,0,0,1)' #'rgba(255,255,255,1)'
     fig.layout.coloraxis.colorbar.tickfont.color = 'rgba(0,0,0,1)' #'rgba(255,255,255,1)'
 
@@ -27,7 +28,7 @@ def configure_fig(fig, type):
         fig.layout.margin.l = 0
     else:                       # when bar chart race is chosen
         fig.layout.margin.t = 50
-    fig.layout.updatemenus[0].showactive = True
+
     fig.layout.title.y = 0.98
     fig.layout.title.x = 0.9
     fig.layout.title.text = fig['frames'][0]['name']

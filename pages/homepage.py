@@ -31,51 +31,72 @@ df = pd.DataFrame(
 )
 
 
-# data = pd.read_csv('C:/Users/FORGE-15/PycharmProjects/glance/datasets/time-series-19-covid-combined.csv')
-# fig = px.scatter_mapbox(
-#         data, lat = 'Lat',
-#         lon = 'Long',
-#         size = 'Confirmed', size_max = 50,
-#         color = 'Deaths', color_continuous_scale = px.colors.sequential.Pinkyl,
-#         hover_name = 'Country/Region',
-#         mapbox_style = 'dark', zoom=1,
-#         title='testing',
-#         animation_frame='Date',
-#     )
-# fig.layout.margin.t = 0
-# fig.layout.margin.b = 0
-# fig.layout.margin.r = 0
-# fig.layout.margin.l = 0
-# fig.layout.title.pad.t = 0
-# fig.layout.title.pad.b = 0
-# fig.layout.title.pad.r = 0
-# fig.layout.title.pad.l = 0
-# fig.layout.title.font.color = 'red'
-# fig.layout.title.font.size = 50
+data = pd.read_csv('C:/Users/FORGE-15/PycharmProjects/glance/datasets/time-series-19-covid-combined.csv')
+fig = px.scatter_mapbox(
+        data, lat = 'Lat',
+        lon = 'Long',
+        size = 'Confirmed', size_max = 50,
+        color = 'Deaths', color_continuous_scale = px.colors.sequential.Pinkyl,
+        hover_name = 'Country/Region',
+        mapbox_style = 'light', zoom=1,
+        title='testing',
+        animation_frame='Date',
+    )
+fig.layout.margin.t = 0
+fig.layout.margin.b = 0
+fig.layout.margin.r = 0
+fig.layout.margin.l = 0
+
+fig.layout.title.pad.t = 0
+fig.layout.title.pad.b = 0
+fig.layout.title.pad.r = 0
+fig.layout.title.pad.l = 0
+fig.layout.title.font.color = 'red'
+fig.layout.title.font.size = 50
+fig.layout.title.y = 0.98
+fig.layout.title.x = 0.2
+
+fig.layout.coloraxis.colorbar.len = 0.4
+fig.layout.coloraxis.colorbar.yanchor = 'bottom'
+# fig.layout.coloraxis.colorbar.xanchor = 'right'
+
+fig.layout.coloraxis.colorbar.xpad = 7
+fig.layout.coloraxis.colorbar.x = -0.04
+fig.layout.coloraxis.colorbar.y = 0
+fig.layout.coloraxis.colorbar.thickness = 10
+
+#dark
+fig.layout.coloraxis.colorbar.bgcolor = 'rgba(0,0,0,1)'
+fig.layout.coloraxis.colorbar.title.font.color = 'rgba(255,255,255,1)'
+fig.layout.coloraxis.colorbar.tickfont.color = 'rgba(255,255,255,1)'
+# #white
+# fig.layout.coloraxis.colorbar.bgcolor = 'rgba(255,255,255,1)'
+# fig.layout.coloraxis.colorbar.title.font.color = 'rgba(0,0,0,1)'
+# fig.layout.coloraxis.colorbar.tickfont.color = 'rgba(0,0,0,1)'
 #
-# fig.layout.title.y = 0.98
-# fig.layout.title.x = 0.02
-# # print((fig.frames))
+fig.layout.sliders[0].visible = False
+fig.layout.updatemenus[0].visible = False
+
+######################################################################################################
+
+# access_token = os.environ['MAP_TOKEN']
 #
-# fig.layout.sliders[0].visible = False
-# fig.layout.updatemenus[0].visible = False
-access_token = os.environ['MAP_TOKEN']
+# fig = go.Figure(go.Scattermapbox(
+#     mode = "markers+text+lines",
+#     lon = [-75, -80, -50], lat = [45, 20, -20],
+#     marker = {'size': 20, 'symbol': ["marker", "harbor", "airport"]},
+#     text = ["Bus", "Harbor", "airport"],
+#     textposition = "top center"
+# ))
+#
+#
+# fig.update_layout(
+#     mapbox = {
+#         'accesstoken': access_token,
+#         'style': "outdoors", 'zoom': 0.7},
+#     showlegend = True
+# )
 
-fig = go.Figure(go.Scattermapbox(
-    mode = "markers+text+lines",
-    lon = [-75, -80, -50], lat = [45, 20, -20],
-    marker = {'size': 20, 'symbol': ["marker", "harbor", "airport"]},
-    text = ["Bus", "Harbor", "airport"],
-    textposition = "top center"
-))
-
-
-fig.update_layout(
-    mapbox = {
-        'accesstoken': access_token,
-        'style': "outdoors", 'zoom': 0.7},
-    showlegend = True
-)
 
 
 toast = html.Div(
@@ -107,11 +128,16 @@ layout = dbc.Jumbotron(
         dcc.Store(id='testing-js', data=fig),
         # dcc.Store(id='testing-plot', data= fig),
         dcc.Graph(id='hp-fig', figure = fig, config={
-                    # 'modeBarButtonsToRemove': ['pan2d','select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox','toggleHover','toImage'],
-                    # 'displaylogo': False,
+                    'modeBarButtonsToRemove': [
+                        'pan2d', 'select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox',
+                        'toggleHover',
+                        'zoom2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toggleSpikelines',
+                        'hoverClosestCartesian', 'hoverCompareCartesian', 'zoomInGeo', 'zoomOutGeo',
+                        'hoverClosestGeo', 'resetGeo'
+                    ],
+                    'displaylogo': False,
                     # 'responsive': False,
-                    # 'editable': True,
-                    'displayModeBar': False
+                    # 'displayModeBar': False
                 }),
         html.A('Download test.mp4', id='export-test-link',
                download='',

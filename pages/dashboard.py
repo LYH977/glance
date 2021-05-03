@@ -26,12 +26,14 @@ screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenheight()
 access_token = os.environ['MAP_TOKEN']
 
-# testMapbox = MapBox(access_token)
-#
-# lala = testMapbox.geocode(query="menara ocbc", exactly_one=True, )
+testMapbox = MapBox(access_token)
+# lala = testMapbox.geocode(query="usm Pusat Penyelidikan Akuatik penang", exactly_one=True, )
+lala = testMapbox.reverse(query="-77.050, 38.889", exactly_one=True, )
+# print(lala)
 # print(lala.longitude)
 # print(lala.latitude)
 # print(lala.address)
+# print(lala.raw)
 
 
 # fig = go.Figure(go.Scattermapbox(

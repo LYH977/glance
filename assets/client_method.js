@@ -35,21 +35,22 @@ const handle_out_of_range_notif = ( celery, slider )=>{
 
 
 const insert_marker = () =>{
+let tt = 12
  return {
     coloraxis: "coloraxis",
-    hovertemplate: '',
-    hoverinfo : "text",
-    customdata: [[]],
-    lat: [45],
-    lon: [-75],
+    hovertemplate: 'tt='+tt+'<br>dfdf<extra></extra>',
+    hovertext : ['sd'],
+    lat: [-31.533592],
+    lon: [79.355590],
     marker: {
         size: 20,
         symbol: ['marker'],
         allowoverlap: true
     },
     mode: 'markers',
-    text: ['SMK King edward ViiSMK King edward ViiSMK King edward ViiSMK King edward ViiSMK King edward Vii'],
-//    textposition: 'bottom right',
+    showlegend :false,
+    legendgroup : '',
+    name:'',
     subplot: 'mapbox',
     type: 'scattermapbox'
 }
@@ -120,7 +121,10 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 fig2 = JSON.parse(JSON.stringify(new_fig))
                 fig2['layout']['coloraxis']['colorscale'] = colorscale['value']
                 console.log(fig2)
+
                 fig2['data'][1] = insert_marker()
+//                fig2['data'][1] = fig2['frames'][2]['data'][0]
+
                 change_frame(param['vtype'], fig2, value)
                 return fig2
             }

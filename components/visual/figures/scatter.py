@@ -28,6 +28,8 @@ def create_scattermap(data, parameter):
         # custom_data=['Date']
     )
     configure_fig(fig, SCATTER_MAP)
+    # print(fig)
+
     return fig
 
 

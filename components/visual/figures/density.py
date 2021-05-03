@@ -26,4 +26,5 @@ def create_density(data, parameter):
 
     )
     configure_fig(fig, DENSITY)
+    # print(fig)
     return fig
