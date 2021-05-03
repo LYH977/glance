@@ -36,15 +36,21 @@ const handle_out_of_range_notif = ( celery, slider )=>{
 
 const insert_marker = () =>{
  return {
-//    coloraxis: "coloraxis",
-    hovertemplate: 'test',
+    coloraxis: "coloraxis",
+    hovertemplate: '',
+    hoverinfo : "text",
+    customdata: [[]],
     lat: [45],
     lon: [-75],
-    marker: {'size': 20, 'symbol': ['bus']},
+    marker: {
+        size: 20,
+        symbol: ['marker'],
+        allowoverlap: true
+    },
     mode: 'markers',
-//    text: ['Bus'],
-    textposition: 'bottom right',
-//    subplot: 'mapbox',
+    text: ['SMK King edward ViiSMK King edward ViiSMK King edward ViiSMK King edward ViiSMK King edward Vii'],
+//    textposition: 'bottom right',
+    subplot: 'mapbox',
     type: 'scattermapbox'
 }
 }

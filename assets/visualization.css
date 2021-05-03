@@ -11,10 +11,10 @@
 
 }
 
-@keyframes example {
+/*@keyframes example {
   from {opacity: 0.5;}
   to {opacity: 1;}
-}
+}*/
 
 .visualization-container {
     background: #46648c;
@@ -28,8 +28,8 @@
     z-index: 20;
     display: inline-block;
     padding: 10px 20px;
-    animation-name: example;
-    animation-duration: 1s;
+  /*  animation-name: example;
+    animation-duration: 1s;*/
 }
 
 .visual-box {

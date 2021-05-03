@@ -23,6 +23,7 @@ def create_density(data, parameter):
         animation_frame = FRAME,
         mapbox_style = "dark",
         # height= 200
+
     )
     configure_fig(fig, DENSITY)
     return fig
