@@ -1,9 +1,10 @@
 import pandas as pd
+import plotly.graph_objects as go
 
 from utils.constant import BAR_CHART_RACE
 
 
-def configure_fig(fig, type):
+def configure_fig(fig, type, add_trace = False):
     fig.layout.sliders[0].visible = False
     fig.layout.updatemenus[0].visible = False
     fig.layout.updatemenus[0].buttons[0].args[1]["frame"]["duration"] = 200
@@ -37,6 +38,29 @@ def configure_fig(fig, type):
 
     fig['layout']['uirevision'] = 1
 
+    # {'lat': [''], 'lon': [''], 'marker': {'size': 0}, 'mode': 'markers', 'showlegend': False, 'type': 'scattermapbox'}
+    if add_trace:
+        temp = go.Figure(go.Scattermapbox(
+            below='',
+            showlegend=False,
+            lat=[''],
+            lon=[''],
+            mode='markers',
+            marker={'size': 0},
+        ))
+    #     test = go.Figure(go.Scattermapbox(
+    # mode = "markers+text+lines",
+    # lon = [-75, -80, -50], lat = [45, 20, -20],
+    # marker = {'size': 20, 'symbol': ["bus", "harbor", "airport"]},
+    # text = ["Bus", "Harbor", "airport"],textposition = "bottom right"))
+        fig.add_trace(temp['data'][0])
+        fig.add_trace(temp['data'][0])
+
+
+    # new_data = list(fig['data'])
+    # print(new_data)
+    # new_data.append(new_data[0])
+    # fig['data'] = tuple(new_data)
 
 def convert_to_float(data, parameter, list):
     for i in list:

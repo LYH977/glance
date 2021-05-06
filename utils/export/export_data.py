@@ -7,11 +7,12 @@ def export_mp4(fig, filename):
     frames = []
     num_frames = len(fig['frames'])
     for i in range(3):
-
-        fig2 = go.Figure(data=fig['frames'][i]['data'][0], layout=fig['layout'])
+        export_data=[fig['frames'][i]['data'][0], fig['data'][1]]
+        # fig2 = go.Figure(data=fig['frames'][i]['data'][0], layout=fig['layout'])
+        fig2 = go.Figure(data=export_data, layout=fig['layout'])
 
         fig2.layout.title.text = fig['frames'][i]['name']
-        img_bytes = fig2.to_image(format="png")
+        img_bytes = fig2.to_image(format="png", scale=3)
         print(f'loading img ' )
         images.append(img_bytes)
 

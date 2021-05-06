@@ -7,6 +7,36 @@ import numexpr as ne
 from utils import collection
 from utils.constant import FIGURE_PARAM, STANDARD_T_FORMAT, FRAME
 
+def reset_trace():
+    return {
+        'lat': [''],
+        'lon': [''],
+        'marker': {'size': 0},
+        'mode': 'markers',
+        'showlegend': False,
+        'type': 'scattermapbox'
+    }
+
+
+def insert_marker ():
+    return {
+        'coloraxis': "coloraxis",
+        'hovertemplate': 'tt=<br>dfdf<extra></extra>',
+        'hovertext': ['sd'],
+        'lat': [-31.533592],
+        'lon': [79.355590],
+        'marker': {
+            'size': 20,
+            'symbol': ['embassy'],
+            'allowoverlap': True
+        },
+        'mode': 'markers',
+        'showlegend': False,
+        'legendgroup': '',
+        'name': '',
+        'subplot': 'mapbox',
+        'type': 'scattermapbox'
+    }
 
 def swapPositions(list, pos1, pos2):
     list[pos1], list[pos2] = list[pos2], list[pos1]

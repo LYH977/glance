@@ -35,25 +35,25 @@ const handle_out_of_range_notif = ( celery, slider )=>{
 
 
 const insert_marker = () =>{
-let tt = 12
- return {
-    coloraxis: "coloraxis",
-    hovertemplate: 'tt='+tt+'<br>dfdf<extra></extra>',
-    hovertext : ['sd'],
-    lat: [-31.533592],
-    lon: [79.355590],
-    marker: {
-        size: 20,
-        symbol: ['marker'],
-        allowoverlap: true
-    },
-    mode: 'markers',
-    showlegend :false,
-    legendgroup : '',
-    name:'',
-    subplot: 'mapbox',
-    type: 'scattermapbox'
-}
+    let tt = 12
+     return {
+        coloraxis: "coloraxis",
+        hovertemplate: 'tt='+tt+'<br>dfdf<extra></extra>',
+        hovertext : ['sd'],
+        lat: [31.533592],
+        lon: [79.355590],
+        marker: {
+            size: 20,
+            symbol: ['embassy'],
+            allowoverlap: true
+        },
+        mode: 'markers',
+        showlegend :false,
+        legendgroup : '',
+        name:'',
+        subplot: 'mapbox',
+        type: 'scattermapbox'
+    }
 }
 
 

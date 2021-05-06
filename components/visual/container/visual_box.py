@@ -9,6 +9,7 @@ from components.visual.utils.stores import stores_markup
 
 
 def visual_box_markup(create_clicks, param, figure, tformat, first_frame, dbname, now, new_col,maxValue):
+
     return html.Div(
         className='visual-box',
         children=[

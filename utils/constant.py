@@ -219,7 +219,7 @@ NOTIFICATION_PARAM = {
 COLLAPSE_HEIGHT = 150
 VISUAL_HEIGHT = 300
 
-MAPBOX_TYPES = [ 'streets',  'light', 'dark', 'satellite', 'satellite-streets']
+MAPBOX_TYPES = [ 'streets',  'light', 'dark', 'satellite-streets']
 
 SEQUENTIAL_COLOR = [
 'Aggrnyl' ,'Agsunset',

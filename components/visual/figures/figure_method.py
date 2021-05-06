@@ -18,3 +18,5 @@ def create_figure(data, parameter, ftype):
         return create_choropleth(data, parameter)
 
 
+
+

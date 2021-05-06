@@ -13,14 +13,11 @@ from utils import collection
 from utils.collection import redis_instance
 from utils.export.export_data import export_mp4
 from utils.method import get_ctx_type, get_ctx_index, formatted_time_value, \
-    select_query, get_last_timestamp
+    select_query, get_last_timestamp, insert_marker
 from utils.constant import SCATTER_MAP,  DENSITY, CHOROPLETH, BAR_CHART_RACE, \
     FRAME, TIME, MAXIMUM, MINIMUM
 
 
-# def change_frame(ftype, fig2, value):
-#     fig2['data'][0] = fig2['frames'][value]['data'][0]
-#     fig2['layout']['title']['text'] = fig2['frames'][value]['name']
 
 def handleOutOfRangeNotif(celery, slider):
     length = len(celery)
@@ -176,10 +173,10 @@ def register_update_playing_status(app):
         if input_type == 'anim-slider':  # input from slider
             label = df_frame[s_value]
 
-            if playing is True and s_value != interval:
-                print('1st condition true: ', s_value, ' and ',interval)
-            if  s_value == maxValue:
-                print('2nd condition true')
+            # if playing is True and s_value != interval:
+            #     print('1st condition true: ', s_value, ' and ',interval)
+            # if  s_value == maxValue:
+            #     print('2nd condition true')
 
             return \
                 False if playing is True and s_value != interval or s_value == maxValue else dash.no_update, \
@@ -269,7 +266,7 @@ def register_update_live_data(app):
             State({'type': 'last-timestamp', 'index': MATCH}, 'data'),
             State({'type': 'frame-format', 'index': MATCH}, 'data'),
             State({'type': 'my_param', 'index': MATCH}, 'data'),
-            State({'type': 'db-name', 'index': MATCH}, 'data'),
+            State({'type': 'db-name-0', 'index': MATCH}, 'data'),
             State({'type': 'back-buffer', 'index': MATCH}, 'data'),
             State({'type': 'new-column-info', 'index': MATCH}, 'data'),
 
@@ -323,6 +320,8 @@ def register_update_live_data(app):
         elif input_type == 'chosen-color-scale':
             fig2 = buffer
             fig2['layout']['coloraxis']['colorscale'] = colorscale['value']
+
+            # fig2['data'][1] = insert_marker()
             return dash.no_update, fig2
 
         raise PreventUpdate
@@ -582,7 +581,7 @@ def register_handle_export_btn_click(app):
     def handle_export_btn_click(btn_click, disabled):
         if btn_click and not disabled:
             now = int(datetime.now().timestamp())
-            print('btn part')
+            # print('btn part')
             return True, False, now
 
         raise PreventUpdate
