@@ -18,17 +18,34 @@ popover_children = [
     ),
 ]
 
+def namelist_item_markup(name, coordinate):
+    return dbc.ListGroupItem(
+        [
+            dbc.ListGroupItemHeading(name, className='marker-item-heading'),
+            dbc.ListGroupItemText(coordinate, className='marker-item-text'),
+        ], className='marker-group-item'
+    )
+
 
 name_content = dbc.Card(
-    dbc.CardBody(
+    dbc.CardBody([
         dbc.InputGroup(
             [
                 dbc.InputGroupAddon("Name", addon_type="prepend", ),
-                dbc.Input(placeholder="USM Malaysia"),
+                dbc.Input(placeholder="e.g. USM Malaysia", id = 'marker-search-name'),
             ],
             className="mb-3", size="sm",
-        )
-    ),
+        ),
+        dbc.ListGroup([
+            dbc.ListGroupItem(
+                [
+                    dbc.ListGroupItemHeading("This item has a heading", className='marker-item-heading'),
+                    dbc.ListGroupItemText("And some text underneath", className='marker-item-text'),
+                ], className='marker-group-item'
+            ),
+        ],className='marker-namelist', id='marker-namelist'),
+        dbc.Button("Confirm", color="success"),
+    ]),
     className="mt-3",
 )
 
@@ -38,14 +55,14 @@ coordinate_content = dbc.Card(
             dbc.InputGroup(
                 [
                     dbc.InputGroupAddon("Latitude", addon_type="prepend", ),
-                    dbc.Input(placeholder="12.12"),
+                    dbc.Input(placeholder="e.g. 12.12"),
                 ],
                 className="mb-3", size="sm",
             ),
             dbc.InputGroup(
                 [
                     dbc.InputGroupAddon("Longitude", addon_type="prepend", ),
-                    dbc.Input(placeholder="21.21"),
+                    dbc.Input(placeholder="e.g. 21.21"),
                 ],
                 className="mb-3", size="sm",
             ),

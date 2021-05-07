@@ -2,8 +2,6 @@ import dash_html_components as html
 import os
 import plotly.graph_objects as go
 
-from geopy import Point
-
 from components import select_dataset_modal
 import plotly.express as px
 import dash_core_components as dcc
@@ -29,8 +27,7 @@ screen_height = root.winfo_screenheight()
 access_token = os.environ['MAP_TOKEN']
 
 testMapbox = MapBox(access_token)
-# lala = testMapbox.geocode(query="usm Pusat Penyelidikan Akuatik penang", exactly_one=True, )
-lala = testMapbox.reverse(query="-77.050, 38.889", exactly_one=True, )
+# lala = testMapbox.geocode(query="Universiti Sains Malaysia (USM), Minden, USM Pulau Pinang, Penang 11800, Malaysia", exactly_one=True, )
 # print(lala)
 # print(lala.longitude)
 # print(lala.latitude)

@@ -9,14 +9,14 @@ import plotly.express as px
 import task
 from components.visual.figures.figure_method import create_figure
 from components.visual.notifications.collapse import collapse_markup
+from components.visual.utils.marker import namelist_item_markup
 from utils import collection
 from utils.collection import redis_instance
 from utils.export.export_data import export_mp4
 from utils.method import get_ctx_type, get_ctx_index, formatted_time_value, \
     select_query, get_last_timestamp, insert_marker
-from utils.constant import SCATTER_MAP,  DENSITY, CHOROPLETH, BAR_CHART_RACE, \
-    FRAME, TIME, MAXIMUM, MINIMUM
-
+from utils.constant import SCATTER_MAP, DENSITY, CHOROPLETH, BAR_CHART_RACE, \
+    FRAME, TIME, MAXIMUM, MINIMUM, MAPBOX_GEOCODER
 
 
 def handleOutOfRangeNotif(celery, slider):
@@ -600,11 +600,21 @@ def register_reset_export_interval(app):
 
 # ############################################################################################################################################
 
-# def register_adjust_visual_position(app):
-#     @app.callback(
-#         Output({'type': 'export-interval', 'index': MATCH}, 'n_intervals'),
-#         Input({'type': 'dlt-btn', 'index': ALL}, 'n_clicks'),
-#         prevent_initial_call=True
-#     )
-#     def adjust_visual_position(click):
-#         return 0
+def register_update_marker_namelist(app):
+    @app.callback(
+        Output('marker-namelist', 'children'),
+        Input('marker-search-name', 'value'),
+        prevent_initial_call=True
+    )
+    def update_marker_namelist(value):
+        if len(value.strip()) == 0:
+            raise PreventUpdate
+        results = MAPBOX_GEOCODER.geocode(query=value, exactly_one=False, )
+        namelist = []
+        for result in results:
+            raw = result.raw
+            coordinate = f"({raw['geometry']['coordinates'][0]}, {raw['geometry']['coordinates'][1]})"
+            temp = namelist_item_markup(raw['place_name'], coordinate)
+            namelist.append(temp)
+
+        return namelist

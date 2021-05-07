@@ -1,3 +1,6 @@
+import os
+from geopy.geocoders import MapBox
+
 NANOSECOND = 1000000000.0
 DAY = '%d'
 MONTH = '%m'
@@ -249,3 +252,5 @@ SEQUENTIAL_COLOR = [
 'tempo','thermal', 'turbid',
 
 ]
+
+MAPBOX_GEOCODER = MapBox(os.environ['MAP_TOKEN'])

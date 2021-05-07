@@ -176,3 +176,21 @@
     max-width: 400px;
 
 }
+
+.marker-namelist {
+    max-height: 200px;
+    overflow: auto
+}
+
+.marker-group-item {
+    padding:5px 10px 0 10px;
+}
+
+.marker-item-heading {
+    font-size:15px;
+     font-weight:bold;
+}
+
+.marker-item-text {
+    font-size:12px;
+}
