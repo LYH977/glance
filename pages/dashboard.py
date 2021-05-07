@@ -21,6 +21,8 @@ from geopy.geocoders import MapBox
 # print('scale', scale)
 # print('colorscale', colorscale)
 # print('----------------------')
+from components.visual.utils.marker import test_marker_markup
+
 root = tk.Tk()
 screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenheight()
@@ -47,9 +49,11 @@ lala = testMapbox.reverse(query="-77.050, 38.889", exactly_one=True, )
 layout = html.Div(
     [
         dcc.Store('resolution', data={'height':screen_height, 'width':screen_width}),
-        html.Div('Welcome to Glance', id='empty-scene', className='empty-scene'),
+        # html.Div('Welcome to Glance', id='empty-scene', className='empty-scene'),
         html.Div(id = 'visual-collection', children=[], className='visual-collection' ),
-        select_dataset_modal.modal
+        select_dataset_modal.modal,
+        test_marker_markup(),
+
     ]
     ,className='main-container'
 

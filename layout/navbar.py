@@ -11,7 +11,7 @@ def upload_btn_markup():
             n_clicks=0
         ),
         active=True,
-        className='nav-item'
+        className='nav-icon'
     )
 
 def adjust_btn_markup():
@@ -23,7 +23,7 @@ def adjust_btn_markup():
         ),
         active=True,
         id = 'adjust-wrapper',
-        className='nav-item'
+        className='nav-icon'
     )
 
 navbar = dbc.NavbarSimple(

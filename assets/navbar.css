@@ -1,11 +1,11 @@
-.nav-item {
+.nav-icon {
    cursor: pointer;
    border-radius: 50%;
    background: rgb(80, 80, 80);
    margin: 0 10px;
 }
 
-.nav-item:hover {
+.nav-icon:hover {
    filter: brightness(120%);
 
 }
