@@ -3,6 +3,7 @@ import dash_html_components as html
 import dash_bootstrap_components as dbc
 from components.visual.utils.controls import controls_markup
 from components.visual.utils.intervals import intervals_markup
+from components.visual.utils.marker import marker_markup
 from components.visual.utils.name_section import name_section_markup
 from components.visual.utils.setting import setting_markup
 from components.visual.utils.stores import stores_markup
@@ -18,7 +19,14 @@ def visual_box_markup(create_clicks, param, figure, tformat, first_frame, dbname
             dbc.Row(
                 [
                     dbc.Col(name_section_markup(create_clicks), width='auto'),
-                    dbc.Col(setting_markup(create_clicks, param['vtype']), width='auto'),
+                    dbc.Col(
+                        dbc.Row([
+                            dbc.Col(setting_markup(create_clicks, param['vtype'])),
+                            dbc.Col(marker_markup(create_clicks)),
+
+                        ],justify="center"), width='auto', ),
+                    # dbc.Col(setting_markup(create_clicks, param['vtype']), width='auto'),
+                    # html.I(className="fa fa-arrows-alt", id='adjust-svg'),
                 ],
                 justify="around",
                 align='center',

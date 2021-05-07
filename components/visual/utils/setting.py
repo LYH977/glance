@@ -15,6 +15,7 @@ def setting_markup(create_clicks, type):
 
     return dbc.DropdownMenu(
         label = 'setting',
+
         children = [
             legend_theme_markup(create_clicks, hide_legend) ,
 
