@@ -9,8 +9,8 @@ from utils.constant import FIGURE_PARAM, STANDARD_T_FORMAT, FRAME
 
 def reset_trace():
     return {
-        'lat': [''],
-        'lon': [''],
+        'lat': [],
+        'lon': [],
         'marker': {'size': 0},
         'mode': 'markers',
         'showlegend': False,

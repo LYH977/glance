@@ -27,7 +27,8 @@ screen_height = root.winfo_screenheight()
 access_token = os.environ['MAP_TOKEN']
 
 testMapbox = MapBox(access_token)
-# lala = testMapbox.geocode(query="Universiti Sains Malaysia (USM), Minden, USM Pulau Pinang, Penang 11800, Malaysia", exactly_one=True, )
+query = 'lake garden taiping'
+# lala = testMapbox.geocode(query=query, exactly_one=True, )
 # print(lala)
 # print(lala.longitude)
 # print(lala.latitude)
@@ -49,7 +50,7 @@ layout = html.Div(
         # html.Div('Welcome to Glance', id='empty-scene', className='empty-scene'),
         html.Div(id = 'visual-collection', children=[], className='visual-collection' ),
         select_dataset_modal.modal,
-        test_marker_markup(),
+        # test_marker_markup(),
 
     ]
     ,className='main-container'

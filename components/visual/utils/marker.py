@@ -11,83 +11,110 @@ active_label_style  ={
             "color": "blue",
             'fontWeight':'bold',
         }
-popover_children = [
-    dbc.PopoverHeader("Mark a location"),
-    dbc.PopoverBody(
-        "And here's some amazing content. Cool!"
-    ),
-]
 
-def namelist_item_markup(name, coordinate):
+
+def namelist_item_not_found_markup(query):
     return dbc.ListGroupItem(
         [
-            dbc.ListGroupItemHeading(name, className='marker-item-heading'),
-            dbc.ListGroupItemText(coordinate, className='marker-item-text'),
+            dbc.ListGroupItemHeading('Not Found', className='marker-item-heading'),
+            dbc.ListGroupItemText(f"The query '{query}' was not found on this server", className='marker-item-text'),
         ], className='marker-group-item'
     )
 
-
-name_content = dbc.Card(
-    dbc.CardBody([
-        dbc.InputGroup(
-            [
-                dbc.InputGroupAddon("Name", addon_type="prepend", ),
-                dbc.Input(placeholder="e.g. USM Malaysia", id = 'marker-search-name'),
-            ],
-            className="mb-3", size="sm",
-        ),
-        dbc.ListGroup([
-            dbc.ListGroupItem(
-                [
-                    dbc.ListGroupItemHeading("This item has a heading", className='marker-item-heading'),
-                    dbc.ListGroupItemText("And some text underneath", className='marker-item-text'),
-                ], className='marker-group-item'
-            ),
-        ],className='marker-namelist', id='marker-namelist'),
-        dbc.Button("Confirm", color="success"),
-    ]),
-    className="mt-3",
-)
-
-coordinate_content = dbc.Card(
-    dbc.CardBody(
+def namelist_item_markup(name, coordinate, id, index, color=''):
+    return dbc.ListGroupItem(
         [
+            dbc.ListGroupItemHeading(
+                name,
+                className='marker-item-heading',
+                id={'type': f'marker-name-{id}', 'index': index}
+            ),
+            dbc.ListGroupItemText(
+                coordinate,
+                className='marker-item-text' ,
+                id={'type': f'marker-coordinate-{id}', 'index': index}
+            ),
+            dbc.Button(
+                "Mark it",
+                color="link",
+                className='marker-item-btn',
+                id={'type': f'marker-name-btn-{id}', 'index': index}
+            )
+        ], className='marker-group-item', color=color
+    )
+
+
+
+def name_markup(create_clicks):
+    return dbc.Card(
+        dbc.CardBody([
+            dbc.InputGroup(
+                [
+                    dbc.InputGroupAddon("Name", addon_type="prepend", ),
+                    dbc.Input(
+                        placeholder="e.g. USM Malaysia",
+                        id={'type': 'marker-search-name', 'index': create_clicks},
+                    ),
+                ],
+                className="mb-3", size="sm",
+            ),
+            dbc.ListGroup([
+                dbc.ListGroupItem(
+                    [
+                        dbc.ListGroupItemHeading("This item has a heading", className='marker-item-heading'),
+                        dbc.ListGroupItemText("And some text underneath", className='marker-item-text'),
+
+                    ], className='marker-group-item'
+                ),
+            ],
+                className='marker-namelist',
+                id={'type': 'marker-namelist', 'index': create_clicks}),
+            # dbc.Button("Confirm", color="success", id={'type': 'name-confirm-btn', 'index': create_clicks},),
+        ]),
+        className="mt-3",
+    )
+
+def coordinate_markup(create_clicks):
+    return dbc.Card(
+        dbc.CardBody([
             dbc.InputGroup(
                 [
                     dbc.InputGroupAddon("Latitude", addon_type="prepend", ),
-                    dbc.Input(placeholder="e.g. 12.12"),
+                    dbc.Input(
+                        placeholder="e.g. 12.12",
+                        id={'type': 'latitude', 'index': create_clicks},
+                    ),
                 ],
                 className="mb-3", size="sm",
             ),
             dbc.InputGroup(
                 [
                     dbc.InputGroupAddon("Longitude", addon_type="prepend", ),
-                    dbc.Input(placeholder="e.g. 21.21"),
+                    dbc.Input(
+                        placeholder="e.g. 21.21",
+                        id={'type': 'longitude', 'index': create_clicks},
+                    ),
                 ],
                 className="mb-3", size="sm",
             ),
-            dbc.Button("Confirm", color="success"),
-
-        ]
-    ),
-    className="mt-3",
-)
+            dbc.Button("Confirm", color="success", id={'type': 'coordinate-confirm-btn', 'index': create_clicks},),
+        ]),
+        className="mt-3",
+    )
 
 
-
-test_popover_children = [
-
-    dbc.PopoverHeader(
-        [
-            dbc.Tabs([
-                dbc.Tab(name_content, label="Name", label_style=label_style, active_label_style=active_label_style),
-                dbc.Tab(coordinate_content, label="Coordinates",  label_style=label_style, active_label_style=active_label_style),
-            ]),
-            dbc.Button("Reset", color="danger"),
-        ]
-    ),
-
-]
+def popover_children_markup(create_clicks):
+    return [
+        dbc.PopoverHeader(
+            [
+                dbc.Tabs([
+                    dbc.Tab(name_markup(create_clicks), label="Name", label_style=label_style, active_label_style=active_label_style),
+                    dbc.Tab(coordinate_markup(create_clicks), label="Coordinates",  label_style=label_style, active_label_style=active_label_style),
+                ]),
+                dbc.Button("Reset", color="danger", id={'type': 'reset-marker-btn', 'index': create_clicks},),
+            ]
+        ),
+    ]
 
 def marker_markup(create_clicks):
     return html.Div(
@@ -99,7 +126,7 @@ def marker_markup(create_clicks):
                 n_clicks=0
             ),
             dbc.Popover(
-                popover_children,
+                popover_children_markup(create_clicks),
                 id="legacy",
                 # target="{'type': 'marker-btn', 'index': "+str(create_clicks)+"}",
                 target=f"popover-div-wrapper-{create_clicks}",
@@ -112,6 +139,7 @@ def marker_markup(create_clicks):
 
 
 def test_marker_markup():
+    create_clicks=1
     return html.Div(
         [
             html.Span(
@@ -121,7 +149,7 @@ def test_marker_markup():
                 n_clicks=0
             ),
             dbc.Popover(
-                test_popover_children,
+                popover_children_markup(create_clicks),
                 id="legacy",
                 # target="{'type': 'marker-btn', 'index': "+str(create_clicks)+"}",
                 target=f"popover-div-wrapper-",

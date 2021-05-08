@@ -253,4 +253,4 @@ SEQUENTIAL_COLOR = [
 
 ]
 
-MAPBOX_GEOCODER = MapBox(os.environ['MAP_TOKEN'])
+# MAPBOX_GEOCODER = MapBox(os.environ['MAP_TOKEN'])

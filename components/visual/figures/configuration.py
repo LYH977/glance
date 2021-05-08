@@ -43,8 +43,8 @@ def configure_fig(fig, type, add_trace = False):
         temp = go.Figure(go.Scattermapbox(
             below='',
             showlegend=False,
-            lat=[''],
-            lon=[''],
+            lat=[],
+            lon=[],
             mode='markers',
             marker={'size': 0},
         ))

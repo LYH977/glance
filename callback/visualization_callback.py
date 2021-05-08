@@ -5,19 +5,21 @@ import dash
 from dash.dependencies import Input, Output, State, MATCH, ClientsideFunction
 from dash.exceptions import PreventUpdate
 import plotly.express as px
-
+import os
+from geopy.geocoders import MapBox
 import task
 from components.visual.figures.figure_method import create_figure
 from components.visual.notifications.collapse import collapse_markup
-from components.visual.utils.marker import namelist_item_markup
+from components.visual.utils.marker import namelist_item_markup, namelist_item_not_found_markup
 from utils import collection
 from utils.collection import redis_instance
 from utils.export.export_data import export_mp4
 from utils.method import get_ctx_type, get_ctx_index, formatted_time_value, \
     select_query, get_last_timestamp, insert_marker
 from utils.constant import SCATTER_MAP, DENSITY, CHOROPLETH, BAR_CHART_RACE, \
-    FRAME, TIME, MAXIMUM, MINIMUM, MAPBOX_GEOCODER
+    FRAME, TIME, MAXIMUM, MINIMUM
 
+MAPBOX_GEOCODER = MapBox(os.environ['MAP_TOKEN'])
 
 def handleOutOfRangeNotif(celery, slider):
     length = len(celery)
@@ -321,7 +323,7 @@ def register_update_live_data(app):
             fig2 = buffer
             fig2['layout']['coloraxis']['colorscale'] = colorscale['value']
 
-            # fig2['data'][1] = insert_marker()
+            fig2['data'][1] = insert_marker()
             return dash.no_update, fig2
 
         raise PreventUpdate
@@ -602,19 +604,54 @@ def register_reset_export_interval(app):
 
 def register_update_marker_namelist(app):
     @app.callback(
-        Output('marker-namelist', 'children'),
-        Input('marker-search-name', 'value'),
+        Output({'type': 'marker-namelist', 'index': MATCH}, 'children'),
+        Input({'type': 'marker-search-name', 'index': MATCH}, 'value'),
+        State({'type': 'back-buffer', 'index': MATCH}, 'data'),
+        State({'type': 'my-index', 'index': MATCH}, 'data'),
+
         prevent_initial_call=True
     )
-    def update_marker_namelist(value):
+    def update_marker_namelist(value, buffer, index):
         if len(value.strip()) == 0:
             raise PreventUpdate
-        results = MAPBOX_GEOCODER.geocode(query=value, exactly_one=False, )
-        namelist = []
-        for result in results:
-            raw = result.raw
-            coordinate = f"({raw['geometry']['coordinates'][0]}, {raw['geometry']['coordinates'][1]})"
-            temp = namelist_item_markup(raw['place_name'], coordinate)
-            namelist.append(temp)
+        try:
+            results = MAPBOX_GEOCODER.geocode(query=value, exactly_one=False, )
+            namelist = []
+            if len(buffer['data'][1]['lat']) !=0: # if marker is specified
+                namelist.append(namelist_item_markup('selected','lcoation','success'))
+            for result,id in zip(results, range(0, len(results))):
+                raw = result.raw
+                lat = raw['geometry']['coordinates'][0]
+                long = raw['geometry']['coordinates'][1]
+                coordinate = f"({lat}, {long})"
+                temp = namelist_item_markup(raw['place_name'], coordinate, id, index)
+                namelist.append(temp)
 
-        return namelist
+            return namelist
+        except:
+            return [namelist_item_not_found_markup(value)]
+
+# ############################################################################################################################################
+
+def register_update_marker_data(app):
+    @app.callback(
+        Output({'type': 'marker_data', 'index': MATCH}, 'data'),
+        [
+            Input({'type': f'marker-name-btn-{id}', 'index': MATCH}, 'n_clicks') for id in range(0,5)
+        ],
+        [
+            State({'type': f'marker-name-0', 'index': MATCH}, 'children') ,
+            State({'type': f'marker-name-1', 'index': MATCH}, 'children'),
+            State({'type': f'marker-name-2', 'index': MATCH}, 'children'),
+            State({'type': f'marker-name-3', 'index': MATCH}, 'children'),
+            State({'type': f'marker-name-4', 'index': MATCH}, 'children'),
+            State({'type': f'marker-coordinate-0', 'index': MATCH}, 'children'),
+            State({'type': f'marker-coordinate-1', 'index': MATCH}, 'children'),
+            State({'type': f'marker-coordinate-2', 'index': MATCH}, 'children'),
+            State({'type': f'marker-coordinate-3', 'index': MATCH}, 'children'),
+            State({'type': f'marker-coordinate-4', 'index': MATCH}, 'children'),
+        ],
+        prevent_initial_call=True
+    )
+    def reset_export_interval(btn0, btn1, btn2, btn3, btn4, name0, name1, name2, name3, name4, coo0, coo1, coo2, coo3, coo4):
+        return 0
