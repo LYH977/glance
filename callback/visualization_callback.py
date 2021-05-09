@@ -15,7 +15,7 @@ from utils import collection
 from utils.collection import redis_instance
 from utils.export.export_data import export_mp4
 from utils.method import get_ctx_type, get_ctx_index, formatted_time_value, \
-    select_query, get_last_timestamp, insert_marker
+    select_query, get_last_timestamp, insert_marker, reset_marker_trace
 from utils.constant import SCATTER_MAP, DENSITY, CHOROPLETH, BAR_CHART_RACE, \
     FRAME, TIME, MAXIMUM, MINIMUM
 
@@ -36,7 +36,23 @@ def assign_style (toggle):
         nstyle = {  'height': 0, }
     return ostyle, nstyle
 
+def check_valid_lat(input):
+    try:
+        value = float(input)
+        if value >= -85 and value <= 85:
+            return True
+        return False
+    except ValueError:
+        return False
 
+def check_valid_long(input):
+    try:
+        value = float(input)
+        if value >= -180 and value <= 180:
+            return True
+        return False
+    except ValueError:
+        return False
 #############################################################################################################################################
 
 
@@ -648,7 +664,42 @@ def register_update_marker_data(app):
     @app.callback(
         Output({'type': 'marker-data', 'index': MATCH}, 'data'),
         [
-            Input({'type': f'marker-name-btn-{id}', 'index': MATCH}, 'n_clicks') for id in range(0,5)
+            Input({'type': 'marker-name-section-data', 'index': MATCH}, 'data'),
+            Input({'type': 'reset-marker-btn', 'index': MATCH}, 'n_clicks'),
+            Input({'type': 'coordinate-apply-btn', 'index': MATCH}, 'n_clicks'),
+
+        ],
+        [
+            State({'type': 'latitude', 'index': MATCH}, 'value'),
+            State({'type': 'longitude', 'index': MATCH}, 'value'),
+        ],
+        prevent_initial_call=True
+    )
+    def update_marker_data(name, reset, apply, lat, long):
+        ctx = dash.callback_context
+        if not ctx.triggered:
+            raise PreventUpdate
+        input_type = get_ctx_type(ctx)
+        if input_type == 'marker-name-section-data':
+            return name
+        elif input_type == 'reset-marker-btn':
+            return reset_marker_trace()
+        elif input_type == 'coordinate-apply-btn':
+            return insert_marker('unknown', f'({float(lat)}, {float(long)})')
+        raise PreventUpdate
+
+# ############################################################################################################################################
+
+def register_update_marker_name_section_data(app):
+    @app.callback(
+        Output({'type': 'marker-name-section-data', 'index': MATCH}, 'data'),
+        [
+            Input({'type': f'marker-name-btn-0', 'index': MATCH}, 'n_clicks'),
+            Input({'type': f'marker-name-btn-1', 'index': MATCH}, 'n_clicks'),
+            Input({'type': f'marker-name-btn-2', 'index': MATCH}, 'n_clicks'),
+            Input({'type': f'marker-name-btn-3', 'index': MATCH}, 'n_clicks'),
+            Input({'type': f'marker-name-btn-4', 'index': MATCH}, 'n_clicks'),
+
         ],
         [
             State({'type': f'marker-name-0', 'index': MATCH}, 'children') ,
@@ -664,7 +715,7 @@ def register_update_marker_data(app):
         ],
         prevent_initial_call=True
     )
-    def update_marker_data(btn0, btn1, btn2, btn3, btn4, name0, name1, name2, name3, name4, coo0, coo1, coo2, coo3, coo4):
+    def update_marker_name_section_data(btn0, btn1, btn2, btn3, btn4, name0, name1, name2, name3, name4, coo0, coo1, coo2, coo3, coo4):
         ctx = dash.callback_context
         if not ctx.triggered:
             raise PreventUpdate
@@ -674,8 +725,9 @@ def register_update_marker_data(app):
             name = eval(f'name{last_char}')
             coo =  eval(f'coo{last_char}')
             return insert_marker(name, coo)
-
         raise PreventUpdate
+
+
 
 # ############################################################################################################################################
 
@@ -698,5 +750,37 @@ def register_update_marker_marked_name(app):
         else:
             name = ''
             coordinate = ''
-            style = {'display': 'block'}
+            style = {'display': 'none'}
         return name, coordinate, style
+
+# ############################################################################################################################################
+
+def register_reset_lat_long(app):
+    @app.callback(
+        [
+            Output({'type': 'latitude', 'index': MATCH}, 'value'),
+            Output({'type': 'longitude', 'index': MATCH}, 'value'),
+        ],
+        Input({'type': 'reset-marker-btn', 'index': MATCH}, 'n_clicks'),
+        prevent_initial_call=True
+    )
+    def reset_export_interval(reset):
+        return '',''
+
+# ############################################################################################################################################
+
+
+
+def register_toggle_coordinate_apply_btn(app):
+    @app.callback(
+        Output({'type': 'coordinate-apply-btn', 'index': MATCH}, 'disabled'),
+        [
+            Input({'type': 'latitude', 'index': MATCH}, 'value'),
+            Input({'type': 'longitude', 'index': MATCH}, 'value'),
+        ],
+        prevent_initial_call=True
+    )
+    def toggle_coordinate_apply_btn(lat, long):
+        if check_valid_lat(lat) and check_valid_long(long):
+            return False
+        return True

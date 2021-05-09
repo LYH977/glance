@@ -47,7 +47,7 @@ query = 'lake garden taiping'
 layout = html.Div(
     [
         dcc.Store('resolution', data={'height':screen_height, 'width':screen_width}),
-        # html.Div('Welcome to Glance', id='empty-scene', className='empty-scene'),
+        html.Div('Welcome to Glance', id='empty-scene', className='empty-scene'),
         html.Div(id = 'visual-collection', children=[], className='visual-collection' ),
         select_dataset_modal.modal,
         # test_marker_markup(),

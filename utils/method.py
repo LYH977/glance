@@ -7,7 +7,7 @@ import numexpr as ne
 from utils import collection
 from utils.constant import FIGURE_PARAM, STANDARD_T_FORMAT, FRAME
 
-def reset_trace():
+def reset_marker_trace():
     return {
         'lat': [],
         'lon': [],
@@ -19,13 +19,16 @@ def reset_trace():
 
 
 def insert_marker (name, coordinate):
-    split_name = name.split(', ')
-    formatted_name=''
-    for s, i in zip(split_name, range(0, len(split_name))):
-        formatted_name += s
-        if i != len(split_name)-1:
-            formatted_name += ',<br>'
-    formatted_name += '<extra></extra>'
+    if name == 'unknown':
+        formatted_name = coordinate + '<extra></extra>'
+    else:
+        split_name = name.split(', ')
+        formatted_name=''
+        for s, i in zip(split_name, range(0, len(split_name))):
+            formatted_name += s
+            if i != len(split_name)-1:
+                formatted_name += ',<br>'
+        formatted_name += '<extra></extra>'
     split_coordinate = coordinate.split(', ')
     lat = float(split_coordinate[0][1:])
     long = float(split_coordinate[1][:-1])
@@ -42,7 +45,6 @@ def insert_marker (name, coordinate):
         },
         'mode': 'markers',
         'showlegend': False,
-        # 'legendgroup': '',
         'name': name,
         'coordinate':coordinate,
         'subplot': 'mapbox',
@@ -134,4 +136,5 @@ def unpack_parameter(param):
 
 
     return zip(label, id, multi)
+
 

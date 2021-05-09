@@ -49,7 +49,7 @@ def namelist_item_markup(name, coordinate, id, index, color=''):
                 id={'type': f'marker-coordinate-{id}', 'index': index}
             ),
             dbc.Button(
-                "Mark it",
+                "apply",
                 color="link",
                 className='marker-item-btn',
                 id={'type': f'marker-name-btn-{id}', 'index': index}
@@ -88,14 +88,19 @@ def name_markup(create_clicks):
                             id={'type': 'marked-coordinate', 'index': create_clicks},
 
                         ),
-                        dbc.Badge("Marked", color="success", className="mr-1 marker-item-btn"),
+                        dbc.Badge("Applied", color="success", className="mr-1 marker-item-btn"),
                     ],
-                    style={'display':'block'},
+                    style={'display':'none'},
                     id={'type': 'marker-marked-name', 'index': create_clicks},
                     color="success",
                     className='marker-group-item'
                 ),
-                html.Div(id={'type': 'marker-namelist', 'index': create_clicks}),
+                html.Div(
+                    id={'type': 'marker-namelist', 'index': create_clicks},
+                    children=[
+
+                    ]
+                ),
 
             ],
                 className='marker-namelist',
@@ -113,23 +118,27 @@ def coordinate_markup(create_clicks):
                 [
                     dbc.InputGroupAddon("Latitude", addon_type="prepend", ),
                     dbc.Input(
-                        placeholder="e.g. 12.12",
+                        placeholder="( -85 to 85 )",
                         id={'type': 'latitude', 'index': create_clicks},
+                        value=''
                     ),
                 ],
                 className="mb-3", size="sm",
             ),
+
             dbc.InputGroup(
                 [
                     dbc.InputGroupAddon("Longitude", addon_type="prepend", ),
                     dbc.Input(
-                        placeholder="e.g. 21.21",
+                        placeholder="( -180 to 180 )",
                         id={'type': 'longitude', 'index': create_clicks},
+                        value= ''
                     ),
+                    # dbc.FormText("Type something in the box above"),
                 ],
                 className="mb-3", size="sm",
             ),
-            dbc.Button("Confirm", color="success", id={'type': 'coordinate-confirm-btn', 'index': create_clicks},),
+            dbc.Button("Apply", color="success", disabled=True, id={'type': 'coordinate-apply-btn', 'index': create_clicks},),
         ]),
         className="mt-3",
     )

@@ -7,7 +7,7 @@ import plotly.express as px
 
 from utils import collection
 from utils.constant import TIME
-from utils.method import get_last_timestamp, reset_trace
+from utils.method import get_last_timestamp, reset_marker_trace
 
 
 def stores_markup(create_clicks, param, figure, tformat,  initial_frame, dbname, now,  new_col):
@@ -32,6 +32,7 @@ def stores_markup(create_clicks, param, figure, tformat,  initial_frame, dbname,
         dcc.Store(id = {'type': 'new-column-info', 'index': create_clicks}, data = new_col),
         dcc.Store(id= {'type': 'export-name', 'index': create_clicks}, data = None),
         dcc.Store(id={'type': 'chosen-color-scale', 'index': create_clicks}, data = {'name' : 'Pinkyl', 'value' : color}),
-        dcc.Store(id={'type': 'marker-data', 'index': create_clicks}, data = reset_trace()),
+        dcc.Store(id={'type': 'marker-data', 'index': create_clicks}, data = reset_marker_trace()),
+        dcc.Store(id={'type': 'marker-name-section-data', 'index': create_clicks}, data = None),
 
     ])
