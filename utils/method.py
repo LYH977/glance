@@ -18,13 +18,23 @@ def reset_trace():
     }
 
 
-def insert_marker ():
+def insert_marker (name, coordinate):
+    split_name = name.split(', ')
+    formatted_name=''
+    for s, i in zip(split_name, range(0, len(split_name))):
+        formatted_name += s
+        if i != len(split_name)-1:
+            formatted_name += ',<br>'
+    formatted_name += '<extra></extra>'
+    split_coordinate = coordinate.split(', ')
+    lat = float(split_coordinate[0][1:])
+    long = float(split_coordinate[1][:-1])
+
     return {
         'coloraxis': "coloraxis",
-        'hovertemplate': 'tt=<br>dfdf<extra></extra>',
-        'hovertext': ['sd'],
-        'lat': [-31.533592],
-        'lon': [79.355590],
+        'hovertemplate': formatted_name,
+        'lat': [lat],
+        'lon': [long],
         'marker': {
             'size': 20,
             'symbol': ['embassy'],
@@ -32,8 +42,9 @@ def insert_marker ():
         },
         'mode': 'markers',
         'showlegend': False,
-        'legendgroup': '',
-        'name': '',
+        # 'legendgroup': '',
+        'name': name,
+        'coordinate':coordinate,
         'subplot': 'mapbox',
         'type': 'scattermapbox'
     }

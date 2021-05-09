@@ -52,6 +52,8 @@ def register_update_figure(app):
             Input({'type': 'legend-theme', 'index': MATCH}, 'on'),
             Input({'type': 'mapbox-type', 'index': MATCH}, 'value'),
             Input({'type': 'chosen-color-scale', 'index': MATCH}, 'data'),
+            Input({'type': 'marker-data', 'index': MATCH}, 'data'),
+
         ],
         [
             State({'type': 'my_param', 'index': MATCH}, 'data'),
@@ -262,6 +264,7 @@ def register_update_live_data(app):
             Input({'type': 'legend-theme', 'index': MATCH}, 'on'),
             Input({'type': 'mapbox-type', 'index': MATCH}, 'value'),
             Input({'type': 'chosen-color-scale', 'index': MATCH}, 'data'),
+            Input({'type': 'marker-data', 'index': MATCH}, 'data'),
 
         ],
         [
@@ -275,7 +278,7 @@ def register_update_live_data(app):
         ],
         prevent_initial_call=True
     )
-    def update_live_data(live, legend,mapbox, colorscale, ts, format,  param, dbname, buffer, info):
+    def update_live_data(live, legend,mapbox, colorscale, marker, ts, format,  param, dbname, buffer, info):
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
@@ -323,7 +326,12 @@ def register_update_live_data(app):
             fig2 = buffer
             fig2['layout']['coloraxis']['colorscale'] = colorscale['value']
 
-            fig2['data'][1] = insert_marker()
+            # fig2['data'][1] = insert_marker()
+            return dash.no_update, fig2
+
+        elif input_type == 'marker-data':
+            fig2 = buffer
+            fig2['data'][1] = marker
             return dash.no_update, fig2
 
         raise PreventUpdate
@@ -606,36 +614,39 @@ def register_update_marker_namelist(app):
     @app.callback(
         Output({'type': 'marker-namelist', 'index': MATCH}, 'children'),
         Input({'type': 'marker-search-name', 'index': MATCH}, 'value'),
-        State({'type': 'back-buffer', 'index': MATCH}, 'data'),
-        State({'type': 'my-index', 'index': MATCH}, 'data'),
+        [
+            # State({'type': 'marker-data', 'index': MATCH}, 'data'),
+            State({'type': 'my-index', 'index': MATCH}, 'data'),
+        ],
 
         prevent_initial_call=True
     )
-    def update_marker_namelist(value, buffer, index):
+    def update_marker_namelist(value,  index):
         if len(value.strip()) == 0:
             raise PreventUpdate
         try:
             results = MAPBOX_GEOCODER.geocode(query=value, exactly_one=False, )
             namelist = []
-            if len(buffer['data'][1]['lat']) !=0: # if marker is specified
-                namelist.append(namelist_item_markup('selected','lcoation','success'))
+            # if len(marker['lat']) !=0: # if marker is specified
+            #     namelist.append(namelist_marked_item_markup(marker['name'],marker['coordinate']))
             for result,id in zip(results, range(0, len(results))):
                 raw = result.raw
-                lat = raw['geometry']['coordinates'][0]
-                long = raw['geometry']['coordinates'][1]
+                lat = raw['geometry']['coordinates'][1]
+                long = raw['geometry']['coordinates'][0]
                 coordinate = f"({lat}, {long})"
                 temp = namelist_item_markup(raw['place_name'], coordinate, id, index)
                 namelist.append(temp)
 
             return namelist
-        except:
+        except Exception as e:
+            print(e)
             return [namelist_item_not_found_markup(value)]
 
 # ############################################################################################################################################
 
 def register_update_marker_data(app):
     @app.callback(
-        Output({'type': 'marker_data', 'index': MATCH}, 'data'),
+        Output({'type': 'marker-data', 'index': MATCH}, 'data'),
         [
             Input({'type': f'marker-name-btn-{id}', 'index': MATCH}, 'n_clicks') for id in range(0,5)
         ],
@@ -653,5 +664,39 @@ def register_update_marker_data(app):
         ],
         prevent_initial_call=True
     )
-    def reset_export_interval(btn0, btn1, btn2, btn3, btn4, name0, name1, name2, name3, name4, coo0, coo1, coo2, coo3, coo4):
-        return 0
+    def update_marker_data(btn0, btn1, btn2, btn3, btn4, name0, name1, name2, name3, name4, coo0, coo1, coo2, coo3, coo4):
+        ctx = dash.callback_context
+        if not ctx.triggered:
+            raise PreventUpdate
+        input_type = get_ctx_type(ctx)
+        last_char = input_type[-1]
+        if eval(f'btn{last_char}') is not None:
+            name = eval(f'name{last_char}')
+            coo =  eval(f'coo{last_char}')
+            return insert_marker(name, coo)
+
+        raise PreventUpdate
+
+# ############################################################################################################################################
+
+def register_update_marker_marked_name(app):
+    @app.callback(
+        [
+            Output({'type': 'marked-name', 'index': MATCH}, 'children'),
+            Output({'type': 'marked-coordinate', 'index': MATCH}, 'children'),
+            Output({'type': 'marker-marked-name', 'index': MATCH}, 'style'),
+
+        ],
+        Input({'type': 'marker-data', 'index': MATCH}, 'data'),
+        prevent_initial_call=True
+    )
+    def update_marker_marked_name(marker):
+        if len(marker['lat']) != 0:  # if marker is specified
+            name = marker['name']
+            coordinate = marker['coordinate']
+            style= {'display':'block'}
+        else:
+            name = ''
+            coordinate = ''
+            style = {'display': 'block'}
+        return name, coordinate, style

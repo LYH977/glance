@@ -78,7 +78,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
 
 
 
-        update_figure: function(value, legend, mapbox, colorscale, param, atmax, live, new_fig) {
+        update_figure: function(value, legend, mapbox, colorscale, marker, param, atmax, live, new_fig) {
             triggered = window.dash_clientside.callback_context.triggered[0]
             if(!triggered)
                 throw window.dash_clientside.PreventUpdate
@@ -121,10 +121,14 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 fig2 = JSON.parse(JSON.stringify(new_fig))
                 fig2['layout']['coloraxis']['colorscale'] = colorscale['value']
                 console.log(fig2)
-
-                fig2['data'][1] = insert_marker()
+//                fig2['data'][1] = insert_marker()
 //                fig2['data'][1] = fig2['frames'][2]['data'][0]
-
+                change_frame(param['vtype'], fig2, value)
+                return fig2
+            }
+            else if(input_type == 'marker-data'){
+                fig2 = JSON.parse(JSON.stringify(new_fig))
+                fig2['data'][1] = marker
                 change_frame(param['vtype'], fig2, value)
                 return fig2
             }

@@ -187,6 +187,7 @@
 .marker-group-item {
     padding:5px 10px 0 10px;
     position: relative;
+
 }
 
 .marker-item-heading {
@@ -199,9 +200,10 @@
 }
 
 .marker-item-btn {
-    position:absolute;
     font-size:13px;
-    padding:0;
+    position:absolute;
     bottom:0;
     right:0;
+
+
 }

@@ -21,6 +21,20 @@ def namelist_item_not_found_markup(query):
         ], className='marker-group-item'
     )
 
+# def namelist_marked_item_markup(name, coordinate,):
+#     return dbc.ListGroupItem([
+#             dbc.ListGroupItemHeading(
+#                 name,
+#                 className='marker-item-heading',
+#             ),
+#             dbc.ListGroupItemText(
+#                 coordinate,
+#                 className='marker-item-text' ,
+#             ),
+#             dbc.Badge("Success", color="success", className="mr-1 marker-item-btn"),
+#         ], color="success", className='marker-group-item')
+
+
 def namelist_item_markup(name, coordinate, id, index, color=''):
     return dbc.ListGroupItem(
         [
@@ -59,16 +73,34 @@ def name_markup(create_clicks):
                 className="mb-3", size="sm",
             ),
             dbc.ListGroup([
+                # html.Div(style={'display':'block'},id={'type': 'marker-marked-name', 'index': create_clicks},),
                 dbc.ListGroupItem(
                     [
-                        dbc.ListGroupItemHeading("This item has a heading", className='marker-item-heading'),
-                        dbc.ListGroupItemText("And some text underneath", className='marker-item-text'),
+                        dbc.ListGroupItemHeading(
+                            'name',
+                            className='marker-item-heading',
+                            id={'type': 'marked-name', 'index': create_clicks},
 
-                    ], className='marker-group-item'
+                        ),
+                        dbc.ListGroupItemText(
+                            'coordinate',
+                            className='marker-item-text',
+                            id={'type': 'marked-coordinate', 'index': create_clicks},
+
+                        ),
+                        dbc.Badge("Marked", color="success", className="mr-1 marker-item-btn"),
+                    ],
+                    style={'display':'block'},
+                    id={'type': 'marker-marked-name', 'index': create_clicks},
+                    color="success",
+                    className='marker-group-item'
                 ),
+                html.Div(id={'type': 'marker-namelist', 'index': create_clicks}),
+
             ],
                 className='marker-namelist',
-                id={'type': 'marker-namelist', 'index': create_clicks}),
+                # id={'type': 'marker-namelist', 'index': create_clicks}
+            ),
             # dbc.Button("Confirm", color="success", id={'type': 'name-confirm-btn', 'index': create_clicks},),
         ]),
         className="mt-3",
