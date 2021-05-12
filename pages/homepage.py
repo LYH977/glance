@@ -15,7 +15,7 @@ import numpy as np
 from datetime import datetime
 from utils.export.export_data import export_mp4
 from plotly import graph_objects as go
-
+from copy import deepcopy
 
 
 redis_instance = redis.StrictRedis.from_url(os.environ['REDIS_URL'])
@@ -56,13 +56,13 @@ fig.layout.title.font.size = 50
 fig.layout.title.y = 0.98
 fig.layout.title.x = 0.2
 
-fig.layout.coloraxis.colorbar.len = 0.4
+fig.layout.coloraxis.colorbar.len = 0.49
 fig.layout.coloraxis.colorbar.yanchor = 'bottom'
 # fig.layout.coloraxis.colorbar.xanchor = 'right'
 
 fig.layout.coloraxis.colorbar.xpad = 7
 fig.layout.coloraxis.colorbar.x = -0.04
-fig.layout.coloraxis.colorbar.y = 0
+fig.layout.coloraxis.colorbar.y = 0.5
 fig.layout.coloraxis.colorbar.thickness = 10
 
 #dark
@@ -76,6 +76,7 @@ fig.layout.coloraxis.colorbar.tickfont.color = 'rgba(255,255,255,1)'
 #
 fig.layout.sliders[0].visible = False
 fig.layout.updatemenus[0].visible = False
+
 
 ######################################################################################################
 
@@ -127,6 +128,8 @@ layout = dbc.Jumbotron(
         html.Button('test new dl btn', id='new-dl-btn'),
         dcc.Store(id='testing-js', data=fig),
         # dcc.Store(id='testing-plot', data= fig),
+        html.Button('multiple layer figure', id='multi-layer-btn'),
+
         dcc.Graph(id='hp-fig', figure = fig, config={
                     'modeBarButtonsToRemove': [
                         'pan2d', 'select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox',
@@ -186,6 +189,7 @@ layout = dbc.Jumbotron(
     ]
 )
 
+# ############################################################################################################################################
 
 
 
@@ -198,6 +202,7 @@ def update_output(click):
         # print('see here:',lala)
 
         return 'dd'
+# ############################################################################################################################################
 
 
 @app.callback(Output('title2', 'children'),
@@ -209,6 +214,7 @@ def update_output(click):
         return 'spider'
 
 
+# ############################################################################################################################################
 
 
 
@@ -224,6 +230,7 @@ app.clientside_callback(
     prevent_initial_call=True
 )
 
+# ############################################################################################################################################
 
 
 @app.callback(
@@ -263,6 +270,7 @@ def open_toast(disabled, name, fig):
     else:
         return None, None, True, dash.no_update
 
+# ############################################################################################################################################
 
 @app.callback(
     [
@@ -301,3 +309,33 @@ def open_toast( click):
 )
 def open_toast( click):
     return dcc.send_file('./assets/export/1618304344.mp4')
+
+# ############################################################################################################################################
+
+@app.callback(
+    Output("hp-fig", "figure"),
+    [Input("multi-layer-btn", "n_clicks")],
+    State("hp-fig", "figure"),
+
+    prevent_initial_call=True
+)
+def open_toast( click, fig):
+    if click:
+
+        temp = deepcopy(fig['data'][0])
+        fig['data'].append(temp)
+        fig['data'][1]['marker']['coloraxis'] = 'coloraxis2'
+        fig['data'][1]['lat']= [-27.059125784374054]
+        fig['data'][1]['lon']= [82.968750]
+        fig['data'][1]['hovertext']= ['eren jaegar']
+        fig['data'][1]['marker']['color']= [17]
+        fig['data'][1]['marker']['size']= [444]
+
+        temp_coloraxis = deepcopy(fig['layout']['coloraxis'])
+        fig['layout']['coloraxis2'] = temp_coloraxis
+        fig['layout']['coloraxis2']['colorbar']['bgcolor'] = "rgba(120,20,200,1)"
+        fig['layout']['coloraxis2']['colorbar']['title']['text'] = 'testing'
+        fig['layout']['coloraxis2']['colorbar']['y'] = 0
+        # print(fig)
+        return fig
+    raise PreventUpdate

@@ -324,11 +324,11 @@ def register_update_live_data(app):
         elif input_type == 'legend-theme':
             fig2 = buffer
             if legend : #dark theme
-                fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(0,0,0,0.75)'
+                fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(0,0,0,1)'
                 fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(255,255,255,1)'
                 fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(255,255,255,1)'
             else: # light theme
-                fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(255,255,255,0.75)'
+                fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(255,255,255,1)'
                 fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(0,0,0,1)'
                 fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
             return dash.no_update,fig2

@@ -11,10 +11,19 @@ def configure_fig(fig, type, add_trace = False):
     fig.layout.updatemenus[0].buttons[0].args[1]["transition"]["duration"] = 200
     fig.layout.updatemenus[0].showactive = True
 
-    fig.layout.coloraxis.colorbar.len = 0.5
-    fig.layout.coloraxis.colorbar.yanchor = 'bottom'
+    fig.layout.coloraxis.colorbar.len = 1
     fig.layout.coloraxis.colorbar.xpad = 10
-    fig.layout.coloraxis.colorbar.x = 0
+    fig.layout.coloraxis.colorbar.x = -0.1
+    fig.layout.coloraxis.colorbar.y = 0
+    # fig.layout.coloraxis.colorbar.title.font.size = 10
+    fig.layout.coloraxis.colorbar.title.side = 'right'
+
+
+    # fig.layout.coloraxis.colorbar.len = 0.5
+    # fig.layout.coloraxis.colorbar.len = 0.4
+    fig.layout.coloraxis.colorbar.yanchor = 'bottom'
+    # fig.layout.coloraxis.colorbar.xpad = 10
+    # fig.layout.coloraxis.colorbar.x = 0
     fig.layout.coloraxis.colorbar.thickness = 10
 
     #white theme legend
