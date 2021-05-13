@@ -153,7 +153,8 @@ def popover_children_markup(create_clicks):
                     dbc.Tab(coordinate_markup(create_clicks), label="Coordinates",  label_style=label_style, active_label_style=active_label_style),
                 ]),
                 dbc.Button("Reset", color="danger", id={'type': 'reset-marker-btn', 'index': create_clicks},),
-            ]
+            ],
+            style={'maxWidth': '400px'},
         ),
     ]
 
@@ -167,12 +168,14 @@ def marker_markup(create_clicks):
                 n_clicks=0
             ),
             dbc.Popover(
+
                 popover_children_markup(create_clicks),
                 id="legacy",
                 # target="{'type': 'marker-btn', 'index': "+str(create_clicks)+"}",
                 target=f"popover-div-wrapper-{create_clicks}",
                 trigger="legacy",
                 placement='bottom-end',
+                # style={'maxWidth': '400px'},
             ),
         ],
 
@@ -196,6 +199,7 @@ def test_marker_markup():
                 target=f"popover-div-wrapper-",
                 trigger="legacy",
                 placement='bottom-end',
+                style={'maxWidth': '400px'},
             ),
         ],
 

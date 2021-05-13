@@ -7,6 +7,13 @@ import numexpr as ne
 from utils import collection
 from utils.constant import FIGURE_PARAM, STANDARD_T_FORMAT, FRAME
 
+def store_template(param1, param2 = {}):
+    return {
+        0:param1,
+        2:param2
+    }
+
+
 def reset_marker_trace():
     return {
         'lat': [],

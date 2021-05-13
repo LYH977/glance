@@ -1,6 +1,7 @@
 const MAXIMUM = 'MAXIMUM'
 const MINIMUM = 'MINIMUM'
 
+const current_ind = 0
 
 const get_ctx_type = (ctx) => {
     let obj = ctx['prop_id'].split('.')[0]
@@ -66,7 +67,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
 
         large_params_function: function(param) {   return param;  },
 
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         second_function: function(param, sim) {
             triggered = window.dash_clientside.callback_context.triggered[0]
@@ -75,7 +76,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
         },
 
 
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
         update_figure: function(value, legend, mapbox, colorscale, marker, param, atmax, live, new_fig) {
@@ -91,7 +92,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                     new_max = new_fig['frames'].length
                     val = new_max - 1
                 }
-                change_frame(param['vtype'], fig2, val)
+                change_frame(param[current_ind]['vtype'], fig2, val)
                 return fig2
             }
             else if(input_type == 'legend-theme'){
@@ -108,36 +109,36 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                     fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
 //                    fig2['layout']['paper_bgcolor'] = '#fff'
                 }
-                change_frame(param['vtype'], fig2, value)
+                change_frame(param[current_ind]['vtype'], fig2, value)
                 return fig2
             }
 
             else if(input_type == 'mapbox-type'){
                 fig2 = JSON.parse(JSON.stringify(new_fig))
                 fig2['layout']['mapbox']['style'] = mapbox
-                change_frame(param['vtype'], fig2, value)
+                change_frame(param[current_ind]['vtype'], fig2, value)
                 return fig2
             }
 
             else if(input_type == 'chosen-color-scale'){
                 fig2 = JSON.parse(JSON.stringify(new_fig))
-                fig2['layout']['coloraxis']['colorscale'] = colorscale['value']
+                fig2['layout']['coloraxis']['colorscale'] = colorscale[current_ind]['value']
                 console.log(fig2)
 //                fig2['data'][1] = insert_marker()
 //                fig2['data'][1] = fig2['frames'][2]['data'][0]
-                change_frame(param['vtype'], fig2, value)
+                change_frame(param[current_ind]['vtype'], fig2, value)
                 return fig2
             }
             else if(input_type == 'marker-data'){
                 fig2 = JSON.parse(JSON.stringify(new_fig))
                 fig2['data'][1] = marker
-                change_frame(param['vtype'], fig2, value)
+                change_frame(param[current_ind]['vtype'], fig2, value)
                 return fig2
             }
             throw window.dash_clientside.PreventUpdate
         },
 
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         update_notif_body: function(cdata, slider, itype){
             triggered = window.dash_clientside.callback_context.triggered[0]
             if(!triggered)
@@ -163,7 +164,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
             }
             throw window.dash_clientside.PreventUpdate
         }
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     }
 });

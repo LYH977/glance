@@ -15,11 +15,13 @@ from utils import collection
 from utils.collection import redis_instance
 from utils.export.export_data import export_mp4
 from utils.method import get_ctx_type, get_ctx_index, formatted_time_value, \
-    select_query, get_last_timestamp, insert_marker, reset_marker_trace
+    select_query, get_last_timestamp, insert_marker, reset_marker_trace, store_template
 from utils.constant import SCATTER_MAP, DENSITY, CHOROPLETH, BAR_CHART_RACE, \
     FRAME, TIME, MAXIMUM, MINIMUM
 
 MAPBOX_GEOCODER = MapBox(os.environ['MAP_TOKEN'])
+
+current_ind = 0
 
 def handleOutOfRangeNotif(celery, slider):
     length = len(celery)
@@ -93,13 +95,13 @@ def register_update_color_scale(app):
         prevent_initial_call=True
     )
     def update_color_scale(dropdown, chosen):
-        if dropdown == chosen['name']:
+        if dropdown == chosen[current_ind]['name']:
             raise PreventUpdate
         chosen_color = eval(f'px.colors.sequential.{dropdown}')
         formatted_scale, scale = px.colors.convert_colors_to_same_type(chosen_color)
         colorscale = px.colors.make_colorscale(formatted_scale, scale=scale)
         # print(colorscale)
-        return {'name': dropdown, 'value': colorscale}
+        return store_template({'name': dropdown, 'value': colorscale})
 
 ############################################################################################################################################## update slider according to interval
 def register_update_slider(app):
@@ -287,7 +289,7 @@ def register_update_live_data(app):
             State({'type': 'last-timestamp', 'index': MATCH}, 'data'),
             State({'type': 'frame-format', 'index': MATCH}, 'data'),
             State({'type': 'my_param', 'index': MATCH}, 'data'),
-            State({'type': 'db-name-0', 'index': MATCH}, 'data'),
+            State({'type': 'db-name', 'index': MATCH}, 'data'),
             State({'type': 'back-buffer', 'index': MATCH}, 'data'),
             State({'type': 'new-column-info', 'index': MATCH}, 'data'),
 
@@ -304,7 +306,7 @@ def register_update_live_data(app):
             input_index = get_ctx_index(ctx)
         if input_type =='live-interval' and collection.live_processing[input_index] is False:
             collection.live_processing[input_index] = True
-            result = select_query(dbname, 'where time >{}'.format(ts))
+            result = select_query(dbname, 'where time >{}'.format(ts[current_ind]))
             if result is not None:
                 result[TIME] = result.index.map(lambda x: str(x).split('+')[0])
                 result[FRAME] = result[TIME].map(lambda x: formatted_time_value(x, format))
@@ -316,8 +318,8 @@ def register_update_live_data(app):
                     result[ exp['name'] ] = new_col
                 last_nano = get_last_timestamp(result[TIME])
                 collection.data[input_index] = collection.data[input_index].append(result, ignore_index=True)
-                fig = create_figure(collection.data[input_index], param['parameter'], param['vtype'])
-                return last_nano, fig
+                fig = create_figure(collection.data[input_index], param[current_ind]['parameter'], param[current_ind]['vtype'])
+                return store_template(last_nano), fig
             collection.live_processing[input_index] = False
             raise PreventUpdate
 
@@ -344,7 +346,7 @@ def register_update_live_data(app):
 
         elif input_type == 'chosen-color-scale':
             fig2 = buffer
-            fig2['layout']['coloraxis']['colorscale'] = colorscale['value']
+            fig2['layout']['coloraxis']['colorscale'] = colorscale[current_ind]['value']
 
             # fig2['data'][1] = insert_marker()
             return dash.no_update, fig2
@@ -551,7 +553,7 @@ def register_update_last_celery_key(app):
             current_rows = len(collection.data[input_index].index)
             if last_rows < current_rows:
                 now = datetime.now().timestamp()
-                result = task.process_dataset.delay(input_index, collection.data[input_index].to_dict(), param['vtype'], param['parameter'], now)
+                result = task.process_dataset.delay(input_index, collection.data[input_index].to_dict(), param[current_ind]['vtype'], param[current_ind]['parameter'], now)
 
                 return current_rows, now
 
@@ -559,7 +561,7 @@ def register_update_last_celery_key(app):
             current_rows = len(collection.data[input_index].index)
             if interval != 0  and interval % 5 == 0 and last_rows < current_rows:
                 now = datetime.now().timestamp()
-                result = task.process_dataset.delay(input_index, collection.data[input_index].to_dict(), param['vtype'], param['parameter'], now)
+                result = task.process_dataset.delay(input_index, collection.data[input_index].to_dict(), param[current_ind]['vtype'], param[current_ind]['parameter'], now)
                 return current_rows, now
 
         raise PreventUpdate

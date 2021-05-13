@@ -37,10 +37,11 @@
 .expression-wrapper {
     height:100px;
     /*background: red;*/
-    overflow-x : auto;
+    overflow : auto;
     display:flex;
+    /*flex-direction: column
     justify-content: center;
-    align-items: center;
+    align-items: center;*/
 }
 
 .expression-box {
