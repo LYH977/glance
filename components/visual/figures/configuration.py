@@ -11,12 +11,14 @@ def configure_fig(fig, type, add_trace = False):
     fig.layout.updatemenus[0].buttons[0].args[1]["transition"]["duration"] = 200
     fig.layout.updatemenus[0].showactive = True
 
-    fig.layout.coloraxis.colorbar.len = 1
-    fig.layout.coloraxis.colorbar.xpad = 10
-    fig.layout.coloraxis.colorbar.x = -0.1
-    fig.layout.coloraxis.colorbar.y = 0
-    # fig.layout.coloraxis.colorbar.title.font.size = 10
+    fig.layout.coloraxis.colorbar.len = 0.99 #0.99
+    fig.layout.coloraxis.colorbar.xpad = 5
+    fig.layout.coloraxis.colorbar.x = -0.067
+    fig.layout.coloraxis.colorbar.y = 0.01
     fig.layout.coloraxis.colorbar.title.side = 'right'
+    fig.layout.coloraxis.colorbar.tickangle = -90
+    fig.layout.coloraxis.colorbar.minexponent = 0
+    fig.layout.coloraxis.colorbar.ticks = 'inside'
 
 
     # fig.layout.coloraxis.colorbar.len = 0.5
@@ -24,7 +26,8 @@ def configure_fig(fig, type, add_trace = False):
     fig.layout.coloraxis.colorbar.yanchor = 'bottom'
     # fig.layout.coloraxis.colorbar.xpad = 10
     # fig.layout.coloraxis.colorbar.x = 0
-    fig.layout.coloraxis.colorbar.thickness = 10
+    fig.layout.coloraxis.colorbar.thickness = 7
+    fig.layout.paper_bgcolor = '#fff'
 
     #white theme legend
     fig.layout.coloraxis.colorbar.bgcolor = 'rgba(255,255,255,1)' #'rgba(0,0,0,0.5)'

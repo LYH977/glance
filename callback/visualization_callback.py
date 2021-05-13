@@ -327,10 +327,14 @@ def register_update_live_data(app):
                 fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(0,0,0,1)'
                 fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(255,255,255,1)'
                 fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(255,255,255,1)'
+                # fig2['layout']['paper_bgcolor'] = '#000'
+
             else: # light theme
                 fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(255,255,255,1)'
                 fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(0,0,0,1)'
                 fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
+                # fig2['layout']['paper_bgcolor'] = '#fff'
+
             return dash.no_update,fig2
 
         elif input_type == 'mapbox-type':

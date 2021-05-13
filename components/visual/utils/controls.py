@@ -15,4 +15,4 @@ def controls_markup(create_clicks, maxValue, initial_label):
                     max=maxValue,
                     value=0,
                 )),
-            ])
+            ], className= 'control-style')

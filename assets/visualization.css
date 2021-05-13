@@ -127,10 +127,13 @@
     background:#46648c;
     position:absolute;
     z-index: 21
+
 }
 
 
-
+.control-style{
+    padding-top: 5px;
+}
 
 
 
