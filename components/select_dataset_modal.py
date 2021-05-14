@@ -26,7 +26,6 @@ modal = html.Div(
         ),
         dcc.Store(id='last-param', data={}),
         dcc.Store(id='chosen-tformat', data= YEAR),
-        # dcc.Store(id='new-col-info', data={'expression': [], 'numeric_col': []}),
         dcc.Store(id='chosen-dropdown', data= None),
         dbc.Modal(
             [
@@ -37,9 +36,17 @@ modal = html.Div(
                 ])),
                 dbc.ModalFooter(
                     html.Div([
-                        dbc.Button("Create", id="create-visual", className="ml-auto",color="success", disabled=True),
+                        html.Div(id="add-secondary-area"),
+                        dbc.Button(
+                            "Create",
+                            id="create-visual",
+                            className="ml-auto",
+                            color="success",
+                            disabled=True,
+                            # style={'display':'block'}
+                        ),
                         dbc.Button("Close", id="cancel-create-visual", className="ml-auto",color="danger"),
-                    ])
+                    ], className= 'mod-footer')
                 ),
             ],
             id="modal",
@@ -167,8 +174,6 @@ def output_form_markup(type):
     ])
 
 
-
-
 def parameter_option(name, id, multi = False):
 
     if not multi:
@@ -283,3 +288,13 @@ def operand_container_markup(type, id):
             maxLength=8,
             # placeholder="A large input...", bs_size="lg", className="mb-3"
         )
+
+def secondary_action_btn_markup(create_click):
+    # print('received', create_click)
+    return dbc.Button(
+        'create_click',
+        id = {'type':'secondary-action-btn', 'index':create_click},
+        className="ml-auto",
+        color="success",
+        n_clicks= 0
+    )

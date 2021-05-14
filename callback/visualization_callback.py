@@ -790,3 +790,16 @@ def register_toggle_coordinate_apply_btn(app):
         if check_valid_lat(lat) and check_valid_long(long):
             return False
         return True
+
+# ############################################################################################################################################
+
+
+
+# def register_update_last_secondary_click_ts(app):
+#     @app.callback(
+#         Output({'type': 'last-secondary-click-ts', 'index': MATCH}, 'n_clicks_timestamp'),
+#         Input({'type': 'secondary-visual-btn', 'index': MATCH}, 'n_clicks_timestamp'),
+#         prevent_initial_call=True
+#     )
+#     def update_last_secondary_click_ts(ts):
+#         return ts

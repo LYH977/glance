@@ -1,7 +1,7 @@
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output, State, ALL
 import dash_table
 import dash
 import numexpr as ne
@@ -17,12 +17,12 @@ from utils import collection
 from utils.method import get_ctx_type, get_ctx_property, get_ctx_value, get_ctx_index, formatted_time_value, \
     select_query
 from components.select_dataset_modal import output_form_markup, dataset_portal_markup, dataset_portal_markup, \
-    dropdown_markup, operand_container_markup
+    dropdown_markup, operand_container_markup, secondary_action_btn_markup
 import base64
 import io
 import json
 import pandas as pd
-
+from datetime import  datetime
 
 
 
@@ -84,18 +84,13 @@ def register_update_after_upload(app):
                 collection.temp = select_query(measurement)
                 if collection.temp is not None:
                     collection.temp['time'] = collection.temp.index.map(lambda x: str(x).split('+')[0])
-
-
                 return dataset_portal_markup(measurement)
 
 
         elif input_type == 'create-visual' or 'cancel-create-visual' :
             return dash.no_update if is_open is True else []
 
-        # elif input_type ==  'create-visual':
-        #     return  []
-        else:
-            raise PreventUpdate
+        raise PreventUpdate
 #############################################################################################################################################
 
 
@@ -123,33 +118,84 @@ def register_update_output_form(app):
 
 def register_toggle_modal(app):
     @app.callback(
-        Output("modal", "is_open"),
-        [Input("open-select-modal", "n_clicks"), Input("cancel-create-visual", "n_clicks"),Input("create-visual", "n_clicks")],
-        [State("modal", "is_open"), State('last-param', 'data')],
+        [
+            Output("modal", "is_open"),
+            Output({'type': "last-secondary-click-ts", 'index': ALL}, "data"),
+        ],
+        [
+            Input("open-select-modal", "n_clicks"),
+            Input("cancel-create-visual", "n_clicks"),
+            Input("create-visual", "n_clicks"),
+            Input({'type': "secondary-visual-btn", 'index': ALL}, "n_clicks_timestamp"),
+
+        ],
+        [
+            State("modal", "is_open"),
+            State({'type': "last-secondary-click-ts", 'index': ALL}, "data"),
+
+        ],
         prevent_initial_call=True
     )
-    def toggle_modal (open, close, create, is_open, param):
-        # print(param)
+    def toggle_modal (open, close, create, secondary, is_open, last_secondary):
+        ts = datetime.now().timestamp()
         ctx = dash.callback_context
         if not ctx.triggered:
-            input_type = 'No input yet'
+            raise PreventUpdate
+        input_type = get_ctx_type(ctx)
+        print('ctx',ctx.triggered)
+        print(secondary)
+        print(last_secondary)
+        print('-----------')
+        if input_type == 'secondary-visual-btn':
+            # print(('sec', secondary))
+            return False, secondary
         else:
-            input_type = ctx.triggered[0]['prop_id'].split('.')[0]
-        # if input_type == 'create-visual':
-        #     if param['vtype'] == CAROUSEL:
-        #         temp = []
-        #         for row in collection.temp.index:
-        #             temp.append( create_ca_img(collection.temp.loc[row, param['parameter'][CAROUSEL_CONSTANT[ITEM]]]) )
-        #         collection.img_container[create] = temp
-        # if open is  None:
-        #     return dash.no_update
-        return not is_open
+            return not is_open, secondary
+
+
+#############################################################################################################################################
+
+
+def register_toggle_modal_action_btn(app):
+    @app.callback(
+        [
+            Output("create-visual", "style"),
+            Output("add-secondary-area", "children"),
+        ],
+        [
+            Input("open-select-modal", "n_clicks"),
+            Input("cancel-create-visual", "n_clicks"),
+            Input("create-visual", "n_clicks"),
+            Input({'type': "secondary-visual-btn", 'index': ALL}, "n_clicks"),
+        ],
+        # [State("modal", "is_open"), State('last-param', 'data')],
+        prevent_initial_call=True
+    )
+    def toggle_modal_action_btn (open, close, create, secondary):
+        ctx = dash.callback_context
+        if not ctx.triggered:
+            raise PreventUpdate
+        input_type = get_ctx_type(ctx)
+        if input_type == 'secondary-visual-btn':
+            style = {'display': 'none'}
+            input_index = get_ctx_index(ctx)
+            return style, secondary_action_btn_markup(input_index)
+        # index = get_ctx_index(ctx)
+        # if input_type == "secondary-visual-btn":
+        #     print('input_type', input_type)
+            # print('index', index)
+        else:
+            style = {'display':'block'}
+            return style, []
 #############################################################################################################################################
 
 
 def register_enable_create_btn(app):
     @app.callback(
-        [Output('create-visual', 'disabled'),  Output('last-param', 'data')] ,
+        [
+            Output('create-visual', 'disabled'),
+            Output('last-param', 'data')
+        ] ,
         [
             Input(SM_PARAM,'data'),
             # Input(SG_PARAM, 'data'),
@@ -176,8 +222,7 @@ def register_enable_create_btn(app):
         if input_value['parameter'] is not None and input_value['is_filled'] is True:
             data = {'vtype': vtype, 'parameter':input_value['parameter'] }
             return False, data
-        else:
-            raise PreventUpdate
+        raise PreventUpdate
 #############################################################################################################################################
 
 
@@ -193,7 +238,11 @@ def register_enable_create_btn(app):
 def register_update_dt_dropdown(app):
     @app.callback(
         Output('dataset-window', 'children') ,
-        [Input('open-select-modal','n_clicks'), Input('cancel-create-visual','n_clicks'), Input('create-visual','n_clicks')],
+        [
+            Input('open-select-modal','n_clicks'),
+            Input('cancel-create-visual','n_clicks'),
+            Input('create-visual','n_clicks')
+        ],
         prevent_initial_call=True
     )
     def update_dt_dropdown (open, close,create):

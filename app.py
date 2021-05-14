@@ -12,11 +12,11 @@ from callback.navbar_callback import register_update_adjust_btn_color, register_
 
 from callback.select_dataset_modal_callback import \
     register_update_after_upload, register_enable_create_btn, register_toggle_modal, \
-    register_update_output_form, register_validate_sm_create,  register_validate_bc_create, \
+    register_update_output_form, register_validate_sm_create, register_validate_bc_create, \
     register_validate_d_create, register_validate_ch_create, register_validate_ca_create, register_update_dt_dropdown, \
     register_update_chosen_dropdown, register_update_chosen_tformat, register_update_equation, \
     register_update_new_column, register_update_operand_type, register_toggle_new_column_btn, \
-    register_clear_popup_value, register_close_popup, register_update_visual_dropdown
+    register_clear_popup_value, register_close_popup, register_update_visual_dropdown, register_toggle_modal_action_btn
 
 from callback.toast_callback import register_update_toast
 
@@ -64,6 +64,8 @@ register_toggle_new_column_btn(app)
 register_clear_popup_value(app)
 register_close_popup(app)
 register_update_visual_dropdown(app)
+register_toggle_modal(app)
+register_toggle_modal_action_btn(app)
 
 # visualization_callback
 register_update_figure(app)
@@ -72,7 +74,6 @@ register_update_slider(app)
 register_update_playing_status(app)
 register_reset_slider_n_interval(app)
 register_update_play_btn(app)
-register_toggle_modal(app)
 register_update_live_mode(app)
 register_update_live_data(app)
 register_update_atmax(app)
@@ -90,6 +91,7 @@ register_update_marker_name_section_data(app)
 register_update_marker_marked_name(app)
 register_reset_lat_long(app)
 register_toggle_coordinate_apply_btn(app)
+# register_update_last_secondary_click_ts(app)
 
 
 # carousel_callback
