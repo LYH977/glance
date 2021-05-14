@@ -14,7 +14,6 @@ def stores_markup(create_clicks, param, figure, tformat,  initial_frame, dbname,
     last_nano = get_last_timestamp(collection.temp[TIME])
     total_rows = len(collection.data[create_clicks].index)
     color = px.colors.convert_colors_to_same_type(px.colors.sequential.Pinkyl)
-    print(new_col)
     return html.Div([
         dcc.Store(id = {'type': 'my-index', 'index': create_clicks}, data = create_clicks),
         dcc.Store(id = {'type': 'is-animating', 'index': create_clicks}, data = False),

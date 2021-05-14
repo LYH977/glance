@@ -11,7 +11,7 @@ from callback.navbar_callback import register_update_adjust_btn_color, register_
     register_toggle_mask_interface, register_disable_floating_btn
 
 from callback.select_dataset_modal_callback import \
-    register_update_after_upload, register_enable_create_btn, register_toggle_modal, \
+    register_update_after_upload, register_enable_create_btn, \
     register_update_output_form, register_validate_sm_create, register_validate_bc_create, \
     register_validate_d_create, register_validate_ch_create, register_validate_ca_create, register_update_dt_dropdown, \
     register_update_chosen_dropdown, register_update_chosen_tformat, register_update_equation, \
@@ -64,7 +64,7 @@ register_toggle_new_column_btn(app)
 register_clear_popup_value(app)
 register_close_popup(app)
 register_update_visual_dropdown(app)
-register_toggle_modal(app)
+# register_toggle_modal(app)
 register_toggle_modal_action_btn(app)
 
 # visualization_callback

@@ -23,6 +23,7 @@ import io
 import json
 import pandas as pd
 from datetime import  datetime
+import time
 
 
 
@@ -88,7 +89,9 @@ def register_update_after_upload(app):
 
 
         elif input_type == 'create-visual' or 'cancel-create-visual' :
-            return dash.no_update if is_open is True else []
+            # return dash.no_update if is_open is True else []
+            time.sleep(1)
+            return []
 
         raise PreventUpdate
 #############################################################################################################################################
@@ -116,43 +119,44 @@ def register_update_output_form(app):
 #############################################################################################################################################
 
 
-def register_toggle_modal(app):
-    @app.callback(
-        [
-            Output("modal", "is_open"),
-            Output({'type': "last-secondary-click-ts", 'index': ALL}, "data"),
-        ],
-        [
-            Input("open-select-modal", "n_clicks"),
-            Input("cancel-create-visual", "n_clicks"),
-            Input("create-visual", "n_clicks"),
-            Input({'type': "secondary-visual-btn", 'index': ALL}, "n_clicks_timestamp"),
+# def register_toggle_modal(app):
+#     @app.callback(
+#         [
+#             Output("modal", "is_open"),
+#             Output({'type': "last-secondary-click-ts", 'index': ALL}, "data"),
+#         ],
+#         [
+#             Input("open-select-modal", "n_clicks"),
+#             Input("cancel-create-visual", "n_clicks"),
+#             Input("create-visual", "n_clicks"),
+#             Input({'type': "secondary-visual-btn", 'index': ALL}, "n_clicks_timestamp"),
+#
+#         ],
+#         [
+#             State("modal", "is_open"),
+#             State({'type': "last-secondary-click-ts", 'index': ALL}, "data"),
+#
+#         ],
+#         prevent_initial_call=True
+#     )
+#     def toggle_modal (open, close, create, secondary, is_open, last_secondary):
+#         ts = datetime.now().timestamp()
+#         ctx = dash.callback_context
+#         if not ctx.triggered:
+#             raise PreventUpdate
+#         input_type = get_ctx_type(ctx)
+#         if input_type == 'secondary-visual-btn':
+#             for index, (first, second) in enumerate(zip(secondary, last_secondary)):
+#                 if first != second:
+#                     diff_index = get_ctx_index(ctx)
+#                     return True, secondary
+#                     break
+#
+#             raise PreventUpdate
+#         else:
+#             return not is_open, secondary
 
-        ],
-        [
-            State("modal", "is_open"),
-            State({'type': "last-secondary-click-ts", 'index': ALL}, "data"),
-
-        ],
-        prevent_initial_call=True
-    )
-    def toggle_modal (open, close, create, secondary, is_open, last_secondary):
-        ts = datetime.now().timestamp()
-        ctx = dash.callback_context
-        if not ctx.triggered:
-            raise PreventUpdate
-        input_type = get_ctx_type(ctx)
-        print('ctx',ctx.triggered)
-        print(secondary)
-        print(last_secondary)
-        print('-----------')
-        if input_type == 'secondary-visual-btn':
-            # print(('sec', secondary))
-            return False, secondary
-        else:
-            return not is_open, secondary
-
-
+# test = [{'prop_id': '{"index":1,"type":"secondary-visual-btn"}.n_clicks_timestamp', 'value': 1621005249117}, {'prop_id': '{"index":2,"type":"secondary-visual-btn"}.n_clicks_timestamp', 'value': 1621005270133}, {'prop_id': '{"index":3,"type":"secondary-visual-btn"}.n_clicks_timestamp', 'value': None}]
 #############################################################################################################################################
 
 
@@ -161,32 +165,45 @@ def register_toggle_modal_action_btn(app):
         [
             Output("create-visual", "style"),
             Output("add-secondary-area", "children"),
+            Output("modal", "is_open"),
+            Output("modal-head", "children"),
+            Output({'type': "last-secondary-click-ts", 'index': ALL}, "data"),
         ],
         [
             Input("open-select-modal", "n_clicks"),
             Input("cancel-create-visual", "n_clicks"),
             Input("create-visual", "n_clicks"),
-            Input({'type': "secondary-visual-btn", 'index': ALL}, "n_clicks"),
+            Input({'type': "secondary-visual-btn", 'index': ALL}, "n_clicks_timestamp"),
         ],
-        # [State("modal", "is_open"), State('last-param', 'data')],
+        [
+            State("modal", "is_open"),
+            State({'type': "last-secondary-click-ts", 'index': ALL}, "data"),
+
+        ],
         prevent_initial_call=True
     )
-    def toggle_modal_action_btn (open, close, create, secondary):
+    def toggle_modal_action_btn (open, close, create, secondary, is_open, last_secondary):
         ctx = dash.callback_context
         if not ctx.triggered:
             raise PreventUpdate
         input_type = get_ctx_type(ctx)
+
         if input_type == 'secondary-visual-btn':
             style = {'display': 'none'}
-            input_index = get_ctx_index(ctx)
-            return style, secondary_action_btn_markup(input_index)
-        # index = get_ctx_index(ctx)
-        # if input_type == "secondary-visual-btn":
-        #     print('input_type', input_type)
-            # print('index', index)
+            # input_index = get_ctx_index(ctx)
+            for index, (first, second) in enumerate(zip(secondary, last_secondary)):
+                if first != second:
+                    diff_index = get_ctx_index(ctx)
+                    header = f'Add Secondary Layer for Visual {diff_index}'
+                    return style, secondary_action_btn_markup(diff_index), True, header, secondary
+            raise PreventUpdate
+        if input_type == 'cancel-create-visual':
+            header = dash.no_update
         else:
-            style = {'display':'block'}
-            return style, []
+            header = 'Create Visualization'
+        style = {'display':'block'}
+
+        return style, [], not is_open, header, secondary
 #############################################################################################################################################
 
 

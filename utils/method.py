@@ -118,6 +118,10 @@ def get_ctx_type(ctx):
         type = obj
     return type
 
+l = [{'prop_id': '{"index":2,"type":"secondary-visual-btn"}.n_clicks_timestamp', 'value': 1621005270133}, {'prop_id': '{"index":3,"type":"secondary-visual-btn"}.n_clicks_timestamp', 'value': 1621005297733}]
+
+
+
 
 def get_ctx_index(ctx):
     obj = json.loads(ctx.triggered[0]['prop_id'].split('.')[0])

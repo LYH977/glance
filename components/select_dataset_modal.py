@@ -29,7 +29,7 @@ modal = html.Div(
         dcc.Store(id='chosen-dropdown', data= None),
         dbc.Modal(
             [
-                dbc.ModalHeader("Create New Visualization"),
+                dbc.ModalHeader("Create New Visualization", id = 'modal-head'),
                 dbc.ModalBody(html.Div([
                     html.Div(id='dataset-window'),
                     html.Div(id='dataset-portal'),
@@ -292,7 +292,7 @@ def operand_container_markup(type, id):
 def secondary_action_btn_markup(create_click):
     # print('received', create_click)
     return dbc.Button(
-        'create_click',
+        'Add',
         id = {'type':'secondary-action-btn', 'index':create_click},
         className="ml-auto",
         color="success",
