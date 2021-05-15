@@ -8,7 +8,7 @@ from dash.exceptions import PreventUpdate
 
 from database.dbConfig import client
 from utils.constant import FIGURE_OPTION, FIGURE_PARAM, CREATE_BTN_ID, SM_PARAM, SG_PARAM, D_PARAM, CA_PARAM, CH_PARAM, \
-    BC_PARAM, SCATTER_MAP,  DENSITY, CHOROPLETH, CAROUSEL, BAR_CHART_RACE, TIME_FORMAT, YEAR
+    BC_PARAM, SCATTER_MAP, DENSITY, CHOROPLETH, CAROUSEL, BAR_CHART_RACE, TIME_FORMAT, YEAR, SECONDARY_FIGURE_OPTION
 from utils import  collection
 from utils.method import unpack_parameter
 import base64
@@ -62,16 +62,17 @@ modal = html.Div(
     # style={    'position':'relative', 'width':'inherit', 'height':'inherit'}
 )
 
-def dataset_portal_markup(filename):
+def dataset_portal_markup(filename, is_secondary):
     return html.Div([
 
-        html.Div(id='data-snapshot',children=snapshot_markup(filename)),
+        html.Div(id='data-snapshot', children=snapshot_markup(filename, is_secondary)),
         html.Div(id='output-form'),
     ])
 
 
 
-def snapshot_markup (filename):
+def snapshot_markup (filename, is_secondary):
+    select_opt = SECONDARY_FIGURE_OPTION if is_secondary else FIGURE_OPTION
     return html.Div([
         html.Div([
             html.H6(f'Filename: {filename}'),
@@ -143,7 +144,7 @@ def snapshot_markup (filename):
                 dbc.Label("Visualization type", html_for="dropdown"),
                 dbc.Select(
                     id="visual-type",
-                    options=[{"label": i, "value": i} for i in FIGURE_OPTION],
+                    options=[{"label": i, "value": i} for i in select_opt],
                 )
             ]
         ),
@@ -152,12 +153,13 @@ def snapshot_markup (filename):
 
 
 
-def output_form_markup(type):
+def output_form_markup(type, is_secondary):
     parameter={}
     for p_id, p_info in FIGURE_PARAM[type].items():
         parameter[p_id] = p_info['value']
     options = [ parameter_option(i, j, k) for i,j,k in unpack_parameter(FIGURE_PARAM[type]) ]
-    options.append(time_format_option())
+    if not is_secondary:
+        options.append(time_format_option())
     return html.Div([
         dcc.Store(id=SM_PARAM, data={'is_filled': False, 'parameter': parameter if type == SCATTER_MAP else None}),
         # dcc.Store(id=SG_PARAM, data={'is_filled': False, 'parameter': parameter if type == SCATTER_GEO else None}),
@@ -212,7 +214,6 @@ def time_format_option():
                             value=YEAR
                         )
                     ],
-                    # className="mr-3",
                     style={'width': '50%', 'padding':'5px'}
         )
 
@@ -292,9 +293,10 @@ def operand_container_markup(type, id):
 def secondary_action_btn_markup(create_click):
     # print('received', create_click)
     return dbc.Button(
-        'Add',
+        'Create',
         id = {'type':'secondary-action-btn', 'index':create_click},
         className="ml-auto",
         color="success",
-        n_clicks= 0
+        n_clicks= 0,
+        disabled= True
     )

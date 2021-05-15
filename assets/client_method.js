@@ -150,15 +150,28 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
 
             input_type = get_ctx_type(triggered)
             if(input_type == 'celery-data'){
+//                console.log('celery-data')
+                if ( !(slider in cdata)){
+                    throw window.dash_clientside.PreventUpdate
+                }
                 notif = (type.length > 0) ? cdata[slider][type]['data'] : ''
                 return [notif, cdata[slider][MAXIMUM]['count'], cdata[slider][MINIMUM]['count'] ]
             }
 
             else if (input_type == 'anim-slider' && cdata ){
+//                console.log(cdata)
+//                console.log(slider)
+                if ( !(slider in cdata)){
+                    throw window.dash_clientside.PreventUpdate
+                }
                 notif = (type.length > 0) ? cdata[slider][type]['data'] : ''
                 return [notif, cdata[slider][MAXIMUM]['count'], cdata[slider][MINIMUM]['count']]
             }
             else if ( input_type == 'last-notif-click'){
+//                console.log('last-notif-click')
+                if ( !(slider in cdata)){
+                    throw window.dash_clientside.PreventUpdate
+                }
                 notif = (type.length > 0) ? cdata[slider][type]['data'] : ''
                 return [notif, cdata[slider][MAXIMUM]['count'], cdata[slider][MINIMUM]['count']]
             }

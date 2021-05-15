@@ -66,18 +66,20 @@ def append_numeric_col_list(info, col):
 def register_update_after_upload(app):
     @app.callback(Output('dataset-portal', 'children'),
                   [
-                      Input("open-select-modal", "n_clicks"),
-                      Input("cancel-create-visual", "n_clicks"),
-                      Input("create-visual", "n_clicks"),
+                      # Input("open-select-modal", "n_clicks"),
+                      # Input("cancel-create-visual", "n_clicks"),
+                      # Input("create-visual", "n_clicks"),
+                      Input("modal", "is_open"),
                       Input('chosen-dropdown', 'data')
                   ],
-                  [State("modal", "is_open")],
+                  State("add-secondary-area", "children"),
+
                   prevent_initial_call=True
     )
-    def update_after_upload(open, close, create, measurement, is_open):
+    def update_after_upload( is_open, measurement, secondary):
         ctx = dash.callback_context
         if not ctx.triggered:
-            input_type = 'No input yet'
+            raise PreventUpdate
         else:
             input_type = ctx.triggered[0]['prop_id'].split('.')[0]
         if input_type == 'chosen-dropdown':
@@ -85,36 +87,36 @@ def register_update_after_upload(app):
                 collection.temp = select_query(measurement)
                 if collection.temp is not None:
                     collection.temp['time'] = collection.temp.index.map(lambda x: str(x).split('+')[0])
-                return dataset_portal_markup(measurement)
+                is_secondary = False if secondary is None else True
+                return dataset_portal_markup(measurement, is_secondary)
 
 
-        elif input_type == 'create-visual' or 'cancel-create-visual' :
+        elif input_type == 'modal' :
             # return dash.no_update if is_open is True else []
-            time.sleep(1)
-            return []
+            # time.sleep(1)
+            return None
 
         raise PreventUpdate
 #############################################################################################################################################
 
 
 def register_update_output_form(app):
-    @app.callback(Output('output-form', 'children'),
-                  Input("visual-type", "value"),
-                  prevent_initial_call=True
+    @app.callback(
+        Output('output-form', 'children'),
+        Input("visual-type", "value"),
+        State("add-secondary-area", "children"),
+        prevent_initial_call=True
     )
-    def update_output_form(type):
+    def update_output_form(type, secondary):
         ctx = dash.callback_context
         if not ctx.triggered:
             input_type = 'No input yet'
         else:
             input_type = ctx.triggered[0]['prop_id'].split('.')[0]
         if input_type == 'visual-type' and type is not None:
-            return output_form_markup(type)
-        # elif input_type == 'close' or input_type == 'create':
-        #     return None
-        else:
-            return None
-            # raise PreventUpdate
+            is_secondary = False if secondary is None else True
+            return output_form_markup(type, is_secondary)
+        return None
 
 #############################################################################################################################################
 
@@ -197,13 +199,10 @@ def register_toggle_modal_action_btn(app):
                     header = f'Add Secondary Layer for Visual {diff_index}'
                     return style, secondary_action_btn_markup(diff_index), True, header, secondary
             raise PreventUpdate
-        if input_type == 'cancel-create-visual':
-            header = dash.no_update
-        else:
-            header = 'Create Visualization'
-        style = {'display':'block'}
 
-        return style, [], not is_open, header, secondary
+        header = dash.no_update if input_type == 'cancel-create-visual' else 'Create Visualization'
+        style = {'display':'block'}
+        return style, None, not is_open, header, secondary
 #############################################################################################################################################
 
 
@@ -211,7 +210,8 @@ def register_enable_create_btn(app):
     @app.callback(
         [
             Output('create-visual', 'disabled'),
-            Output('last-param', 'data')
+            Output('last-param', 'data'),
+            Output({'type': 'secondary-action-btn', 'index': ALL}, 'disabled')
         ] ,
         [
             Input(SM_PARAM,'data'),
@@ -222,23 +222,25 @@ def register_enable_create_btn(app):
             Input(BC_PARAM, 'data'),
             Input('create-visual', 'n_clicks'),
         ],
-        State('visual-type', 'value'),
+        [
+            State('visual-type', 'value'),
+            State({'type': 'secondary-action-btn', 'index': ALL}, 'disabled')
+        ],
         prevent_initial_call=True
     )
-    def enable_create_btn (sm,  d, ch, ca, bc, create, vtype):
+    def enable_create_btn (sm,  d, ch, ca, bc, create, vtype, secondary):
         ctx = dash.callback_context
         if not ctx.triggered:
-            input_type = 'No input yet'
-            input_value=None
+            raise PreventUpdate
         else:
             input_type = get_ctx_type(ctx)
             input_value = get_ctx_value(ctx)
 
         if input_type == 'create-visual':
-            return True, dash.no_update
+            return True, dash.no_update, [True for i in secondary]
         if input_value['parameter'] is not None and input_value['is_filled'] is True:
             data = {'vtype': vtype, 'parameter':input_value['parameter'] }
-            return False, data
+            return False, data, [False for i in secondary]
         raise PreventUpdate
 #############################################################################################################################################
 
@@ -256,26 +258,30 @@ def register_update_dt_dropdown(app):
     @app.callback(
         Output('dataset-window', 'children') ,
         [
-            Input('open-select-modal','n_clicks'),
-            Input('cancel-create-visual','n_clicks'),
-            Input('create-visual','n_clicks')
+            # Input('open-select-modal','n_clicks'),
+            # Input('cancel-create-visual','n_clicks'),
+            # Input('create-visual','n_clicks'),
+            Input("modal", "is_open")
         ],
         prevent_initial_call=True
     )
-    def update_dt_dropdown (open, close,create):
-        ctx = dash.callback_context
-        if not ctx.triggered:
-            input_type = 'No input yet'
-            input_value=None
-        else:
-            input_type = get_ctx_type(ctx)
-            input_value = get_ctx_value(ctx)
-        if input_type == 'open-select-modal':
+    def update_dt_dropdown (is_open):
+        # ctx = dash.callback_context
+        # if not ctx.triggered:
+        #     input_type = 'No input yet'
+        #     input_value=None
+        # else:
+        #     input_type = get_ctx_type(ctx)
+        #     input_value = get_ctx_value(ctx)
+        # if input_type == 'open-select-modal':
+        #     return dropdown_markup(client.get_list_measurements())
+        # elif input_type == 'cancel-create-visual' or 'create-visual':
+        #     return None
+        # else:
+        #     raise PreventUpdate
+        if is_open:
             return dropdown_markup(client.get_list_measurements())
-        elif input_type == 'cancel-create-visual' or 'create-visual':
-            return None
-        else:
-            raise PreventUpdate
+        return None
 
 #############################################################################################################################################
 

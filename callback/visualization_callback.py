@@ -21,7 +21,7 @@ from utils.constant import SCATTER_MAP, DENSITY, CHOROPLETH, BAR_CHART_RACE, \
 
 MAPBOX_GEOCODER = MapBox(os.environ['MAP_TOKEN'])
 
-current_ind = 0
+current_ind = '0'
 
 def handleOutOfRangeNotif(celery, slider):
     length = len(celery)
@@ -178,11 +178,12 @@ def register_update_playing_status(app):
         [
             State({'type': 'is-animating', 'index': MATCH}, 'data'),
             State({'type': 'interval', 'index': MATCH}, 'n_intervals'),
+            State({'type': 'back-buffer', 'index': MATCH}, 'data'),
 
         ],
         prevent_initial_call=True
     )
-    def update_playing_status(play_clicked, s_value, live, playing, interval):
+    def update_playing_status(play_clicked, s_value, live, playing, interval, buffer):
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
@@ -190,16 +191,14 @@ def register_update_playing_status(app):
         else:
             input_type = get_ctx_type(ctx)
             input_index = get_ctx_index(ctx)
-        df_frame = collection.data[input_index][FRAME].unique()
-        maxValue = df_frame.shape[0] - 1
+
         if input_type == 'anim-slider':  # input from slider
+            df_frame = collection.data[input_index][FRAME].unique()
+            maxValue = df_frame.shape[0] - 1
             label = df_frame[s_value]
 
-            # if playing is True and s_value != interval:
-            #     print('1st condition true: ', s_value, ' and ',interval)
-            # if  s_value == maxValue:
-            #     print('2nd condition true')
-
+            # maxValue = len(buffer['frames']) -1
+            # label = buffer['frames'][s_value]['name']
             return \
                 False if playing is True and s_value != interval or s_value == maxValue else dash.no_update, \
                 label
@@ -222,11 +221,15 @@ def register_reset_slider_n_interval(app):
     @app.callback(
         Output({'type': 'interval', 'index': MATCH}, 'n_intervals'),
         Input({'type': 'play-btn', 'index': MATCH}, 'n_clicks'),
-        State({'type': 'anim-slider', 'index': MATCH}, 'value'),
+        [
+            State({'type': 'anim-slider', 'index': MATCH}, 'value'),
+            State({'type': 'back-buffer', 'index': MATCH}, 'data'),
+
+        ],
 
         prevent_initial_call=True
     )
-    def reset_slider_n_interval(play, slider):
+    def reset_slider_n_interval(play, slider, buffer):
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
@@ -236,6 +239,8 @@ def register_reset_slider_n_interval(app):
             input_index = get_ctx_index(ctx)
         df_frame = collection.data[input_index][FRAME].unique()
         maxValue = df_frame.shape[0] - 1
+        # maxValue = len(buffer['frames']) - 1
+
         return slider if slider != maxValue else 0
 #############################################################################################################################################
 
@@ -283,6 +288,7 @@ def register_update_live_data(app):
             Input({'type': 'mapbox-type', 'index': MATCH}, 'value'),
             Input({'type': 'chosen-color-scale', 'index': MATCH}, 'data'),
             Input({'type': 'marker-data', 'index': MATCH}, 'data'),
+            # Input({'type': 'secondary-action-btn', 'index': MATCH}, 'data'),
 
         ],
         [
@@ -296,7 +302,8 @@ def register_update_live_data(app):
         ],
         prevent_initial_call=True
     )
-    def update_live_data(live, legend,mapbox, colorscale, marker, ts, format,  param, dbname, buffer, info):
+    def update_live_data(live, legend, mapbox, colorscale, marker,  ts, format,  param, dbname, buffer, info):
+        print(ts)
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
@@ -306,7 +313,7 @@ def register_update_live_data(app):
             input_index = get_ctx_index(ctx)
         if input_type =='live-interval' and collection.live_processing[input_index] is False:
             collection.live_processing[input_index] = True
-            result = select_query(dbname, 'where time >{}'.format(ts[current_ind]))
+            result = select_query(dbname['0'], 'where time >{}'.format(ts))
             if result is not None:
                 result[TIME] = result.index.map(lambda x: str(x).split('+')[0])
                 result[FRAME] = result[TIME].map(lambda x: formatted_time_value(x, format))
@@ -319,7 +326,7 @@ def register_update_live_data(app):
                 last_nano = get_last_timestamp(result[TIME])
                 collection.data[input_index] = collection.data[input_index].append(result, ignore_index=True)
                 fig = create_figure(collection.data[input_index], param[current_ind]['parameter'], param[current_ind]['vtype'])
-                return store_template(last_nano), fig
+                return last_nano, fig
             collection.live_processing[input_index] = False
             raise PreventUpdate
 
