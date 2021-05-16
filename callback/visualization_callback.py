@@ -16,7 +16,7 @@ from utils import collection
 from utils.collection import redis_instance
 from utils.export.export_data import export_mp4
 from utils.method import get_ctx_type, get_ctx_index, formatted_time_value, \
-    select_query, get_last_timestamp, insert_marker, reset_marker_trace, store_template
+    select_query, get_last_timestamp, insert_marker, reset_marker_trace, store_template, merge_frames
 from utils.constant import SCATTER_MAP, DENSITY, CHOROPLETH, BAR_CHART_RACE, \
     FRAME, TIME, MAXIMUM, MINIMUM
 
@@ -115,15 +115,17 @@ def register_update_slider(app):
         ],
         [
             Input({'type': 'interval', 'index': MATCH}, 'n_intervals'),
-            Input({'type': 'last-timestamp', 'index': MATCH}, 'data')
+            Input({'type': 'last-timestamp', 'index': MATCH}, 'data'),
+            Input({'type': 'secondary-mode', 'index': MATCH}, 'data')
         ],
         [
             State({'type': 'is-animating', 'index': MATCH}, 'data'),
             State({'type': 'at-max', 'index': MATCH}, 'data'),
+            State({'type': 'back-buffer', 'index': MATCH}, 'data'),
         ],
         prevent_initial_call=True
     )
-    def update_slider(value, ts, animate, atmax):
+    def update_slider(value, ts, mode, animate, atmax, buffer):
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
@@ -142,6 +144,11 @@ def register_update_slider(app):
             maxValue = df_frame.shape[0] - 1
             collection.live_processing[input_index] = False
             return maxValue if atmax else dash.no_update, maxValue, maxValue
+
+        elif input_type == 'secondary-mode' and mode:
+            maxValue = len(buffer['frames']) - 1
+            # label = buffer['frames'][s_value]['name']
+            return 0, maxValue, maxValue
 
 
 #############################################################################################################################################
@@ -283,6 +290,7 @@ def register_update_live_data(app):
         [
             Output({'type': 'last-timestamp', 'index': MATCH}, 'data'),
             Output({'type': 'back-buffer', 'index': MATCH}, 'data'),
+            Output({'type': 'secondary-mode', 'index': MATCH}, 'data'),
         ],
         [
             Input({'type': 'live-interval', 'index': MATCH}, 'n_intervals'),
@@ -290,7 +298,7 @@ def register_update_live_data(app):
             Input({'type': 'mapbox-type', 'index': MATCH}, 'value'),
             Input({'type': 'chosen-color-scale', 'index': MATCH}, 'data'),
             Input({'type': 'marker-data', 'index': MATCH}, 'data'),
-            # Input({'type': 'secondary-action-btn', 'index': MATCH}, 'data'),
+            Input({'type': 'secondary-data', 'index': MATCH}, 'data'),
 
         ],
         [
@@ -304,7 +312,7 @@ def register_update_live_data(app):
         ],
         prevent_initial_call=True
     )
-    def update_live_data(live, legend, mapbox, colorscale, marker,  ts, format,  param, dbname, buffer, info):
+    def update_live_data(live, legend, mapbox, colorscale, marker, secondary,  ts, format,  param, dbname, buffer, info):
         # print(ts)
         ctx = dash.callback_context
         input_index = None
@@ -329,7 +337,7 @@ def register_update_live_data(app):
                 last_nano = get_last_timestamp(result[TIME])
                 collection.data[input_index] = collection.data[input_index].append(result, ignore_index=True)
                 fig = create_figure(collection.data[input_index], param[current_ind]['parameter'], param[current_ind]['vtype'])
-                return last_nano, fig
+                return last_nano, fig, dash.no_update
             collection.live_processing[input_index] = False
             raise PreventUpdate
 
@@ -347,24 +355,34 @@ def register_update_live_data(app):
                 fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
                 # fig2['layout']['paper_bgcolor'] = '#fff'
 
-            return dash.no_update,fig2
+            return dash.no_update,fig2, dash.no_update
 
         elif input_type == 'mapbox-type':
             fig2 = buffer
             fig2['layout']['mapbox']['style'] = mapbox
-            return dash.no_update, fig2
+            return dash.no_update, fig2, dash.no_update
 
         elif input_type == 'chosen-color-scale':
             fig2 = buffer
             fig2['layout']['coloraxis']['colorscale'] = colorscale[current_ind]['value']
 
             # fig2['data'][1] = insert_marker()
-            return dash.no_update, fig2
+            return dash.no_update, fig2, dash.no_update
 
         elif input_type == 'marker-data':
             fig2 = buffer
             fig2['data'][1] = marker
-            return dash.no_update, fig2
+            return dash.no_update, fig2, dash.no_update
+
+        elif input_type == 'secondary-data':
+            fig2 = buffer
+            fig2['data'][2] = secondary['frames'][0]['data'][0]
+            fig2['layout']['coloraxis2'] = secondary['coloraxis']
+            fig2['layout']['coloraxis']['colorbar']['y'] = 0.496
+            fig2['layout']['coloraxis']['colorbar']['len'] = 0.505
+            fig2['frames'] = merge_frames(fig2['frames'], secondary['frames'])
+            print('sort', fig2['frames'])
+            return dash.no_update, fig2, True
 
         raise PreventUpdate
 
@@ -831,11 +849,11 @@ def register_update_secondary_frames(app):
             configure_coloraxis(figure)
             figure = figure.to_dict()
             # frames = []
-            if param['vtype'] == DENSITY:
-                for f in figure['frames']:
+            for f in figure['frames']:
+                f['data'][0]['secondary'] = True
+                if param['vtype'] == DENSITY:
                     f['data'][0]['coloraxis'] = 'coloraxis2'
-            else:
-                for f in figure['frames']:
+                else:
                     f['data'][0]['marker']['coloraxis'] = 'coloraxis2'
 
             secondary_data = {
@@ -844,6 +862,6 @@ def register_update_secondary_frames(app):
             }
             secondary_data['coloraxis']['colorbar']['y'] = 0.01
             secondary_data['coloraxis']['colorbar']['len'] = 0.495
-            print(secondary_data)
+            # print(secondary_data)
             return secondary_data
         raise PreventUpdate

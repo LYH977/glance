@@ -176,6 +176,7 @@ def register_toggle_modal_action_btn(app):
             Input("cancel-create-visual", "n_clicks"),
             Input("create-visual", "n_clicks"),
             Input({'type': "secondary-visual-btn", 'index': ALL}, "n_clicks_timestamp"),
+            Input({'type': 'secondary-action-btn', 'index': ALL}, 'n_clicks'),
         ],
         [
             State("modal", "is_open"),
@@ -184,7 +185,7 @@ def register_toggle_modal_action_btn(app):
         ],
         prevent_initial_call=True
     )
-    def toggle_modal_action_btn (open, close, create, secondary, is_open, last_secondary):
+    def toggle_modal_action_btn (open, close, create, secondary_visual,secondary_action,  is_open, last_secondary):
         ctx = dash.callback_context
         if not ctx.triggered:
             raise PreventUpdate
@@ -193,16 +194,18 @@ def register_toggle_modal_action_btn(app):
         if input_type == 'secondary-visual-btn':
             style = {'display': 'none'}
             # input_index = get_ctx_index(ctx)
-            for index, (first, second) in enumerate(zip(secondary, last_secondary)):
+            for index, (first, second) in enumerate(zip(secondary_visual, last_secondary)):
                 if first != second:
                     diff_index = get_ctx_index(ctx)
                     header = f'Add Secondary Layer for Visual {diff_index}'
-                    return style, secondary_action_btn_markup(diff_index), True, header, secondary
+                    return style, secondary_action_btn_markup(diff_index), True, header, secondary_visual
             raise PreventUpdate
+        elif input_type == 'secondary-action-btn':
+            return dash.no_update, dash.no_update, False, dash.no_update, secondary_visual
 
         header = dash.no_update if input_type == 'cancel-create-visual' else 'Create Visualization'
         style = {'display':'block'}
-        return style, None, not is_open, header, secondary
+        return style, None, not is_open, header, secondary_visual
 #############################################################################################################################################
 
 

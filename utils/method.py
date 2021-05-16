@@ -144,8 +144,24 @@ def unpack_parameter(param):
         label.append(p_info['label'])
         id.append(p_id)
         multi.append(p_info['multi'])
-
-
     return zip(label, id, multi)
+
+
+def merge_frames(list1, list2):
+    merged_list = list1 + list2
+    sorted_list = sorted(merged_list, key = lambda i: i['name'])
+    unwanted_index = []
+    for index in range(0, len(sorted_list)):
+        print(index)
+        if index >= len(sorted_list) -1:
+            break
+        if sorted_list[index]['name'] == sorted_list[index+1]['name']:
+            sorted_list[index]['data'].append(sorted_list[index+1]['data'][0])
+            unwanted_index.insert(0, index+1) # prepend
+    for index in unwanted_index:
+        sorted_list.pop(index)
+
+    return sorted_list
+
 
 

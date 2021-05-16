@@ -25,6 +25,9 @@ const get_ctx_value = (ctx) => { return ctx['value'] }
 
 const change_frame = (ftype, fig2, value) => {
     fig2['data'][0] = fig2['frames'][value]['data'][0]
+    if(fig2['frames'][value]['data'].length == 2){
+        fig2['data'][2] = fig2['frames'][value]['data'][1]
+    }
     fig2['layout']['title']['text'] = fig2['frames'][value]['name']
 }
 
@@ -139,7 +142,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 fig2['layout']['coloraxis2'] = secondary['coloraxis']
                 fig2['layout']['coloraxis']['colorbar']['y'] = 0.496
                 fig2['layout']['coloraxis']['colorbar']['len'] = 0.505
-                console.log(fig2)
+
                 change_frame(param[current_ind]['vtype'], fig2, value)
                 return fig2
             }
