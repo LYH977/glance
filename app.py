@@ -27,7 +27,8 @@ from callback.visualization_callback import \
     register_update_last_celery_key, register_export_visual, register_handle_export_btn_click, \
     register_reset_export_interval, register_reset_slider_n_interval, register_update_color_scale, \
     register_update_marker_namelist, register_update_marker_data, register_update_marker_marked_name, \
-    register_update_marker_name_section_data, register_reset_lat_long, register_toggle_coordinate_apply_btn
+    register_update_marker_name_section_data, register_reset_lat_long, register_toggle_coordinate_apply_btn, \
+    register_update_secondary_frames
 
 # meta_tags are required for the app layout to be mobile responsive
 from callback.upload_modal_callback import register_update_preview, register_update_datetime_modifier, \
@@ -64,6 +65,7 @@ register_toggle_new_column_btn(app)
 register_clear_popup_value(app)
 register_close_popup(app)
 register_update_visual_dropdown(app)
+
 # register_toggle_modal(app)
 register_toggle_modal_action_btn(app)
 
@@ -92,7 +94,7 @@ register_update_marker_marked_name(app)
 register_reset_lat_long(app)
 register_toggle_coordinate_apply_btn(app)
 # register_update_last_secondary_click_ts(app)
-
+register_update_secondary_frames(app)
 
 # carousel_callback
 register_display_image(app)

@@ -5,7 +5,8 @@ from utils.constant import SCATTER_MAP_CONSTANT, LATITUDE, LONGITUDE, SIZE, COLO
      SCATTER_MAP
 
 
-def create_scattermap(data, parameter):
+def create_scattermap(data, parameter, toConfigure ):
+    # px.colors.sequential.
     convert_to_float(data, parameter, [
         SCATTER_MAP_CONSTANT[LATITUDE],
         SCATTER_MAP_CONSTANT[LONGITUDE]
@@ -27,7 +28,9 @@ def create_scattermap(data, parameter):
         # hover_data=['Active', 'Confirmed']
         # custom_data=['Date']
     )
-    configure_fig(fig, SCATTER_MAP, True)
+    # print(fig)
+    if toConfigure:
+        configure_fig(fig, SCATTER_MAP, True)
     # print(fig)
 
     return fig

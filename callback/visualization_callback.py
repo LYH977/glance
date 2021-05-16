@@ -8,6 +8,7 @@ import plotly.express as px
 import os
 from geopy.geocoders import MapBox
 import task
+from components.visual.figures.configuration import configure_coloraxis
 from components.visual.figures.figure_method import create_figure
 from components.visual.notifications.collapse import collapse_markup
 from components.visual.utils.marker import namelist_item_markup, namelist_item_not_found_markup
@@ -71,6 +72,7 @@ def register_update_figure(app):
             Input({'type': 'mapbox-type', 'index': MATCH}, 'value'),
             Input({'type': 'chosen-color-scale', 'index': MATCH}, 'data'),
             Input({'type': 'marker-data', 'index': MATCH}, 'data'),
+            Input({'type': 'secondary-data', 'index': MATCH}, 'data')
 
         ],
         [
@@ -193,12 +195,12 @@ def register_update_playing_status(app):
             input_index = get_ctx_index(ctx)
 
         if input_type == 'anim-slider':  # input from slider
-            df_frame = collection.data[input_index][FRAME].unique()
-            maxValue = df_frame.shape[0] - 1
-            label = df_frame[s_value]
+            # df_frame = collection.data[input_index][FRAME].unique()
+            # maxValue = df_frame.shape[0] - 1
+            # label = df_frame[s_value]
 
-            # maxValue = len(buffer['frames']) -1
-            # label = buffer['frames'][s_value]['name']
+            maxValue = len(buffer['frames']) -1
+            label = buffer['frames'][s_value]['name']
             return \
                 False if playing is True and s_value != interval or s_value == maxValue else dash.no_update, \
                 label
@@ -230,16 +232,16 @@ def register_reset_slider_n_interval(app):
         prevent_initial_call=True
     )
     def reset_slider_n_interval(play, slider, buffer):
-        ctx = dash.callback_context
-        input_index = None
-        if not ctx.triggered:
-            input_type = 'No input yet'
-        else:
-            input_type = get_ctx_type(ctx)
-            input_index = get_ctx_index(ctx)
-        df_frame = collection.data[input_index][FRAME].unique()
-        maxValue = df_frame.shape[0] - 1
-        # maxValue = len(buffer['frames']) - 1
+        # ctx = dash.callback_context
+        # input_index = None
+        # if not ctx.triggered:
+        #     input_type = 'No input yet'
+        # else:
+        #     input_type = get_ctx_type(ctx)
+        #     input_index = get_ctx_index(ctx)
+        # df_frame = collection.data[input_index][FRAME].unique()
+        # maxValue = df_frame.shape[0] - 1
+        maxValue = len(buffer['frames']) - 1
 
         return slider if slider != maxValue else 0
 #############################################################################################################################################
@@ -303,7 +305,7 @@ def register_update_live_data(app):
         prevent_initial_call=True
     )
     def update_live_data(live, legend, mapbox, colorscale, marker,  ts, format,  param, dbname, buffer, info):
-        print(ts)
+        # print(ts)
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
@@ -311,6 +313,7 @@ def register_update_live_data(app):
         else:
             input_type = get_ctx_type(ctx)
             input_index = get_ctx_index(ctx)
+
         if input_type =='live-interval' and collection.live_processing[input_index] is False:
             collection.live_processing[input_index] = True
             result = select_query(dbname['0'], 'where time >{}'.format(ts))
@@ -800,13 +803,47 @@ def register_toggle_coordinate_apply_btn(app):
 
 # ############################################################################################################################################
 
+# def update_coloraxis_info(vtype, figure):
+#     if vtype == DENSITY:
+#         for f in figure['frames']:
+#             f['data'][0]['coloraxis'] = 'coloraxis2'
+#     else:
+#         for f in figure['frames']:
+#             f['data'][0]['marker']['coloraxis'] = 'coloraxis2'
 
+def register_update_secondary_frames(app):
+    @app.callback(
+        Output({'type': 'secondary-data', 'index': MATCH}, 'data'),
+        Input({'type': 'secondary-action-btn', 'index': MATCH}, 'n_clicks'),
+        [
+            State('last-param', 'data'),
+            State({'type': 'frame-format', 'index': MATCH}, 'data'),
+            State('chosen-dropdown', 'data'),
+        ],
+        prevent_initial_call=True
+    )
+    def update_secondary_frames(click, param, tformat, dbname):
+        if click >0:
+            collection.temp = collection.temp.dropna()
+            collection.temp.reset_index(drop=True, inplace=True)
+            collection.temp[FRAME] = collection.temp[TIME].map(lambda x: formatted_time_value(x, tformat))
+            figure = create_figure(collection.temp, param['parameter'], param['vtype'], False)
+            configure_coloraxis(figure)
+            figure = figure.to_dict()
+            # frames = []
+            if param['vtype'] == DENSITY:
+                for f in figure['frames']:
+                    f['data'][0]['coloraxis'] = 'coloraxis2'
+            else:
+                for f in figure['frames']:
+                    f['data'][0]['marker']['coloraxis'] = 'coloraxis2'
 
-# def register_update_last_secondary_click_ts(app):
-#     @app.callback(
-#         Output({'type': 'last-secondary-click-ts', 'index': MATCH}, 'n_clicks_timestamp'),
-#         Input({'type': 'secondary-visual-btn', 'index': MATCH}, 'n_clicks_timestamp'),
-#         prevent_initial_call=True
-#     )
-#     def update_last_secondary_click_ts(ts):
-#         return ts
+            secondary_data = {
+                'frames': figure['frames'],
+                'coloraxis': figure['layout']['coloraxis']
+            }
+            secondary_data['coloraxis']['colorbar']['y'] = 0.01
+            secondary_data['coloraxis']['colorbar']['len'] = 0.495
+            print(secondary_data)
+            return secondary_data
+        raise PreventUpdate

@@ -3,14 +3,7 @@ import plotly.graph_objects as go
 
 from utils.constant import BAR_CHART_RACE
 
-
-def configure_fig(fig, type, add_trace = False):
-    fig.layout.sliders[0].visible = False
-    fig.layout.updatemenus[0].visible = False
-    fig.layout.updatemenus[0].buttons[0].args[1]["frame"]["duration"] = 200
-    fig.layout.updatemenus[0].buttons[0].args[1]["transition"]["duration"] = 200
-    fig.layout.updatemenus[0].showactive = True
-
+def configure_coloraxis(fig):
     fig.layout.coloraxis.colorbar.len = 0.99 #0.99
     fig.layout.coloraxis.colorbar.xpad = 5
     fig.layout.coloraxis.colorbar.x = -0.067
@@ -19,20 +12,37 @@ def configure_fig(fig, type, add_trace = False):
     fig.layout.coloraxis.colorbar.tickangle = -90
     fig.layout.coloraxis.colorbar.minexponent = 0
     fig.layout.coloraxis.colorbar.ticks = 'inside'
-
-
-    # fig.layout.coloraxis.colorbar.len = 0.5
-    # fig.layout.coloraxis.colorbar.len = 0.4
     fig.layout.coloraxis.colorbar.yanchor = 'bottom'
-    # fig.layout.coloraxis.colorbar.xpad = 10
-    # fig.layout.coloraxis.colorbar.x = 0
     fig.layout.coloraxis.colorbar.thickness = 7
     fig.layout.paper_bgcolor = '#fff'
-
     #white theme legend
     fig.layout.coloraxis.colorbar.bgcolor = 'rgba(255,255,255,1)' #'rgba(0,0,0,0.5)'
     fig.layout.coloraxis.colorbar.title.font.color = 'rgba(0,0,0,1)' #'rgba(255,255,255,1)'
     fig.layout.coloraxis.colorbar.tickfont.color = 'rgba(0,0,0,1)' #'rgba(255,255,255,1)'
+
+def configure_fig(fig, type, add_trace = False):
+    fig.layout.sliders[0].visible = False
+    fig.layout.updatemenus[0].visible = False
+    fig.layout.updatemenus[0].buttons[0].args[1]["frame"]["duration"] = 200
+    fig.layout.updatemenus[0].buttons[0].args[1]["transition"]["duration"] = 200
+    fig.layout.updatemenus[0].showactive = True
+
+    # fig.layout.coloraxis.colorbar.len = 0.99 #0.99
+    # fig.layout.coloraxis.colorbar.xpad = 5
+    # fig.layout.coloraxis.colorbar.x = -0.067
+    # fig.layout.coloraxis.colorbar.y = 0.01
+    # fig.layout.coloraxis.colorbar.title.side = 'right'
+    # fig.layout.coloraxis.colorbar.tickangle = -90
+    # fig.layout.coloraxis.colorbar.minexponent = 0
+    # fig.layout.coloraxis.colorbar.ticks = 'inside'
+    # fig.layout.coloraxis.colorbar.yanchor = 'bottom'
+    # fig.layout.coloraxis.colorbar.thickness = 7
+    # fig.layout.paper_bgcolor = '#fff'
+    # #white theme legend
+    # fig.layout.coloraxis.colorbar.bgcolor = 'rgba(255,255,255,1)' #'rgba(0,0,0,0.5)'
+    # fig.layout.coloraxis.colorbar.title.font.color = 'rgba(0,0,0,1)' #'rgba(255,255,255,1)'
+    # fig.layout.coloraxis.colorbar.tickfont.color = 'rgba(0,0,0,1)' #'rgba(255,255,255,1)'
+    configure_coloraxis(fig)
 
     if type != BAR_CHART_RACE: #other than bar chart race
         fig.layout.margin.t = 0
@@ -60,19 +70,10 @@ def configure_fig(fig, type, add_trace = False):
             mode='markers',
             marker={'size': 0},
         ))
-    #     test = go.Figure(go.Scattermapbox(
-    # mode = "markers+text+lines",
-    # lon = [-75, -80, -50], lat = [45, 20, -20],
-    # marker = {'size': 20, 'symbol': ["bus", "harbor", "airport"]},
-    # text = ["Bus", "Harbor", "airport"],textposition = "bottom right"))
         fig.add_trace(temp['data'][0])
         fig.add_trace(temp['data'][0])
 
 
-    # new_data = list(fig['data'])
-    # print(new_data)
-    # new_data.append(new_data[0])
-    # fig['data'] = tuple(new_data)
 
 def convert_to_float(data, parameter, list):
     for i in list:

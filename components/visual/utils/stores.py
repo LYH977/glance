@@ -34,5 +34,6 @@ def stores_markup(create_clicks, param, figure, tformat,  initial_frame, dbname,
         dcc.Store(id={'type': 'chosen-color-scale', 'index': create_clicks}, data = store_template({'name' : 'Pinkyl', 'value' : color})),
         dcc.Store(id={'type': 'marker-data', 'index': create_clicks}, data = reset_marker_trace()),
         dcc.Store(id={'type': 'marker-name-section-data', 'index': create_clicks}, data = None),
+        dcc.Store(id={'type': 'secondary-data', 'index': create_clicks}, data=None),
 
     ])

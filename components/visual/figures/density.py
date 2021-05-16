@@ -4,7 +4,7 @@ from components.visual.figures.configuration import configure_fig, convert_to_fl
 from utils.constant import DENSITY_CONSTANT, LATITUDE, LONGITUDE, Z, MESSAGE, FRAME, DENSITY
 
 
-def create_density(data, parameter):
+def create_density(data, parameter, toConfigure ):
     convert_to_float(data, parameter, [
         DENSITY_CONSTANT[LATITUDE],
         DENSITY_CONSTANT[LONGITUDE],
@@ -25,6 +25,7 @@ def create_density(data, parameter):
         # height= 200
 
     )
-    configure_fig(fig, DENSITY, True)
+    if toConfigure:
+        configure_fig(fig, DENSITY, True)
     # print(fig)
     return fig

@@ -79,7 +79,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-        update_figure: function(value, legend, mapbox, colorscale, marker, param, atmax, live, new_fig) {
+        update_figure: function(value, legend, mapbox, colorscale, marker, secondary, param, atmax, live, new_fig) {
             triggered = window.dash_clientside.callback_context.triggered[0]
             if(!triggered)
                 throw window.dash_clientside.PreventUpdate
@@ -101,13 +101,11 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                     fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(0,0,0,1)'
                     fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(255,255,255,1)'
                     fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(255,255,255,1)'
-//                    fig2['layout']['paper_bgcolor'] = '#000'
                 }
                 else{// light theme
                     fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(255,255,255,1)'
                     fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(0,0,0,1)'
                     fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
-//                    fig2['layout']['paper_bgcolor'] = '#fff'
                 }
                 change_frame(param[current_ind]['vtype'], fig2, value)
                 return fig2
@@ -132,6 +130,16 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
             else if(input_type == 'marker-data'){
                 fig2 = JSON.parse(JSON.stringify(new_fig))
                 fig2['data'][1] = marker
+                change_frame(param[current_ind]['vtype'], fig2, value)
+                return fig2
+            }
+            else if(input_type == 'secondary-data'){
+                fig2 = JSON.parse(JSON.stringify(new_fig))
+                fig2['data'][2] = secondary['frames'][0]['data'][0]
+                fig2['layout']['coloraxis2'] = secondary['coloraxis']
+                fig2['layout']['coloraxis']['colorbar']['y'] = 0.496
+                fig2['layout']['coloraxis']['colorbar']['len'] = 0.505
+                console.log(fig2)
                 change_frame(param[current_ind]['vtype'], fig2, value)
                 return fig2
             }
