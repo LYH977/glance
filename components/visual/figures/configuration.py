@@ -6,6 +6,8 @@ from utils.constant import BAR_CHART_RACE
 def configure_coloraxis(fig):
     fig.layout.coloraxis.colorbar.len = 0.99 #0.99
     fig.layout.coloraxis.colorbar.xpad = 5
+    fig.layout.coloraxis.colorbar.ypad = 20
+
     fig.layout.coloraxis.colorbar.x = -0.067
     fig.layout.coloraxis.colorbar.y = 0.01
     fig.layout.coloraxis.colorbar.title.side = 'right'

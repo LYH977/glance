@@ -21,11 +21,12 @@ def parse_contents(contents, filename):
     try:
         if 'csv' in filename:
             # Assume that the user uploaded a CSV file
-            collection.temp = pd.read_csv(
-                io.StringIO(decoded.decode('utf-8')))
+            collection.temp = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+            print('csv', collection.temp)
         elif 'xls' in filename:
             # Assume that the user uploaded an data file
-            collection.temp = pd.read_data(io.BytesIO(decoded))
+            collection.temp = pd.read_excel(io.BytesIO(decoded))
+            print('xls', collection.temp)
     except Exception as e:
         print(e)
         return html.Div([
@@ -208,38 +209,46 @@ def register_handle_upload_click(app):
     def update_handle_upload_click(click, dt, input, name, tags):
         dataset = collection.temp
         pd.options.mode.chained_assignment = None
-        dataset[dt] = dataset[dt].map(lambda x : datetime.strptime(str(x), input).strftime('%Y-%m-%d %H:%M:%S.%f'))
-
-        json_body = []
-        fields = list(dataset)
-        if tags:
-            for t in tags:
-                fields.remove(t)
-        fields.remove(dt)
-
-        for count in range(len(dataset.index)):
-            tag_obj = {}
-            field_obj = {}
+        try:
+            dataset[dt] = dataset[dt].map(lambda x : datetime.strptime(str(x), input).strftime('%Y-%m-%d %H:%M:%S.%f'))
+            json_body = []
+            fields = list(dataset)
             if tags:
                 for t in tags:
-                    tag_obj[t] = dataset.loc[count, t]
-            for f in fields:
-                data =  dataset.loc[count, f]
-                field_obj[f] = data
-            json_body.append({
-                "measurement":name,
-                "tags": tag_obj,
-                "time": dataset.loc[count, dt],
-                "fields" : field_obj
-            })
-        new_client.write_points(json_body, time_precision='ms')
-        toast = {
-            'children' : f'{name} is successfully added.',
-            'is_open' : True,
-            'icon' : 'success',
-            'header' : 'SUCCESS'
-        }
-        return toast
+                    fields.remove(t)
+            fields.remove(dt)
+            for count in range(len(dataset.index)):
+                tag_obj = {}
+                field_obj = {}
+                if tags:
+                    for t in tags:
+                        tag_obj[t] = dataset.loc[count, t]
+                for f in fields:
+                    data =  dataset.loc[count, f]
+                    field_obj[f] = data
+                json_body.append({
+                    "measurement":name,
+                    "tags": tag_obj,
+                    "time": dataset.loc[count, dt],
+                    "fields" : field_obj
+                })
+            new_client.write_points(json_body, time_precision='ms')
+            toast = {
+                'children' : f'{name} is successfully added.',
+                'is_open' : True,
+                'icon' : 'success',
+                'header' : 'SUCCESS'
+            }
+            return toast
+        except Exception as e:
+            print('error', e)
+            toast = {
+                'children': f'Error found in the dataset : {e}',
+                'is_open': True,
+                'icon': 'danger',
+                'header': 'DANGER'
+            }
+            return toast
 #############################################################################################################################################
 
 def register_update_dt_input_validity(app):

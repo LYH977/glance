@@ -61,6 +61,8 @@ fig.layout.coloraxis.colorbar.yanchor = 'bottom'
 # fig.layout.coloraxis.colorbar.xanchor = 'right'
 
 fig.layout.coloraxis.colorbar.xpad = 7
+# fig.layout.coloraxis.colorbar.ypad = 50
+
 fig.layout.coloraxis.colorbar.x = -0.04
 fig.layout.coloraxis.colorbar.y = 0.5
 fig.layout.coloraxis.colorbar.thickness = 10
