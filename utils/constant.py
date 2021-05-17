@@ -246,7 +246,7 @@ SEQUENTIAL_COLOR = [
 'Sunset',  'Sunsetdark',
  'Teal','Tealgrn', 'Turbo',
 'Viridis',
-'YlGn','YlGnBu',  'YlorBr',  'YlorRd',
+'YlGn','YlGnBu',
 'algae',   'amp',
 'deep', 'dense',
  'gray',

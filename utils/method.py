@@ -118,7 +118,7 @@ def get_ctx_type(ctx):
         type = obj
     return type
 
-l = [{'prop_id': '{"index":2,"type":"secondary-visual-btn"}.n_clicks_timestamp', 'value': 1621005270133}, {'prop_id': '{"index":3,"type":"secondary-visual-btn"}.n_clicks_timestamp', 'value': 1621005297733}]
+# l = [{'prop_id': '{"index":2,"type":"secondary-visual-btn"}.n_clicks_timestamp', 'value': 1621005270133}, {'prop_id': '{"index":3,"type":"secondary-visual-btn"}.n_clicks_timestamp', 'value': 1621005297733}]
 
 
 
@@ -152,7 +152,7 @@ def merge_frames(list1, list2):
     sorted_list = sorted(merged_list, key = lambda i: i['name'])
     unwanted_index = []
     for index in range(0, len(sorted_list)):
-        print(index)
+        # print(index)
         if index >= len(sorted_list) -1:
             break
         if sorted_list[index]['name'] == sorted_list[index+1]['name']:

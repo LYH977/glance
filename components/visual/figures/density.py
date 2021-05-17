@@ -5,6 +5,8 @@ from utils.constant import DENSITY_CONSTANT, LATITUDE, LONGITUDE, Z, MESSAGE, FR
 
 
 def create_density(data, parameter, toConfigure ):
+    color_scale = px.colors.sequential.Pinkyl if toConfigure else px.colors.sequential.Plotly3
+
     convert_to_float(data, parameter, [
         DENSITY_CONSTANT[LATITUDE],
         DENSITY_CONSTANT[LONGITUDE],
@@ -18,7 +20,7 @@ def create_density(data, parameter, toConfigure ):
         hover_data=parameter[DENSITY_CONSTANT[MESSAGE]],
         radius = 10,
         center = dict(lat = 0, lon = 180),
-        color_continuous_scale=px.colors.sequential.Pinkyl,
+        color_continuous_scale=color_scale,
         zoom = 0,
         animation_frame = FRAME,
         mapbox_style = "dark",

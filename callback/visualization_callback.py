@@ -380,8 +380,10 @@ def register_update_live_data(app):
             fig2['layout']['coloraxis2'] = secondary['coloraxis']
             fig2['layout']['coloraxis']['colorbar']['y'] = 0.496
             fig2['layout']['coloraxis']['colorbar']['len'] = 0.505
+            fig2['layout']['coloraxis']['colorbar']['title']['text'] = fig2['layout']['coloraxis']['colorbar']['title']['text'] + '(1)'
+
             fig2['frames'] = merge_frames(fig2['frames'], secondary['frames'])
-            print('sort', fig2['frames'])
+            # print('figure', fig2)
             return dash.no_update, fig2, True
 
         raise PreventUpdate
@@ -862,6 +864,8 @@ def register_update_secondary_frames(app):
             }
             secondary_data['coloraxis']['colorbar']['y'] = 0.01
             secondary_data['coloraxis']['colorbar']['len'] = 0.495
+            secondary_data['coloraxis']['colorbar']['title']['text'] = secondary_data['coloraxis']['colorbar']['title']['text'] + '(2)'
+
             # print(secondary_data)
             return secondary_data
         raise PreventUpdate

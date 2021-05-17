@@ -1,7 +1,35 @@
 const MAXIMUM = 'MAXIMUM'
 const MINIMUM = 'MINIMUM'
+const FULL = 'FULL'
+const FIRST = 'FIRST'
+const SECOND = 'SECOND'
+
+const LEGEND_STYLE = {
+    FULL: {  y: 0.01,  len: 0.99  },
+    FIRST: {  y: 0.496,  len: 0.505 },
+    SECOND: {  y: 0.01,  len: 0.495 },
+}
+
+const set_full_legend_style = (fig, coloraxis, style) =>{
+    fig['layout'][coloraxis]['colorbar']['y'] = LEGEND_STYLE[style]['y']
+    fig['layout'][coloraxis]['colorbar']['len'] = LEGEND_STYLE[style]['len']
+    return fig
+}
 
 const current_ind = 0
+
+const reset_trace = () =>{
+    return {
+        coloraxis:'coloraxis',
+        lat: [],
+        lon: [],
+        marker: {size: 0},
+        mode: 'markers',
+        showlegend: false,
+        type: 'scattermapbox'
+    }
+}
+
 
 const get_ctx_type = (ctx) => {
     let obj = ctx['prop_id'].split('.')[0]
@@ -23,12 +51,29 @@ const get_ctx_property = (ctx) => { return ctx['prop_id'].split('.')[1] }
 
 const get_ctx_value = (ctx) => { return ctx['value'] }
 
+
 const change_frame = (ftype, fig2, value) => {
-    fig2['data'][0] = fig2['frames'][value]['data'][0]
-    if(fig2['frames'][value]['data'].length == 2){
-        fig2['data'][2] = fig2['frames'][value]['data'][1]
+    let current_data_1 = fig2['frames'][value]['data'][0]
+    if (current_data_1.hasOwnProperty("secondary")){            //only one data in the frame
+        fig2['data'][2] = current_data_1
+        fig2['data'][0] = reset_trace()
+        fig2 = set_full_legend_style(fig2, 'coloraxis2', FULL)
     }
-    fig2['layout']['title']['text'] = fig2['frames'][value]['name']
+    else{                                                       //two data in the frame
+       fig2['data'][0] = current_data_1
+       if(fig2['frames'][value]['data'].length == 2){
+           fig2['data'][2] = fig2['frames'][value]['data'][1]
+           fig2 =set_full_legend_style(fig2, 'coloraxis', FIRST)
+           fig2 = set_full_legend_style(fig2, 'coloraxis2', SECOND)
+
+       }
+       else{
+           fig2= set_full_legend_style(fig2, 'coloraxis', FULL)
+       }
+    }
+   fig2['layout']['title']['text'] = fig2['frames'][value]['name']
+
+
 }
 
 const handle_out_of_range_notif = ( celery, slider )=>{
@@ -41,7 +86,7 @@ const handle_out_of_range_notif = ( celery, slider )=>{
 const insert_marker = () =>{
     let tt = 12
      return {
-        coloraxis: "coloraxis",
+//        coloraxis: "coloraxis",
         hovertemplate: 'tt='+tt+'<br>dfdf<extra></extra>',
         hovertext : ['sd'],
         lat: [31.533592],

@@ -67,14 +67,18 @@ fig.layout.coloraxis.colorbar.x = -0.04
 fig.layout.coloraxis.colorbar.y = 0.5
 fig.layout.coloraxis.colorbar.thickness = 10
 
-#dark
-fig.layout.coloraxis.colorbar.bgcolor = 'rgba(0,0,0,1)'
-fig.layout.coloraxis.colorbar.title.font.color = 'rgba(255,255,255,1)'
-fig.layout.coloraxis.colorbar.tickfont.color = 'rgba(255,255,255,1)'
-# #white
-# fig.layout.coloraxis.colorbar.bgcolor = 'rgba(255,255,255,1)'
-# fig.layout.coloraxis.colorbar.title.font.color = 'rgba(0,0,0,1)'
-# fig.layout.coloraxis.colorbar.tickfont.color = 'rgba(0,0,0,1)'
+# fig.layout.coloraxis.colorbar.outlinewidth =1
+
+fig.layout.coloraxis.colorbar.borderwidth = 0.1
+
+# #dark
+# fig.layout.coloraxis.colorbar.bgcolor = 'rgba(0,0,0,1)'
+# fig.layout.coloraxis.colorbar.title.font.color = 'rgba(255,255,255,1)'
+# fig.layout.coloraxis.colorbar.tickfont.color = 'rgba(255,255,255,1)'
+#white
+fig.layout.coloraxis.colorbar.bgcolor = 'rgba(255,255,255,1)'
+fig.layout.coloraxis.colorbar.title.font.color = 'rgba(0,0,0,1)'
+fig.layout.coloraxis.colorbar.tickfont.color = 'rgba(0,0,0,1)'
 #
 fig.layout.sliders[0].visible = False
 fig.layout.updatemenus[0].visible = False

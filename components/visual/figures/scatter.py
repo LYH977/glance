@@ -7,6 +7,7 @@ from utils.constant import SCATTER_MAP_CONSTANT, LATITUDE, LONGITUDE, SIZE, COLO
 
 def create_scattermap(data, parameter, toConfigure ):
     # px.colors.sequential.
+    color_scale = px.colors.sequential.Pinkyl if toConfigure else px.colors.sequential.Plotly3
     convert_to_float(data, parameter, [
         SCATTER_MAP_CONSTANT[LATITUDE],
         SCATTER_MAP_CONSTANT[LONGITUDE]
@@ -17,7 +18,7 @@ def create_scattermap(data, parameter, toConfigure ):
         size = parameter[SCATTER_MAP_CONSTANT[SIZE]],
         size_max = 50,
         color = parameter[SCATTER_MAP_CONSTANT[COLOR]],
-        color_continuous_scale = px.colors.sequential.Pinkyl,
+        color_continuous_scale = color_scale,
         hover_name = parameter[SCATTER_MAP_CONSTANT[NAME]],
         mapbox_style = 'dark', zoom=1,
         animation_frame = FRAME,
