@@ -80,7 +80,7 @@ def register_update_figure(app):
             State({'type': 'at-max', 'index': MATCH}, 'data'),
             State({'type': 'live-mode', 'index': MATCH}, 'on'),
             State({'type': 'back-buffer', 'index': MATCH}, 'data'),
-            # State({'type': 'visualization', 'index': MATCH}, 'figure'),
+            State({'type': 'backup-frames', 'index': MATCH}, 'data')
         ],
         prevent_initial_call=True
     )
@@ -291,6 +291,7 @@ def register_update_live_data(app):
             Output({'type': 'last-timestamp', 'index': MATCH}, 'data'),
             Output({'type': 'back-buffer', 'index': MATCH}, 'data'),
             Output({'type': 'secondary-mode', 'index': MATCH}, 'data'),
+            Output({'type': 'backup-frames', 'index': MATCH}, 'data'),
         ],
         [
             Input({'type': 'live-interval', 'index': MATCH}, 'n_intervals'),
@@ -337,7 +338,7 @@ def register_update_live_data(app):
                 last_nano = get_last_timestamp(result[TIME])
                 collection.data[input_index] = collection.data[input_index].append(result, ignore_index=True)
                 fig = create_figure(collection.data[input_index], param[current_ind]['parameter'], param[current_ind]['vtype'])
-                return last_nano, fig, dash.no_update
+                return last_nano, fig, dash.no_update, dash.no_update
             collection.live_processing[input_index] = False
             raise PreventUpdate
 
@@ -355,24 +356,24 @@ def register_update_live_data(app):
                 fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
                 # fig2['layout']['paper_bgcolor'] = '#fff'
 
-            return dash.no_update,fig2, dash.no_update
+            return dash.no_update,fig2, dash.no_update, dash.no_update
 
         elif input_type == 'mapbox-type':
             fig2 = buffer
             fig2['layout']['mapbox']['style'] = mapbox
-            return dash.no_update, fig2, dash.no_update
+            return dash.no_update, fig2, dash.no_update, dash.no_update
 
         elif input_type == 'chosen-color-scale':
             fig2 = buffer
             fig2['layout']['coloraxis']['colorscale'] = colorscale[current_ind]['value']
 
             # fig2['data'][1] = insert_marker()
-            return dash.no_update, fig2, dash.no_update
+            return dash.no_update, fig2, dash.no_update, dash.no_update
 
         elif input_type == 'marker-data':
             fig2 = buffer
             fig2['data'][1] = marker
-            return dash.no_update, fig2, dash.no_update
+            return dash.no_update, fig2, dash.no_update, dash.no_update
 
         elif input_type == 'secondary-data':
             fig2 = buffer
@@ -381,10 +382,11 @@ def register_update_live_data(app):
             fig2['layout']['coloraxis']['colorbar']['y'] = 0.496
             fig2['layout']['coloraxis']['colorbar']['len'] = 0.505
             fig2['layout']['coloraxis']['colorbar']['title']['text'] = fig2['layout']['coloraxis']['colorbar']['title']['text'] + '(1)'
+            merged = merge_frames(fig2['frames'], secondary['frames'])
 
-            fig2['frames'] = merge_frames(fig2['frames'], secondary['frames'])
+            fig2['frames'] = merged['frames']
             # print('figure', fig2)
-            return dash.no_update, fig2, True
+            return dash.no_update, fig2, True, {'frames0': merged['frames0'], 'frames2': merged['frames2']}
 
         raise PreventUpdate
 

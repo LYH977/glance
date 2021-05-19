@@ -36,7 +36,7 @@ def stores_markup(create_clicks, param, figure, tformat,  initial_frame, dbname,
         dcc.Store(id={'type': 'marker-name-section-data', 'index': create_clicks}, data = None),
         dcc.Store(id={'type': 'secondary-data', 'index': create_clicks}, data=None),
         dcc.Store(id={'type': 'secondary-mode', 'index': create_clicks}, data= False),
-        dcc.Store(id={'type': 'secondary-celery', 'index': create_clicks}, data=None),
-        dcc.Store(id={'type': 'backup-frames', 'index': create_clicks}, data=[]),
+        dcc.Store(id={'type': 'backup-celery', 'index': create_clicks}, data=None),
+        dcc.Store(id={'type': 'backup-frames', 'index': create_clicks}, data={}),
 
     ])

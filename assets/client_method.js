@@ -3,8 +3,10 @@ const MINIMUM = 'MINIMUM'
 const FULL = 'FULL'
 const FIRST = 'FIRST'
 const SECOND = 'SECOND'
+const HIDDEN = 'HIDDEN'
 
 const LEGEND_STYLE = {
+    HIDDEN : {  y: 0.01,  len: 0  },
     FULL: {  y: 0.01,  len: 0.99  },
     FIRST: {  y: 0.496,  len: 0.505 },
     SECOND: {  y: 0.01,  len: 0.495 },
@@ -52,27 +54,60 @@ const get_ctx_property = (ctx) => { return ctx['prop_id'].split('.')[1] }
 const get_ctx_value = (ctx) => { return ctx['value'] }
 
 
-const change_frame = (ftype, fig2, value) => {
-    let current_data_1 = fig2['frames'][value]['data'][0]
-    if (current_data_1.hasOwnProperty("secondary")){            //only one data in the frame
-        fig2['data'][2] = current_data_1
-        fig2['data'][0] = reset_trace()
-        fig2 = set_full_legend_style(fig2, 'coloraxis2', FULL)
-    }
-    else{                                                       //two data in the frame
-       fig2['data'][0] = current_data_1
-       if(fig2['frames'][value]['data'].length == 2){
-           fig2['data'][2] = fig2['frames'][value]['data'][1]
-           fig2 =set_full_legend_style(fig2, 'coloraxis', FIRST)
-           fig2 = set_full_legend_style(fig2, 'coloraxis2', SECOND)
+const change_frame = (ftype, fig2, value, backup_frames) => {
+//    let current_data_1 = fig2['frames'][value]['data'][0]
+//    if (current_data_1.hasOwnProperty("secondary")){            //only one data in the frame
+//        fig2['data'][2] = current_data_1
+//        fig2['data'][0] = reset_trace()
+//        fig2 = set_full_legend_style(fig2, 'coloraxis2', FULL)
+//    }
+//    else{                                                       //two data in the frame
+//       fig2['data'][0] = current_data_1
+//       if(fig2['frames'][value]['data'].length == 2){
+//           fig2['data'][2] = fig2['frames'][value]['data'][1]
+//           fig2 = set_full_legend_style(fig2, 'coloraxis', FIRST)
+//           fig2 = set_full_legend_style(fig2, 'coloraxis2', SECOND)
+//
+//       }
+//       else{
+//           fig2= set_full_legend_style(fig2, 'coloraxis', FULL)
+//       }
+//    }
+//   fig2['layout']['title']['text'] = fig2['frames'][value]['name']
 
-       }
-       else{
-           fig2= set_full_legend_style(fig2, 'coloraxis', FULL)
-       }
+
+   //////////////////////////////
+
+    if(Object.keys(backup_frames).length !== 0){//multulayer
+        let pointers = fig2['frames'][value]['pointers']
+        if(pointers.length === 2){
+            fig2['data'][0] = eval('backup_frames' + pointers[0])
+            fig2['data'][2] = eval('backup_frames' + pointers[1])
+            fig2 = set_full_legend_style(fig2, 'coloraxis', FIRST)
+            fig2 = set_full_legend_style(fig2, 'coloraxis2', SECOND)
+        }
+        else{
+            let num = parseInt(pointers[0][8])
+            if(num === 0){
+                fig2['data'][0] = eval('backup_frames' + pointers[0])
+                fig2['data'][2] = reset_trace()
+                fig2 = set_full_legend_style(fig2, 'coloraxis', FULL)
+                fig2 = set_full_legend_style(fig2, 'coloraxis2', HIDDEN)
+            }
+            else{
+                fig2['data'][2] = eval('backup_frames' + pointers[0])
+                fig2['data'][0] = reset_trace()
+                fig2 = set_full_legend_style(fig2, 'coloraxis2', FULL)
+                fig2 = set_full_legend_style(fig2, 'coloraxis', HIDDEN)
+            }
+        }
     }
+    else{                                          // single layer
+        fig2['data'][0] = fig2['frames'][value]['data'][0]
+        fig2 = set_full_legend_style(fig2, 'coloraxis', FULL)
+    }
+
    fig2['layout']['title']['text'] = fig2['frames'][value]['name']
-
 
 }
 
@@ -127,7 +162,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-        update_figure: function(value, legend, mapbox, colorscale, marker, secondary, param, atmax, live, new_fig) {
+        update_figure: function(value, legend, mapbox, colorscale, marker, secondary, param, atmax, live, new_fig,backup_frames) {
             triggered = window.dash_clientside.callback_context.triggered[0]
             if(!triggered)
                 throw window.dash_clientside.PreventUpdate
@@ -140,7 +175,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                     new_max = new_fig['frames'].length
                     val = new_max - 1
                 }
-                change_frame(param[current_ind]['vtype'], fig2, val)
+                change_frame(param[current_ind]['vtype'], fig2, val,backup_frames)
                 return fig2
             }
             else if(input_type == 'legend-theme'){
@@ -155,14 +190,14 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                     fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(0,0,0,1)'
                     fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
                 }
-                change_frame(param[current_ind]['vtype'], fig2, value)
+                change_frame(param[current_ind]['vtype'], fig2, value, backup_frames)
                 return fig2
             }
 
             else if(input_type == 'mapbox-type'){
                 fig2 = JSON.parse(JSON.stringify(new_fig))
                 fig2['layout']['mapbox']['style'] = mapbox
-                change_frame(param[current_ind]['vtype'], fig2, value)
+                change_frame(param[current_ind]['vtype'], fig2, value, backup_frames)
                 return fig2
             }
 
@@ -172,13 +207,13 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 console.log(fig2)
 //                fig2['data'][1] = insert_marker()
 //                fig2['data'][1] = fig2['frames'][2]['data'][0]
-                change_frame(param[current_ind]['vtype'], fig2, value)
+                change_frame(param[current_ind]['vtype'], fig2, value , backup_frames)
                 return fig2
             }
             else if(input_type == 'marker-data'){
                 fig2 = JSON.parse(JSON.stringify(new_fig))
                 fig2['data'][1] = marker
-                change_frame(param[current_ind]['vtype'], fig2, value)
+                change_frame(param[current_ind]['vtype'], fig2, value,backup_frames)
                 return fig2
             }
             else if(input_type == 'secondary-data'){
@@ -188,7 +223,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 fig2['layout']['coloraxis']['colorbar']['y'] = 0.496
                 fig2['layout']['coloraxis']['colorbar']['len'] = 0.505
 
-                change_frame(param[current_ind]['vtype'], fig2, value)
+                change_frame(param[current_ind]['vtype'], fig2, value, backup_frames)
                 return fig2
             }
             throw window.dash_clientside.PreventUpdate

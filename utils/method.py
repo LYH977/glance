@@ -158,7 +158,10 @@ def index_frame(frames, num):
 
 
 def merge_frames(list1, list2):
-    merged_list = list1 + list2
+    new_list1 = index_frame(list1, 0)
+    new_list2 = index_frame(list2, 2)
+    pointers_fr = []
+    merged_list = new_list1 + new_list2
     sorted_list = sorted(merged_list, key = lambda i: i['name'])
     unwanted_index = []
     for index in range(0, len(sorted_list)):
@@ -170,8 +173,19 @@ def merge_frames(list1, list2):
             unwanted_index.insert(0, index+1) # prepend
     for index in unwanted_index:
         sorted_list.pop(index)
+    for li in sorted_list:
+        pointers = []
+        for d in li['data']:
+            pointers.append(d['oriIndex'])
+        pointers_fr.append({
+            'name':li['name'],
+            'pointers': pointers
+        })
+    # print(pointers_fr)
 
-    return sorted_list
 
-
-
+    return {
+        'frames': pointers_fr,
+        'frames0': list1,
+        'frames2': list2
+    }
