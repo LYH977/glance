@@ -1,3 +1,4 @@
+import copy
 import json
 from datetime import datetime
 from database.dbConfig import client
@@ -145,6 +146,15 @@ def unpack_parameter(param):
         id.append(p_id)
         multi.append(p_info['multi'])
     return zip(label, id, multi)
+
+def index_frame(frames, num):
+   new_frames = []
+   for i,fr in enumerate(frames):
+       new_fr = copy.deepcopy(fr)
+       new_fr['data'][0]['oriIndex'] = f"['frames{num}'][{i}]['data'][0]"
+       new_frames.append(new_fr)
+   return new_frames
+
 
 
 def merge_frames(list1, list2):
