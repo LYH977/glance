@@ -59,8 +59,6 @@ def register_update_visual_container(app):
                 collection.img_container[create_clicks] = temp
             else: # other than carousel
                 # result = task.process_dataset.delay(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'], now)
-                print(param)
-                # print(collection.temp.to_dict())
                 task.process_dataset(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'], now)
 
             new_child = container.render_container(create_clicks, param, tformat, dbname, now, collection.new_col)

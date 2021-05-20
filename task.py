@@ -135,7 +135,6 @@ def setup_periodic_tasks(sender, **kwargs):
 def process_dataset(create_click, dataframe, vtype, parameter, now, old_celery = {}):
     dataframe = pd.DataFrame.from_dict(dataframe)
     print('starting',now)
-    print('dataframe', dataframe)
     tags = []
     obj = {}
     extract = [MAXIMUM, MINIMUM]
@@ -150,13 +149,18 @@ def process_dataset(create_click, dataframe, vtype, parameter, now, old_celery =
             for v in NOTIFICATION_PARAM[vtype][FIELD]:
                 obj[f][e]['temp'][parameter[v]] = []
 
+
+
     for t in notif_tags:
         tags.append(parameter[t])
-    # print('tags', tags)
+
+    tags = list(dict.fromkeys(tags)) # remove duplicate items
+
+
     if tags:
         tag_df = dataframe[tags]
         tag_df = tag_df.drop_duplicates()  # Lat, Long, Country
-        print('tag_df', tag_df)
+        # print('tag_df', tag_df)
         tag_list = tag_df.index.tolist()
 
         notif_fields = NOTIFICATION_PARAM[vtype][FIELD]
@@ -208,9 +212,11 @@ def process_dataset(create_click, dataframe, vtype, parameter, now, old_celery =
     print('done obj')
 
     if len(old_celery) == 0:
+        print('see 1')
         obj = json.dumps(obj, cls=plotly.utils.PlotlyJSONEncoder)
         redis_instance.set( f'{create_click}-{now}', obj, 30)
     else:
+        print('see 2')
         list1 = list(old_celery.values())
         list2 = list(obj.values())
         merged_list = list1 + list2
@@ -226,7 +232,7 @@ def process_dataset(create_click, dataframe, vtype, parameter, now, old_celery =
         for index in unwanted_index:
             sorted_list.pop(index)
         results = {i: v for i,v in enumerate(sorted_list)}
-        print(results)
+        # print('see here', results)
         obj = json.dumps(results, cls=plotly.utils.PlotlyJSONEncoder)
         redis_instance.set(f'{create_click}-{now}', obj, 30)
 

@@ -483,13 +483,27 @@ def register_update_celery_data(app):
                     print('celery error', e)
                     return dash.no_update, False, dash.no_update, dash.no_update
             else: # multilayer mode
-                raise PreventUpdate
+                try:
+                    result = redis_instance.get(f'{index}-{now}').decode("utf-8")
+                    result = json.loads(result)
+                    ctx = dash.callback_context
+                    input_index = get_ctx_index(ctx)
+                    # get max and min of current frame
+                    count = {
+                        MAXIMUM: result[str(slider)][MAXIMUM]['count'],
+                        MINIMUM: result[str(slider)][MINIMUM]['count'],
+                    }
+                    return result, True, collapse_markup(input_index, count), dash.no_update
+                except Exception as e:
+                    print('celery error', e)
+                    return dash.no_update, False, dash.no_update, dash.no_update
 
 
         elif input_type == 'last-total-rows':
             return dash.no_update, False, dash.no_update, dash.no_update
 
         elif input_type == 'secondary-mode':
+
             return dash.no_update, False, dash.no_update, old_celery
         raise PreventUpdate
 
@@ -577,10 +591,11 @@ def register_update_last_celery_key(app):
             State({'type': 'last-total-rows', 'index': MATCH}, 'data'),
             State({'type': 'my_param', 'index': MATCH}, 'data'),
             State('last-param', 'data'),
+            State({'type': 'celery-data', 'index': MATCH}, 'data'),
         ],
         prevent_initial_call=True
     )
-    def update_last_celery_key( live, interval,secondary, last_rows, param, modal_param):
+    def update_last_celery_key( live, interval,secondary, last_rows, param, modal_param, old_celery):
         ctx = dash.callback_context
         input_index= None
         if not ctx.triggered:
@@ -605,7 +620,14 @@ def register_update_last_celery_key(app):
                 return current_rows, now
         elif input_type == 'secondary-data':
             now = datetime.now().timestamp()
-            result = task.process_dataset.delay(input_index, collection.temp.to_dict(), modal_param['vtype'],modal_param['parameter'], now)
+            result = task.process_dataset.delay(
+                input_index,
+                collection.temp.to_dict(),
+                modal_param['vtype'],
+                modal_param['parameter'],
+                now,
+                old_celery
+            )
             return dash.no_update, now
         raise PreventUpdate
 

@@ -50,3 +50,9 @@ def notif_badge_markup(id, number, create_clicks):
         width='auto',
         className= 'notif-badge'
     )
+
+def notif_loading_markup():
+    return dbc.Spinner(
+            color="light",
+            type="grow"
+        )
