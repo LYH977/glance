@@ -30,6 +30,14 @@ redis_instance = redis.StrictRedis.from_url('redis://localhost:6379')
 #     "DATE_UPDATED": "DATE_UPDATED"
 # }
 
+def merge_celery_data(current_frame, next_frame):
+    for key in current_frame.keys():
+        if key == 'frame':
+            continue
+        for nested_key in current_frame[key].keys():
+            current_frame[key][nested_key] = current_frame[key][nested_key] + next_frame[key][nested_key]
+
+
 def parse_number(value):
     if value.is_integer():
         return int(value)
@@ -124,9 +132,10 @@ def setup_periodic_tasks(sender, **kwargs):
     # )
 
 @app.task
-def process_dataset(create_click, dataframe, vtype, parameter, now):
+def process_dataset(create_click, dataframe, vtype, parameter, now, old_celery = {}):
     dataframe = pd.DataFrame.from_dict(dataframe)
     print('starting',now)
+    print('dataframe', dataframe)
     tags = []
     obj = {}
     extract = [MAXIMUM, MINIMUM]
@@ -147,7 +156,7 @@ def process_dataset(create_click, dataframe, vtype, parameter, now):
     if tags:
         tag_df = dataframe[tags]
         tag_df = tag_df.drop_duplicates()  # Lat, Long, Country
-        # print('tag_df', tag_df)
+        print('tag_df', tag_df)
         tag_list = tag_df.index.tolist()
 
         notif_fields = NOTIFICATION_PARAM[vtype][FIELD]
@@ -184,7 +193,6 @@ def process_dataset(create_click, dataframe, vtype, parameter, now):
                         frame = target_df.loc[mi, FRAME]
                         index = frames.index(frame)
                         obj[index][MINIMUM]['temp'][col].append(obj_data)
-    # print(obj)
         for k in obj.keys(): # index
             for e in extract: # MAX, MIN
                 for f in fields:
@@ -198,10 +206,29 @@ def process_dataset(create_click, dataframe, vtype, parameter, now):
                 obj[k][e].pop('temp', None)
 
     print('done obj')
-    obj = json.dumps(obj, cls=plotly.utils.PlotlyJSONEncoder)
-    # print(obj)
-    redis_instance.set( f'{create_click}-{now}', obj, 30)
 
+    if len(old_celery) == 0:
+        obj = json.dumps(obj, cls=plotly.utils.PlotlyJSONEncoder)
+        redis_instance.set( f'{create_click}-{now}', obj, 30)
+    else:
+        list1 = list(old_celery.values())
+        list2 = list(obj.values())
+        merged_list = list1 + list2
+        sorted_list = sorted(merged_list, key=lambda i: i['frame'])
+        unwanted_index = []
+        for index in range(0, len(sorted_list)):
+            if index >= len(sorted_list) - 1:
+                break
+            if sorted_list[index]['frame'] == sorted_list[index + 1]['frame']: # perform merging data here
+                merge_celery_data(sorted_list[index], sorted_list[index + 1])
+                # sorted_list[index]['data'].append(sorted_list[index + 1]['data'][0])
+                unwanted_index.insert(0, index + 1)  # prepend
+        for index in unwanted_index:
+            sorted_list.pop(index)
+        results = {i: v for i,v in enumerate(sorted_list)}
+        print(results)
+        obj = json.dumps(results, cls=plotly.utils.PlotlyJSONEncoder)
+        redis_instance.set(f'{create_click}-{now}', obj, 30)
 
 
 @app.task

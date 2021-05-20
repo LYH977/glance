@@ -383,7 +383,6 @@ def register_update_live_data(app):
             fig2['layout']['coloraxis']['colorbar']['len'] = 0.505
             fig2['layout']['coloraxis']['colorbar']['title']['text'] = fig2['layout']['coloraxis']['colorbar']['title']['text'] + '(1)'
             merged = merge_frames(fig2['frames'], secondary['frames'])
-
             fig2['frames'] = merged['frames']
             # print('figure', fig2)
             return dash.no_update, fig2, True, {'frames0': merged['frames0'], 'frames2': merged['frames2']}
@@ -441,21 +440,25 @@ def register_update_celery_data(app):
         [
             Output({'type': 'celery-data', 'index': MATCH}, 'data'),
             Output({'type': 'celery-interval', 'index': MATCH}, 'disabled'),
-            Output({'type': 'loading-notif-output', 'index': MATCH}, 'children')
+            Output({'type': 'loading-notif-output', 'index': MATCH}, 'children'),
+            Output({'type': 'backup-celery', 'index': MATCH}, 'data')
+
         ],
         [
             Input({'type': 'celery-interval', 'index': MATCH}, 'n_intervals'),
             Input({'type': 'last-total-rows', 'index': MATCH}, 'data'),
+            Input({'type': 'secondary-mode', 'index': MATCH}, 'data'),
 
         ],
         [
             State({'type': 'anim-slider', 'index': MATCH}, 'value'),
             State({'type': 'my-index', 'index': MATCH}, 'data'),
             State({'type': 'redis-timestamp', 'index': MATCH}, 'data'),
+            State({'type': 'celery-data', 'index': MATCH}, 'data'),
         ]
         # prevent_initial_call=True
     )
-    def update_celery_data(interval,rows, slider, index, now):
+    def update_celery_data(interval,rows, secondary, slider, index, now, old_celery):
         ctx = dash.callback_context
         # input_index = None
         if not ctx.triggered:
@@ -464,27 +467,30 @@ def register_update_celery_data(app):
             input_type = get_ctx_type(ctx)
             # input_index = get_ctx_index(ctx)
         if input_type == 'celery-interval':
-            try:
-                # print(f'checking {index}-{now}')
-                result = redis_instance.get(f'{index}-{now}').decode("utf-8")
-                result = json.loads(result)
-                ctx = dash.callback_context
-                input_index = get_ctx_index(ctx)
-                # get max and min of current frame
-                count = {
-                    MAXIMUM: result[str(slider)][MAXIMUM]['count'],
-                    MINIMUM: result[str(slider)][MINIMUM]['count'],
-                }
-                # print('done bro', now)
-                # print(f'done {index}-{now}')
-                return result, True, collapse_markup(input_index, count)
-            except Exception as e:
-                print('celery', e)
-                return dash.no_update, False, dash.no_update
+            if not secondary: # not multilayer
+                try:
+                    result = redis_instance.get(f'{index}-{now}').decode("utf-8")
+                    result = json.loads(result)
+                    ctx = dash.callback_context
+                    input_index = get_ctx_index(ctx)
+                    # get max and min of current frame
+                    count = {
+                        MAXIMUM: result[str(slider)][MAXIMUM]['count'],
+                        MINIMUM: result[str(slider)][MINIMUM]['count'],
+                    }
+                    return result, True, collapse_markup(input_index, count), dash.no_update
+                except Exception as e:
+                    print('celery error', e)
+                    return dash.no_update, False, dash.no_update, dash.no_update
+            else: # multilayer mode
+                raise PreventUpdate
+
 
         elif input_type == 'last-total-rows':
-            # print('started bro', now)
-            return dash.no_update, False, dash.no_update
+            return dash.no_update, False, dash.no_update, dash.no_update
+
+        elif input_type == 'secondary-mode':
+            return dash.no_update, False, dash.no_update, old_celery
         raise PreventUpdate
 
 
@@ -565,14 +571,16 @@ def register_update_last_celery_key(app):
             # Input({'type': 'celery-data', 'index': MATCH}, 'data'),
             Input({'type': 'live-mode', 'index': MATCH}, 'on'),
             Input({'type': 'live-interval', 'index': MATCH}, 'n_intervals'),
+            Input({'type': 'secondary-data', 'index': MATCH}, 'data'),
         ],
         [
             State({'type': 'last-total-rows', 'index': MATCH}, 'data'),
-            State({'type': 'my_param', 'index': MATCH}, 'data')
+            State({'type': 'my_param', 'index': MATCH}, 'data'),
+            State('last-param', 'data'),
         ],
         prevent_initial_call=True
     )
-    def update_last_celery_key( live, interval, last_rows, param):
+    def update_last_celery_key( live, interval,secondary, last_rows, param, modal_param):
         ctx = dash.callback_context
         input_index= None
         if not ctx.triggered:
@@ -595,7 +603,10 @@ def register_update_last_celery_key(app):
                 now = datetime.now().timestamp()
                 result = task.process_dataset.delay(input_index, collection.data[input_index].to_dict(), param[current_ind]['vtype'], param[current_ind]['parameter'], now)
                 return current_rows, now
-
+        elif input_type == 'secondary-data':
+            now = datetime.now().timestamp()
+            result = task.process_dataset.delay(input_index, collection.temp.to_dict(), modal_param['vtype'],modal_param['parameter'], now)
+            return dash.no_update, now
         raise PreventUpdate
 
 
