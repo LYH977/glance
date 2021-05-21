@@ -66,9 +66,6 @@ def append_numeric_col_list(info, col):
 def register_update_after_upload(app):
     @app.callback(Output('dataset-portal', 'children'),
                   [
-                      # Input("open-select-modal", "n_clicks"),
-                      # Input("cancel-create-visual", "n_clicks"),
-                      # Input("create-visual", "n_clicks"),
                       Input("modal", "is_open"),
                       Input('chosen-dropdown', 'data')
                   ],
@@ -121,46 +118,6 @@ def register_update_output_form(app):
 #############################################################################################################################################
 
 
-# def register_toggle_modal(app):
-#     @app.callback(
-#         [
-#             Output("modal", "is_open"),
-#             Output({'type': "last-secondary-click-ts", 'index': ALL}, "data"),
-#         ],
-#         [
-#             Input("open-select-modal", "n_clicks"),
-#             Input("cancel-create-visual", "n_clicks"),
-#             Input("create-visual", "n_clicks"),
-#             Input({'type': "secondary-visual-btn", 'index': ALL}, "n_clicks_timestamp"),
-#
-#         ],
-#         [
-#             State("modal", "is_open"),
-#             State({'type': "last-secondary-click-ts", 'index': ALL}, "data"),
-#
-#         ],
-#         prevent_initial_call=True
-#     )
-#     def toggle_modal (open, close, create, secondary, is_open, last_secondary):
-#         ts = datetime.now().timestamp()
-#         ctx = dash.callback_context
-#         if not ctx.triggered:
-#             raise PreventUpdate
-#         input_type = get_ctx_type(ctx)
-#         if input_type == 'secondary-visual-btn':
-#             for index, (first, second) in enumerate(zip(secondary, last_secondary)):
-#                 if first != second:
-#                     diff_index = get_ctx_index(ctx)
-#                     return True, secondary
-#                     break
-#
-#             raise PreventUpdate
-#         else:
-#             return not is_open, secondary
-
-# test = [{'prop_id': '{"index":1,"type":"secondary-visual-btn"}.n_clicks_timestamp', 'value': 1621005249117}, {'prop_id': '{"index":2,"type":"secondary-visual-btn"}.n_clicks_timestamp', 'value': 1621005270133}, {'prop_id': '{"index":3,"type":"secondary-visual-btn"}.n_clicks_timestamp', 'value': None}]
-#############################################################################################################################################
-
 
 def register_toggle_modal_action_btn(app):
     @app.callback(
@@ -185,7 +142,7 @@ def register_toggle_modal_action_btn(app):
         ],
         prevent_initial_call=True
     )
-    def toggle_modal_action_btn (open, close, create, secondary_visual,secondary_action,  is_open, last_secondary):
+    def toggle_modal_action_btn (open, close, create, secondary_visual, secondary_action,  is_open, last_secondary):
         ctx = dash.callback_context
         if not ctx.triggered:
             raise PreventUpdate
@@ -200,12 +157,16 @@ def register_toggle_modal_action_btn(app):
                     header = f'Add Secondary Layer for Visual {diff_index}'
                     return style, secondary_action_btn_markup(diff_index), True, header, secondary_visual
             raise PreventUpdate
+
         elif input_type == 'secondary-action-btn':
             return dash.no_update, dash.no_update, False, dash.no_update, secondary_visual
 
+        #else
         header = dash.no_update if input_type == 'cancel-create-visual' else 'Create Visualization'
         style = {'display':'block'}
         return style, None, not is_open, header, secondary_visual
+
+
 #############################################################################################################################################
 
 
@@ -248,40 +209,16 @@ def register_enable_create_btn(app):
 #############################################################################################################################################
 
 
-# def register_clear_upload(app):
-#     @app.callback(
-#         Output('upload-data', 'contents') ,
-#         [Input('close','n_clicks'), Input('create','n_clicks')],
-#         prevent_initial_call=True
-#     )
-#     def clear_upload (close,create):
-#         return None
-
 def register_update_dt_dropdown(app):
     @app.callback(
         Output('dataset-window', 'children') ,
         [
-            # Input('open-select-modal','n_clicks'),
-            # Input('cancel-create-visual','n_clicks'),
-            # Input('create-visual','n_clicks'),
             Input("modal", "is_open")
         ],
         prevent_initial_call=True
     )
     def update_dt_dropdown (is_open):
-        # ctx = dash.callback_context
-        # if not ctx.triggered:
-        #     input_type = 'No input yet'
-        #     input_value=None
-        # else:
-        #     input_type = get_ctx_type(ctx)
-        #     input_value = get_ctx_value(ctx)
-        # if input_type == 'open-select-modal':
-        #     return dropdown_markup(client.get_list_measurements())
-        # elif input_type == 'cancel-create-visual' or 'create-visual':
-        #     return None
-        # else:
-        #     raise PreventUpdate
+
         if is_open:
             return dropdown_markup(client.get_list_measurements())
         return None
@@ -318,28 +255,6 @@ def register_validate_sm_create(app):
     )
     def validate_sm_create (lat, long, size, color, name, msg, data):
         return validate_create(data)
-
-
-#############################################################################################################################################
-
-
-# def register_validate_sg_create(app):
-#     @app.callback(
-#         Output(SG_PARAM, 'data') ,
-#         [
-#             Input("sg_latitude", "value"),
-#             Input("sg_longitude", "value"),
-#             Input("sg_size", "value"),
-#             Input("sg_color", "value"),
-#             Input("sg_name", "value"),
-#             # Input("sg_frame", "value"),
-#             Input("sg_message", "value"),
-#         ],
-#         State(SG_PARAM, 'data'),
-#         prevent_initial_call=True
-#     )
-#     def validate_sg_create (lat, long, size, color, name, msg, data):
-#         return validate_create(data)
 
 
 #############################################################################################################################################
