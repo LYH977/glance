@@ -145,9 +145,9 @@ def register_update_slider(app):
             collection.live_processing[input_index] = False
             return maxValue if atmax else dash.no_update, maxValue, maxValue
 
-        elif input_type == 'secondary-mode' and mode:
+        elif input_type == 'secondary-mode' :
+            # print(buffer)
             maxValue = len(buffer['frames']) - 1
-            # label = buffer['frames'][s_value]['name']
             return 0, maxValue, maxValue
 
 
@@ -300,6 +300,7 @@ def register_update_live_data(app):
             Input({'type': 'chosen-color-scale', 'index': MATCH}, 'data'),
             Input({'type': 'marker-data', 'index': MATCH}, 'data'),
             Input({'type': 'secondary-data', 'index': MATCH}, 'data'),
+            # Input({'type': 'del-secondary-btn', 'index': MATCH}, 'n_clicks'),
 
         ],
         [
@@ -309,11 +310,12 @@ def register_update_live_data(app):
             State({'type': 'db-name', 'index': MATCH}, 'data'),
             State({'type': 'back-buffer', 'index': MATCH}, 'data'),
             State({'type': 'new-column-info', 'index': MATCH}, 'data'),
+            State({'type': 'backup-frames', 'index': MATCH}, 'data'),
 
         ],
         prevent_initial_call=True
     )
-    def update_live_data(live, legend, mapbox, colorscale, marker, secondary,  ts, format,  param, dbname, buffer, info):
+    def update_live_data(live, legend, mapbox, colorscale, marker, secondary,  ts, format,  param, dbname, buffer, info, backup_frames):
         # print(ts)
         ctx = dash.callback_context
         input_index = None
@@ -376,16 +378,26 @@ def register_update_live_data(app):
             return dash.no_update, fig2, dash.no_update, dash.no_update
 
         elif input_type == 'secondary-data':
-            fig2 = buffer
-            fig2['data'][2] = secondary['frames'][0]['data'][0]
-            fig2['layout']['coloraxis2'] = secondary['coloraxis']
-            fig2['layout']['coloraxis']['colorbar']['y'] = 0.496
-            fig2['layout']['coloraxis']['colorbar']['len'] = 0.505
-            fig2['layout']['coloraxis']['colorbar']['title']['text'] = fig2['layout']['coloraxis']['colorbar']['title']['text'] + '(1)'
-            merged = merge_frames(fig2['frames'], secondary['frames'])
-            fig2['frames'] = merged['frames']
-            # print('figure', fig2)
-            return dash.no_update, fig2, True, {'frames0': merged['frames0'], 'frames2': merged['frames2']}
+            if len(secondary) != 0:
+                fig2 = buffer
+                fig2['data'][2] = secondary['frames'][0]['data'][0]
+                fig2['layout']['coloraxis2'] = secondary['coloraxis']
+                fig2['layout']['coloraxis']['colorbar']['y'] = 0.496
+                fig2['layout']['coloraxis']['colorbar']['len'] = 0.505
+                fig2['layout']['coloraxis']['colorbar']['title']['text'] = fig2['layout']['coloraxis']['colorbar']['title']['text'] + '(1)'
+                merged = merge_frames(fig2['frames'], secondary['frames'])
+                fig2['frames'] = merged['frames']
+                # print('figure', fig2)
+                return dash.no_update, fig2, True, {'frames0': merged['frames0'], 'frames2': merged['frames2']}
+            else:
+                fig2 = buffer
+                fig2['frames'] = backup_frames['frames0']
+                fig2['data'][0] = fig2['frames'][0]['data'][0]
+                fig2['data'][2] = reset_marker_trace()
+                fig2['layout']['coloraxis']['colorbar']['title']['text'] = fig2['layout']['coloraxis']['colorbar']['title']['text'].replace('(1)', '')
+
+                return dash.no_update, fig2, False, {}
+
 
         raise PreventUpdate
 
@@ -455,10 +467,12 @@ def register_update_celery_data(app):
             State({'type': 'my-index', 'index': MATCH}, 'data'),
             State({'type': 'redis-timestamp', 'index': MATCH}, 'data'),
             State({'type': 'celery-data', 'index': MATCH}, 'data'),
+            State({'type': 'backup-celery', 'index': MATCH}, 'data')
+
         ]
         # prevent_initial_call=True
     )
-    def update_celery_data(interval,rows, secondary, slider, index, now, old_celery):
+    def update_celery_data(interval,rows, secondary, slider, index, now, celery, backup_celery):
         ctx = dash.callback_context
         # input_index = None
         if not ctx.triggered:
@@ -467,44 +481,49 @@ def register_update_celery_data(app):
             input_type = get_ctx_type(ctx)
             # input_index = get_ctx_index(ctx)
         if input_type == 'celery-interval':
-            if not secondary: # not multilayer
-                try:
-                    result = redis_instance.get(f'{index}-{now}').decode("utf-8")
-                    result = json.loads(result)
-                    ctx = dash.callback_context
-                    input_index = get_ctx_index(ctx)
-                    # get max and min of current frame
-                    count = {
-                        MAXIMUM: result[str(slider)][MAXIMUM]['count'],
-                        MINIMUM: result[str(slider)][MINIMUM]['count'],
-                    }
+            # if not secondary: # not multilayer
+            try:
+                result = redis_instance.get(f'{index}-{now}').decode("utf-8")
+                result = json.loads(result)
+                # print(result)
+                ctx = dash.callback_context
+                input_index = get_ctx_index(ctx)
+                count = {
+                    MAXIMUM: result[str(slider)][MAXIMUM]['count'],
+                    MINIMUM: result[str(slider)][MINIMUM]['count'],
+                }
+                if not secondary:
                     return result, True, collapse_markup(input_index, count), dash.no_update
-                except Exception as e:
-                    print('celery error', e)
-                    return dash.no_update, False, dash.no_update, dash.no_update
-            else: # multilayer mode
-                try:
-                    result = redis_instance.get(f'{index}-{now}').decode("utf-8")
-                    result = json.loads(result)
-                    ctx = dash.callback_context
-                    input_index = get_ctx_index(ctx)
-                    # get max and min of current frame
-                    count = {
-                        MAXIMUM: result[str(slider)][MAXIMUM]['count'],
-                        MINIMUM: result[str(slider)][MINIMUM]['count'],
-                    }
+                else:
                     return result, True, collapse_markup(input_index, count), dash.no_update
-                except Exception as e:
-                    print('celery error', e)
-                    return dash.no_update, False, dash.no_update, dash.no_update
+            except Exception as e:
+                print('celery error', e)
+                return dash.no_update, False, dash.no_update, dash.no_update
+            # else: # multilayer mode
+            #     try:
+            #         result = redis_instance.get(f'{index}-{now}').decode("utf-8")
+            #         result = json.loads(result)
+            #         ctx = dash.callback_context
+            #         input_index = get_ctx_index(ctx)
+            #         count = {
+            #             MAXIMUM: result[str(slider)][MAXIMUM]['count'],
+            #             MINIMUM: result[str(slider)][MINIMUM]['count'],
+            #         }
+            #         return result, True, collapse_markup(input_index, count), dash.no_update
+            #     except Exception as e:
+            #         print('celery error', e)
+            #         return dash.no_update, False, dash.no_update, dash.no_update
 
 
         elif input_type == 'last-total-rows':
             return dash.no_update, False, dash.no_update, dash.no_update
 
         elif input_type == 'secondary-mode':
+            if secondary:
+                return dash.no_update, False, dash.no_update, celery
+            else:
+                return backup_celery, True, dash.no_update, {}
 
-            return dash.no_update, False, dash.no_update, old_celery
         raise PreventUpdate
 
 
@@ -618,17 +637,19 @@ def register_update_last_celery_key(app):
                 now = datetime.now().timestamp()
                 result = task.process_dataset.delay(input_index, collection.data[input_index].to_dict(), param[current_ind]['vtype'], param[current_ind]['parameter'], now)
                 return current_rows, now
+
         elif input_type == 'secondary-data':
-            now = datetime.now().timestamp()
-            result = task.process_dataset.delay(
-                input_index,
-                collection.temp.to_dict(),
-                modal_param['vtype'],
-                modal_param['parameter'],
-                now,
-                old_celery
-            )
-            return dash.no_update, now
+            if len(secondary) != 0:
+                now = datetime.now().timestamp()
+                result = task.process_dataset.delay(
+                    input_index,
+                    collection.temp.to_dict(),
+                    modal_param['vtype'],
+                    modal_param['parameter'],
+                    now,
+                    old_celery
+                )
+                return dash.no_update, now
         raise PreventUpdate
 
 
@@ -858,18 +879,14 @@ def register_toggle_coordinate_apply_btn(app):
 
 # ############################################################################################################################################
 
-# def update_coloraxis_info(vtype, figure):
-#     if vtype == DENSITY:
-#         for f in figure['frames']:
-#             f['data'][0]['coloraxis'] = 'coloraxis2'
-#     else:
-#         for f in figure['frames']:
-#             f['data'][0]['marker']['coloraxis'] = 'coloraxis2'
 
 def register_update_secondary_frames(app):
     @app.callback(
         Output({'type': 'secondary-data', 'index': MATCH}, 'data'),
-        Input({'type': 'secondary-action-btn', 'index': MATCH}, 'n_clicks'),
+        [
+            Input({'type': 'secondary-action-btn', 'index': MATCH}, 'n_clicks'),
+            Input({'type': 'del-secondary-btn', 'index': MATCH}, 'n_clicks'),
+        ],
         [
             State('last-param', 'data'),
             State({'type': 'frame-format', 'index': MATCH}, 'data'),
@@ -877,22 +894,24 @@ def register_update_secondary_frames(app):
         ],
         prevent_initial_call=True
     )
-    def update_secondary_frames(click, param, tformat, dbname):
-        if click >0:
+    def update_secondary_frames(click, del_click, param, tformat, dbname):
+        ctx = dash.callback_context
+        if not ctx.triggered:
+            raise PreventUpdate
+        input_type = get_ctx_type(ctx)
+        if input_type == 'secondary-action-btn' and click >0:
             collection.temp = collection.temp.dropna()
             collection.temp.reset_index(drop=True, inplace=True)
             collection.temp[FRAME] = collection.temp[TIME].map(lambda x: formatted_time_value(x, tformat))
             figure = create_figure(collection.temp, param['parameter'], param['vtype'], False)
             configure_coloraxis(figure)
             figure = figure.to_dict()
-            # frames = []
             for f in figure['frames']:
                 f['data'][0]['secondary'] = True
                 if param['vtype'] == DENSITY:
                     f['data'][0]['coloraxis'] = 'coloraxis2'
                 else:
                     f['data'][0]['marker']['coloraxis'] = 'coloraxis2'
-
             secondary_data = {
                 'frames': figure['frames'],
                 'coloraxis': figure['layout']['coloraxis']
@@ -900,7 +919,53 @@ def register_update_secondary_frames(app):
             secondary_data['coloraxis']['colorbar']['y'] = 0.01
             secondary_data['coloraxis']['colorbar']['len'] = 0.495
             secondary_data['coloraxis']['colorbar']['title']['text'] = secondary_data['coloraxis']['colorbar']['title']['text'] + '(2)'
-
-            # print(secondary_data)
             return secondary_data
+        elif input_type == 'del-secondary-btn' and del_click>0:
+            return {}
         raise PreventUpdate
+
+
+# ############################################################################################################################################
+
+def register_toggle_secondary_btn_visibility(app):
+    @app.callback(
+        [
+            Output({'type': 'secondary-visual-btn', 'index': MATCH}, 'style'),
+            Output({'type': 'del-secondary-btn', 'index': MATCH}, 'style'),
+        ],
+        Input({'type': 'secondary-mode', 'index': MATCH}, 'data'),
+        prevent_initial_call=True
+    )
+    def toggle_secondary_btn_visibility(secondary):
+        display1 = 'none' if secondary else 'block'
+        display2 = 'block' if secondary else 'none'
+        return {'display':display1}, {'display':display2}
+
+# ############################################################################################################################################
+
+def register_toggle_live_mode(app):
+    @app.callback(
+        [
+            Output({'type': 'live-mode', 'index': MATCH}, 'on'),
+            Output({'type': 'live-mode', 'index': MATCH}, 'disabled'),
+        ],
+        Input({'type': 'secondary-data', 'index': MATCH}, 'data'),
+        prevent_initial_call=True
+    )
+    def toggle_live_mode(secondary):
+        condition = len(secondary) !=0
+        isOn = False if condition else dash.no_update
+        isDisabled = True if condition else False
+        return isOn, isDisabled
+
+# ############################################################################################################################################
+
+def register_toggle_add_secondary_visual_btn(app):
+    @app.callback(
+
+        Output({'type': 'secondary-visual-btn', 'index': MATCH}, 'disabled'),
+        Input({'type': 'live-mode', 'index': MATCH}, 'on'),
+        prevent_initial_call=True
+    )
+    def toggle_add_secondary_visual_btn(live):
+        return True if live else False

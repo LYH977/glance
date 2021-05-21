@@ -57,7 +57,8 @@ def live_mode_markup(create_clicks):
                 id={'type': 'live-mode', 'index': create_clicks},
                 on=False,
                 color="#9B51E0",
-                label=f'Live Mode {create_clicks}'
+                label=f'Live Mode {create_clicks}',
+                disabled=False
             ),
             header=True
         ),

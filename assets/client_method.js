@@ -55,28 +55,6 @@ const get_ctx_value = (ctx) => { return ctx['value'] }
 
 
 const change_frame = (ftype, fig2, value, backup_frames) => {
-//    let current_data_1 = fig2['frames'][value]['data'][0]
-//    if (current_data_1.hasOwnProperty("secondary")){            //only one data in the frame
-//        fig2['data'][2] = current_data_1
-//        fig2['data'][0] = reset_trace()
-//        fig2 = set_full_legend_style(fig2, 'coloraxis2', FULL)
-//    }
-//    else{                                                       //two data in the frame
-//       fig2['data'][0] = current_data_1
-//       if(fig2['frames'][value]['data'].length == 2){
-//           fig2['data'][2] = fig2['frames'][value]['data'][1]
-//           fig2 = set_full_legend_style(fig2, 'coloraxis', FIRST)
-//           fig2 = set_full_legend_style(fig2, 'coloraxis2', SECOND)
-//
-//       }
-//       else{
-//           fig2= set_full_legend_style(fig2, 'coloraxis', FULL)
-//       }
-//    }
-//   fig2['layout']['title']['text'] = fig2['frames'][value]['name']
-
-
-   //////////////////////////////
 
     if(Object.keys(backup_frames).length !== 0){//multulayer
         let pointers = fig2['frames'][value]['pointers']
@@ -217,14 +195,16 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 return fig2
             }
             else if(input_type == 'secondary-data'){
-                fig2 = JSON.parse(JSON.stringify(new_fig))
-                fig2['data'][2] = secondary['frames'][0]['data'][0]
-                fig2['layout']['coloraxis2'] = secondary['coloraxis']
-                fig2['layout']['coloraxis']['colorbar']['y'] = 0.496
-                fig2['layout']['coloraxis']['colorbar']['len'] = 0.505
+                if (Object.keys(secondary).length !== 0){
+                    fig2 = JSON.parse(JSON.stringify(new_fig))
+                    fig2['data'][2] = secondary['frames'][0]['data'][0]
+                    fig2['layout']['coloraxis2'] = secondary['coloraxis']
+                    fig2['layout']['coloraxis']['colorbar']['y'] = 0.496
+                    fig2['layout']['coloraxis']['colorbar']['len'] = 0.505
+                    change_frame(param[current_ind]['vtype'], fig2, value, backup_frames)
+                    return fig2
+                }
 
-                change_frame(param[current_ind]['vtype'], fig2, value, backup_frames)
-                return fig2
             }
             throw window.dash_clientside.PreventUpdate
         },
