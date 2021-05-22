@@ -28,20 +28,23 @@ import time
 
 
 
-def assign_param(data, type):
-    ctx = dash.callback_context
-    input_value = None
-    if not ctx.triggered:
-        input_type = 'No input yet'
-        raise PreventUpdate
-    else:
-        input_type = get_ctx_type(ctx)
-        input_value = get_ctx_value(ctx)
-    input_type = input_type.replace(EDIT_MODAL, '')
-    data['parameter'][input_type] = input_value
-    # data['type'] = type
-    # print(data['parameter'])
-    return data['parameter']
+# def assign_param(data, type):
+#
+#     ctx = dash.callback_context
+#     input_value = None
+#     if not ctx.triggered:
+#         input_type = 'No input yet'
+#         print(ctx.triggered)
+#         return data
+#     else:
+#         input_type = get_ctx_type(ctx)
+#         input_value = get_ctx_value(ctx)
+#     input_type = input_type.replace(EDIT_MODAL, '')
+#     data['parameter'][input_type] = input_value
+#     # data['type'] = type
+#     # print(data['parameter'])
+#     print('data:', data)
+#     return data
 
 #############################################################################################################################################
 
@@ -53,6 +56,11 @@ def register_toggle_open_edit_modal(app):
             Output("edit-modal-head", "children"),
             Output("edit-visual-portal", "children"),
             Output({'type': "last-edit-click-ts", 'index': ALL}, "data"),
+            Output("last-saved-param", "data"),
+            Output("last-saved-tformat", "data"),
+            Output("edit-location", "data"),
+            Output("edit-index", "data"),
+
         ],
         [
             Input({'type': "edit-visual-btn", 'index': ALL}, "n_clicks_timestamp"),
@@ -78,13 +86,17 @@ def register_toggle_open_edit_modal(app):
                 if first != second:
                     diff_index = get_ctx_index(ctx)
                     header = f'Edit Visual {diff_index} ({old_param[index]["vtype"]})'
-                    return  True, header, edit_visual_portal_markup(old_param[index], columns[index], tformat[index]), edit_ts
+                    return  True, \
+                            header,\
+                            edit_visual_portal_markup(old_param[index], columns[index], tformat[index]), \
+                            edit_ts, \
+                            old_param[index], tformat[index], index, diff_index
 
         elif input_type == 'cancel-edit-visual' and cancel >0:
-            return False, dash.no_update, None, edit_ts
+            return False, dash.no_update, None, edit_ts, dash.no_update, dash.no_update, dash.no_update, dash.no_update
         elif input_type == 'confirm-edit-visual' and confirm >0:
             print('b',param_to_edit)
-            return False, dash.no_update, None, edit_ts
+            return False, dash.no_update, None, edit_ts, dash.no_update, dash.no_update, dash.no_update, dash.no_update
         raise PreventUpdate
 
 
@@ -105,10 +117,18 @@ def register_validate_sm_create_edit_modal(app):
             Input("sm_message_edit_modal", "value"),
         ],
         State(SM_PARAM+EDIT_MODAL, 'data'),
-        prevent_initial_call=True
+        # prevent_initial_call=True
     )
     def validate_sm_create_edit_modal (lat, long, size, color, name, msg, data):
-        return assign_param(data, SCATTER_MAP)
+        data['parameter']['sm_latitude_edit_modal'] = lat
+        data['parameter']['sm_longitude_edit_modal'] = long
+        data['parameter']['sm_size_edit_modal'] = size
+        data['parameter']['sm_color_edit_modal'] = color
+        data['parameter']['sm_name_edit_modal'] = name
+        data['parameter']['sm_message_edit_modal'] = msg
+
+
+        return data
 
 
 #############################################################################################################################################
@@ -123,10 +143,14 @@ def register_validate_bc_create_edit_modal(app):
             # Input("bc_frame", "value"),
         ],
         State(BC_PARAM+EDIT_MODAL, 'data'),
-        prevent_initial_call=True
+        # prevent_initial_call=True
     )
     def validate_bc_create_edit_modal (item, value, data):
-        return assign_param(data, BAR_CHART_RACE)
+        print('bc')
+        data['parameter']['bc_item'] = item
+        data['parameter']['bc_value'] = value
+        return data
+        # return assign_param(data, BAR_CHART_RACE)
 
 
 #############################################################################################################################################
@@ -142,10 +166,16 @@ def register_validate_d_create_edit_modal(app):
             Input("d_message_edit_modal", "value"),
         ],
         State(D_PARAM+EDIT_MODAL, 'data'),
-        prevent_initial_call=True
+        # prevent_initial_call=True
     )
     def validate_d_create_edit_modal (lat, long, z, msg, data):
-        return assign_param(data, DENSITY)
+
+        data['parameter']['d_latitude'] = lat
+        data['parameter']['d_longitude'] = long
+        data['parameter']['d_z'] = z
+        data['parameter']['d_message'] = msg
+        return data
+        # return assign_param(data, DENSITY)
 
 
 #############################################################################################################################################
@@ -162,10 +192,14 @@ def register_validate_ch_create_edit_modal(app):
             Input("ch_message_edit_modal", "value"),
         ],
         State(CH_PARAM+EDIT_MODAL, 'data'),
-        prevent_initial_call=True
+        # prevent_initial_call=True
     )
     def validate_ch_create_edit_modal (loc, color, name, msg, data):
-        return assign_param(data, CHOROPLETH)
+        data['parameter']['ch_locations'] = loc
+        data['parameter']['ch_color'] = color
+        data['parameter']['ch_name'] = name
+        data['parameter']['ch_message'] = msg
+        return data
 
 
 #############################################################################################################################################
@@ -179,10 +213,12 @@ def register_validate_ca_create_edit_modal(app):
             # Input("ca_frame", "value"),
         ],
         State(CA_PARAM+EDIT_MODAL, 'data'),
-        prevent_initial_call=True
+        # prevent_initial_call=True
     )
     def validate_ca_create_edit_modal (item, data):
-        return assign_param(data, CAROUSEL)
+        data['parameter']['ca_item'] = item
+
+        return data
 
 
 #############################################################################################################################################
@@ -191,19 +227,28 @@ def register_validate_ca_create_edit_modal(app):
 def register_update_chosen_tformat_edit_modal(app):
     @app.callback(
         Output('chosen-tformat_edit_modal', 'data') ,
-        Input("time-format_edit_modal", "value"),
+        [
+            Input("time-format_edit_modal", "value"),
+        ],
         prevent_initial_call=True
     )
     def update_chosen_tformat_edit_modal (value):
-        return value
+        ctx = dash.callback_context
+        if not ctx.triggered:
+            raise PreventUpdate
+        input_type = get_ctx_type(ctx)
+        if input_type == 'time-format_edit_modal':
+            return value
+        # elif input_type == 'last-saved-tformat':
+        #     return last
+        raise PreventUpdate
 #############################################################################################################################################
 
 
 def register_assign_param_to_edit(app):
     @app.callback(
-        [
-            Output('param-to-edit', 'data'),
-        ] ,
+
+        Output('param-to-edit', 'data'),
         [
             Input(SM_PARAM+EDIT_MODAL,'data'),
             # Input(SG_PARAM, 'data'),
@@ -211,6 +256,7 @@ def register_assign_param_to_edit(app):
             Input(CH_PARAM+EDIT_MODAL, 'data'),
             Input(CA_PARAM+EDIT_MODAL, 'data'),
             Input(BC_PARAM+EDIT_MODAL, 'data'),
+            Input('last-saved-param', 'data'),
 
         ],
         # [
@@ -218,20 +264,31 @@ def register_assign_param_to_edit(app):
         # ],
         prevent_initial_call=True
     )
-    def enable_create_btn (sm,  d, ch, ca, bc, ):
+    def assign_param_to_edit (sm,  d, ch, ca, bc, last):
         ctx = dash.callback_context
         if not ctx.triggered:
             raise PreventUpdate
         else:
             input_type = get_ctx_type(ctx)
+            # input_value = get_ctx_value(ctx)
+
+        if input_type == 'last-saved-param':
+            # print(1)
+            return last
+        if len(ctx.triggered)>1:
+            for c in ctx.triggered:
+                if c['value']['parameter'] is None:
+                    continue
+                input_value = c['value']
+                print('1', input_value)
+                return input_value
+                break
+            raise PreventUpdate
+        else:
             input_value = get_ctx_value(ctx)
-
-        print('a ',input_value)
-        if input_value['parameter'] is not None :
-            # data = {'vtype': vtype, 'parameter':input_value['parameter'] }
-
+            print('2',input_value)
             return input_value
-        raise PreventUpdate
+
 
 #############################################################################################################################################
 
@@ -239,19 +296,26 @@ def register_assign_param_to_edit(app):
 def register_toggle_edit_btn(app):
     @app.callback(
         Output('confirm-edit-visual', 'disabled') ,
-        Input("param-to-edit", "data"),
+        [
+            Input("param-to-edit", "data"),
+            Input("chosen-tformat_edit_modal", "data"),
+        ],
+        [
+            State("last-saved-param", "data"),
+            State("last-saved-tformat", "data"),
+        ],
         prevent_initial_call=True
     )
-    def toggle_edit_btn (data):
-        return True if len(data) == 0 else False
+    def toggle_edit_btn (param, tformat, last_param, last_tformat):
+        return True if param == last_param and tformat == last_tformat else False
 
 #############################################################################################################################################
 
 
-# def register_toggle_param_to_edit(app):
+# def register_toggle_edit_btn(app):
 #     @app.callback(
-#         Output('param-to-edit', 'data') ,
-#         Input("param-to-edit", "data"),
+#         Output('confirm-edit-visual', 'disabled') ,
+#         Input("last-saved-tformat", "data"),
 #         prevent_initial_call=True
 #     )
 #     def toggle_edit_btn (data):

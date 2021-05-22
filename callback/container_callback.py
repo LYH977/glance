@@ -26,7 +26,8 @@ def register_update_visual_container(app):
             # Input({'type': 'visualization-container', 'index': ALL}, 'style'),
             Input({'type': 'dlt-btn', 'index': ALL}, 'n_clicks'),
             Input({'type': 'left-arrow', 'index': ALL}, 'n_clicks'),
-            Input({'type': 'right-arrow', 'index': ALL}, 'n_clicks')
+            Input({'type': 'right-arrow', 'index': ALL}, 'n_clicks'),
+            Input("confirm-edit-visual", "n_clicks"),
 
         ],
         [
@@ -34,10 +35,13 @@ def register_update_visual_container(app):
             State('last-param', 'data'),
             State('chosen-tformat', 'data'),
             State('chosen-dropdown', 'data'),
-
+            State("param-to-edit", "data"),
+            State("chosen-tformat_edit_modal", "data"),
+            State("edit-location", "data"),
+            State("edit-index", "data"),
         ],
         prevent_initial_call=True)
-    def update_visual_container(create_clicks,  dlt_btn, left, right ,div_children, param, tformat, dbname):
+    def update_visual_container(create_clicks,  dlt_btn, left, right , confirm_edit, div_children, param, tformat, dbname, param_to_edit, chosen_tformat,edit_location, edit_index):
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
@@ -110,6 +114,33 @@ def register_update_visual_container(app):
                     div_children = swapPositions(div_children, i, i+1)
                     break
             return div_children, dash.no_update
+
+        elif input_type == 'confirm-edit-visual' and confirm_edit>0 :
+            # raise PreventUpdate
+
+            collection.live_processing[create_clicks] = False
+            now = datetime.now().timestamp()
+            if param['vtype'] == CAROUSEL:  # carousel
+                temp = []
+                for row in collection.temp.index:
+                    temp.append(create_ca_img(collection.temp.loc[row, param['parameter'][CAROUSEL_CONSTANT[ITEM]]]))
+                collection.img_container[create_clicks] = temp
+            else:  # other than carousel
+                result = task.process_dataset.delay(create_clicks, collection.data[edit_index].to_dict(), param_to_edit['vtype'],
+                                                    param_to_edit['parameter'], now)
+                # task.process_dataset(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'], now)
+            # print(param)
+            new_child = container.render_container(edit_index, param_to_edit, chosen_tformat, dbname, now, collection.new_col)
+            div_children.append(new_child)
+            toast = {
+                'children': f"Visualization {create_clicks} is successfully created.",
+                'is_open': True,
+                'icon': 'success',
+                'header': 'SUCCESS'
+            }
+            collection.new_col = {'expression': [], 'numeric_col': []}
+            return div_children, toast
+
         raise PreventUpdate
 
 

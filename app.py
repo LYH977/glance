@@ -10,7 +10,7 @@ from callback.dashboard_callback import register_update_dashboard
 from callback.edit_visual_callback import register_toggle_open_edit_modal, register_validate_bc_create_edit_modal, \
     register_validate_d_create_edit_modal, register_validate_sm_create_edit_modal, \
     register_validate_ch_create_edit_modal, register_update_chosen_tformat_edit_modal, register_assign_param_to_edit, \
-    register_validate_ca_create_edit_modal
+    register_validate_ca_create_edit_modal, register_toggle_edit_btn
 from callback.navbar_callback import register_update_adjust_btn_color, register_toggle_is_adjusting_status, \
     register_toggle_mask_interface, register_disable_floating_btn
 
@@ -150,16 +150,12 @@ register_disable_floating_btn(app)
 register_toggle_open_edit_modal(app)
 register_validate_sm_create_edit_modal(app)
 register_validate_bc_create_edit_modal(app)
-
 register_validate_d_create_edit_modal(app)
-
 register_validate_ch_create_edit_modal(app)
-
 register_validate_ca_create_edit_modal(app)
-
 register_update_chosen_tformat_edit_modal(app)
-
 register_assign_param_to_edit(app)
+register_toggle_edit_btn(app)
 
 server = app.server
 

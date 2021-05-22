@@ -19,9 +19,13 @@ from utils.method import get_key
 
 edit_modal = html.Div(
     [
-
+        dcc.Store(id='edit-index', data=None),
+        dcc.Store(id='edit-location', data= None),
         dcc.Store(id='param-to-edit', data={}),
+        dcc.Store(id='last-saved-param', data={}),
         dcc.Store(id='chosen-tformat_edit_modal', data= YEAR),
+        dcc.Store(id='last-saved-tformat', data=YEAR),
+
         # dcc.Store(id='chosen-dropdown', data= None),
         dbc.Modal(
             [
@@ -120,12 +124,11 @@ def edit_visual_portal_markup(old_param, columns, tformat):
                 for label, id, value, multi in unpack_edit_parameter( FIGURE_PARAM[type], old_param['parameter'] ) ]
     options.append(time_format_option(tformat))
     return html.Div([
-        dcc.Store(id=SM_PARAM+EDIT_MODAL, data={'type': SCATTER_MAP,'parameter': parameter if type == SCATTER_MAP else None}),
-        # dcc.Store(id=SG_PARAM, data={'type': ,'parameter': parameter if type == SCATTER_GEO else None}),
-        dcc.Store(id=D_PARAM+EDIT_MODAL, data={'type': DENSITY,'parameter': parameter if type == DENSITY else None}),
-        dcc.Store(id=CH_PARAM+EDIT_MODAL, data={'type': CHOROPLETH,'parameter': parameter if type == CHOROPLETH else None}),
-        dcc.Store(id=CA_PARAM+EDIT_MODAL, data={'type': CAROUSEL,'parameter': parameter if type == CAROUSEL else None}),
-        dcc.Store(id=BC_PARAM+EDIT_MODAL, data={'type': BAR_CHART_RACE,'parameter': parameter if type == BAR_CHART_RACE else None}),
+        dcc.Store(id=SM_PARAM+EDIT_MODAL, data={  'vtype': SCATTER_MAP,'parameter': parameter if type == SCATTER_MAP else None,  }),
+        dcc.Store(id=D_PARAM+EDIT_MODAL, data={'vtype': DENSITY,'parameter': parameter if type == DENSITY else None,}),
+        dcc.Store(id=CH_PARAM+EDIT_MODAL, data={'vtype': CHOROPLETH,'parameter': parameter if type == CHOROPLETH else None,}),
+        dcc.Store(id=CA_PARAM+EDIT_MODAL, data={'vtype': CAROUSEL,'parameter': parameter if type == CAROUSEL else None,}),
+        dcc.Store(id=BC_PARAM+EDIT_MODAL, data={'vtype': BAR_CHART_RACE,'parameter': parameter if type == BAR_CHART_RACE else None,}),
 
         dbc.Form(
             options,
