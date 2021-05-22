@@ -153,7 +153,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                     new_max = new_fig['frames'].length
                     val = new_max - 1
                 }
-                change_frame(param[current_ind]['vtype'], fig2, val,backup_frames)
+                change_frame(param['vtype'], fig2, val,backup_frames)
                 return fig2
             }
             else if(input_type == 'legend-theme'){
@@ -168,14 +168,14 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                     fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(0,0,0,1)'
                     fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
                 }
-                change_frame(param[current_ind]['vtype'], fig2, value, backup_frames)
+                change_frame(param['vtype'], fig2, value, backup_frames)
                 return fig2
             }
 
             else if(input_type == 'mapbox-type'){
                 fig2 = JSON.parse(JSON.stringify(new_fig))
                 fig2['layout']['mapbox']['style'] = mapbox
-                change_frame(param[current_ind]['vtype'], fig2, value, backup_frames)
+                change_frame(param['vtype'], fig2, value, backup_frames)
                 return fig2
             }
 
@@ -185,13 +185,13 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 console.log(fig2)
 //                fig2['data'][1] = insert_marker()
 //                fig2['data'][1] = fig2['frames'][2]['data'][0]
-                change_frame(param[current_ind]['vtype'], fig2, value , backup_frames)
+                change_frame(param['vtype'], fig2, value , backup_frames)
                 return fig2
             }
             else if(input_type == 'marker-data'){
                 fig2 = JSON.parse(JSON.stringify(new_fig))
                 fig2['data'][1] = marker
-                change_frame(param[current_ind]['vtype'], fig2, value,backup_frames)
+                change_frame(param['vtype'], fig2, value,backup_frames)
                 return fig2
             }
             else if(input_type == 'secondary-data'){
@@ -201,7 +201,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                     fig2['layout']['coloraxis2'] = secondary['coloraxis']
                     fig2['layout']['coloraxis']['colorbar']['y'] = 0.496
                     fig2['layout']['coloraxis']['colorbar']['len'] = 0.505
-                    change_frame(param[current_ind]['vtype'], fig2, value, backup_frames)
+                    change_frame(param['vtype'], fig2, value, backup_frames)
                     return fig2
                 }
 

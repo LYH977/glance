@@ -327,7 +327,7 @@ def register_update_live_data(app):
 
         if input_type =='live-interval' and collection.live_processing[input_index] is False:
             collection.live_processing[input_index] = True
-            result = select_query(dbname['0'], 'where time >{}'.format(ts))
+            result = select_query(dbname, 'where time >{}'.format(ts))
             if result is not None:
                 result[TIME] = result.index.map(lambda x: str(x).split('+')[0])
                 result[FRAME] = result[TIME].map(lambda x: formatted_time_value(x, format))
@@ -339,7 +339,7 @@ def register_update_live_data(app):
                     result[ exp['name'] ] = new_col
                 last_nano = get_last_timestamp(result[TIME])
                 collection.data[input_index] = collection.data[input_index].append(result, ignore_index=True)
-                fig = create_figure(collection.data[input_index], param[current_ind]['parameter'], param[current_ind]['vtype'])
+                fig = create_figure(collection.data[input_index], param['parameter'], param['vtype'])
                 return last_nano, fig, dash.no_update, dash.no_update
             collection.live_processing[input_index] = False
             raise PreventUpdate
@@ -627,7 +627,7 @@ def register_update_last_celery_key(app):
             current_rows = len(collection.data[input_index].index)
             if last_rows < current_rows:
                 now = datetime.now().timestamp()
-                result = task.process_dataset.delay(input_index, collection.data[input_index].to_dict(), param[current_ind]['vtype'], param[current_ind]['parameter'], now)
+                result = task.process_dataset.delay(input_index, collection.data[input_index].to_dict(), param['vtype'], param['parameter'], now)
 
                 return current_rows, now
 
@@ -635,7 +635,7 @@ def register_update_last_celery_key(app):
             current_rows = len(collection.data[input_index].index)
             if interval != 0  and interval % 5 == 0 and last_rows < current_rows:
                 now = datetime.now().timestamp()
-                result = task.process_dataset.delay(input_index, collection.data[input_index].to_dict(), param[current_ind]['vtype'], param[current_ind]['parameter'], now)
+                result = task.process_dataset.delay(input_index, collection.data[input_index].to_dict(), param['vtype'], param['parameter'], now)
                 return current_rows, now
 
         elif input_type == 'secondary-data':
@@ -879,12 +879,26 @@ def register_toggle_coordinate_apply_btn(app):
 
 # ############################################################################################################################################
 
+def register_update_secondary_action_click(app):
+    @app.callback(
+        Output({'type': 'secondary-action-click', 'index': MATCH}, 'data'),
+        Input({'type': 'secondary-action-btn', 'index': MATCH}, 'n_clicks'),
+        State({'type': 'secondary-action-click', 'index': MATCH}, 'data'),
+        prevent_initial_call=True
+    )
+    def toggle_secondary_btn_visibility(btn, click):
+        if btn:
+            return click +1
+        raise PreventUpdate
+
+# ############################################################################################################################################
+
 
 def register_update_secondary_frames(app):
     @app.callback(
         Output({'type': 'secondary-data', 'index': MATCH}, 'data'),
         [
-            Input({'type': 'secondary-action-btn', 'index': MATCH}, 'n_clicks'),
+            Input({'type': 'secondary-action-click', 'index': MATCH}, 'data'),
             Input({'type': 'del-secondary-btn', 'index': MATCH}, 'n_clicks'),
         ],
         [
@@ -899,7 +913,10 @@ def register_update_secondary_frames(app):
         if not ctx.triggered:
             raise PreventUpdate
         input_type = get_ctx_type(ctx)
-        if input_type == 'secondary-action-btn' and click >0:
+        print('------------------')
+        print('click = ', click)
+        print('type=', input_type)
+        if input_type == 'secondary-action-click' and click >0:
             collection.temp = collection.temp.dropna()
             collection.temp.reset_index(drop=True, inplace=True)
             collection.temp[FRAME] = collection.temp[TIME].map(lambda x: formatted_time_value(x, tformat))

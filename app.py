@@ -7,6 +7,10 @@ from callback.carousel_callback import register_display_image, register_ca_updat
 
 from callback.container_callback import register_update_visual_container
 from callback.dashboard_callback import register_update_dashboard
+from callback.edit_visual_callback import register_toggle_open_edit_modal, register_validate_bc_create_edit_modal, \
+    register_validate_d_create_edit_modal, register_validate_sm_create_edit_modal, \
+    register_validate_ch_create_edit_modal, register_update_chosen_tformat_edit_modal, register_assign_param_to_edit, \
+    register_validate_ca_create_edit_modal
 from callback.navbar_callback import register_update_adjust_btn_color, register_toggle_is_adjusting_status, \
     register_toggle_mask_interface, register_disable_floating_btn
 
@@ -29,7 +33,7 @@ from callback.visualization_callback import \
     register_update_marker_namelist, register_update_marker_data, register_update_marker_marked_name, \
     register_update_marker_name_section_data, register_reset_lat_long, register_toggle_coordinate_apply_btn, \
     register_update_secondary_frames, register_toggle_secondary_btn_visibility, register_toggle_live_mode, \
-    register_toggle_add_secondary_visual_btn
+    register_toggle_add_secondary_visual_btn, register_update_secondary_action_click
 
 # meta_tags are required for the app layout to be mobile responsive
 from callback.upload_modal_callback import register_update_preview, register_update_datetime_modifier, \
@@ -94,7 +98,7 @@ register_update_marker_name_section_data(app)
 register_update_marker_marked_name(app)
 register_reset_lat_long(app)
 register_toggle_coordinate_apply_btn(app)
-# register_update_last_secondary_click_ts(app)
+register_update_secondary_action_click(app)
 register_update_secondary_frames(app)
 register_toggle_secondary_btn_visibility(app)
 register_toggle_live_mode(app)
@@ -140,6 +144,22 @@ register_toggle_mask_interface(app)
 register_update_adjust_btn_color(app)
 register_toggle_is_adjusting_status(app)
 register_disable_floating_btn(app)
+
+
+#edit_visual_callback
+register_toggle_open_edit_modal(app)
+register_validate_sm_create_edit_modal(app)
+register_validate_bc_create_edit_modal(app)
+
+register_validate_d_create_edit_modal(app)
+
+register_validate_ch_create_edit_modal(app)
+
+register_validate_ca_create_edit_modal(app)
+
+register_update_chosen_tformat_edit_modal(app)
+
+register_assign_param_to_edit(app)
 
 server = app.server
 

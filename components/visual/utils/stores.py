@@ -11,13 +11,16 @@ from utils.method import get_last_timestamp, reset_marker_trace, store_template
 
 
 def stores_markup(create_clicks, param, figure, tformat,  initial_frame, dbname, now,  new_col):
+    columns = collection.temp.columns.tolist()
+    columns.remove('frame')
     last_nano = get_last_timestamp(collection.temp[TIME])
     total_rows = len(collection.data[create_clicks].index)
     color = px.colors.convert_colors_to_same_type(px.colors.sequential.Pinkyl)
     return html.Div([
         dcc.Store(id = {'type': 'my-index', 'index': create_clicks}, data = create_clicks),
         dcc.Store(id = {'type': 'is-animating', 'index': create_clicks}, data = False),
-        dcc.Store(id = {'type': 'my_param', 'index': create_clicks}, data = store_template(param)),
+        dcc.Store(id = {'type': 'my_param', 'index': create_clicks}, data = param),
+        dcc.Store(id={'type': 'dataset-column-name', 'index': create_clicks}, data= columns),
         dcc.Store(id = {'type': 'back-buffer', 'index': create_clicks}, data = figure),
         dcc.Store(id = {'type': 'frame-format', 'index': create_clicks}, data = tformat),
         dcc.Store(id = {'type': 'last-timestamp', 'index': create_clicks}, data = last_nano),
@@ -35,6 +38,7 @@ def stores_markup(create_clicks, param, figure, tformat,  initial_frame, dbname,
         dcc.Store(id={'type': 'marker-data', 'index': create_clicks}, data = reset_marker_trace()),
         dcc.Store(id={'type': 'marker-name-section-data', 'index': create_clicks}, data = None),
         dcc.Store(id={'type': 'secondary-data', 'index': create_clicks}, data = {}),
+        dcc.Store(id={'type': 'secondary-action-click', 'index': create_clicks}, data=0),
         dcc.Store(id={'type': 'secondary-mode', 'index': create_clicks}, data = False),
         dcc.Store(id={'type': 'backup-celery', 'index': create_clicks}, data = {}),
         dcc.Store(id={'type': 'backup-frames', 'index': create_clicks}, data ={}),

@@ -190,3 +190,11 @@ def merge_frames(list1, list2):
         'frames0': list1,
         'frames2': list2
     }
+
+
+def get_key(val, dict):
+    for key, value in dict.items():
+        if val == value:
+            return key
+
+    return "key doesn't exist"

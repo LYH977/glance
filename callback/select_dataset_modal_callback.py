@@ -149,6 +149,7 @@ def register_toggle_modal_action_btn(app):
         input_type = get_ctx_type(ctx)
 
         if input_type == 'secondary-visual-btn':
+            # print('secondary-visual-btn')
             style = {'display': 'none'}
             # input_index = get_ctx_index(ctx)
             for index, (first, second) in enumerate(zip(secondary_visual, last_secondary)):
@@ -159,6 +160,7 @@ def register_toggle_modal_action_btn(app):
             raise PreventUpdate
 
         elif input_type == 'secondary-action-btn':
+            # print('secondary-action-btn')
             return dash.no_update, dash.no_update, False, dash.no_update, secondary_visual
 
         #else

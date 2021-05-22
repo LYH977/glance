@@ -8,18 +8,20 @@ from dash.exceptions import PreventUpdate
 
 from database.dbConfig import client
 from utils.constant import FIGURE_OPTION, FIGURE_PARAM, CREATE_BTN_ID, SM_PARAM, SG_PARAM, D_PARAM, CA_PARAM, CH_PARAM, \
-    BC_PARAM, SCATTER_MAP, DENSITY, CHOROPLETH, CAROUSEL, BAR_CHART_RACE, TIME_FORMAT, YEAR, SECONDARY_FIGURE_OPTION
+    BC_PARAM, SCATTER_MAP, DENSITY, CHOROPLETH, CAROUSEL, BAR_CHART_RACE, TIME_FORMAT, YEAR, SECONDARY_FIGURE_OPTION, \
+    EDIT_MODAL
 from utils import  collection
-from utils.method import unpack_parameter
 import base64
 import io
 import pandas as pd
 
-modal = html.Div(
+from utils.method import get_key
+
+edit_modal = html.Div(
     [
 
         dcc.Store(id='param-to-edit', data={}),
-        # dcc.Store(id='chosen-tformat', data= YEAR),
+        dcc.Store(id='chosen-tformat_edit_modal', data= YEAR),
         # dcc.Store(id='chosen-dropdown', data= None),
         dbc.Modal(
             [
@@ -31,7 +33,7 @@ modal = html.Div(
                     html.Div([
                         dbc.Button(
                             "Edit",
-                            id="edit-visual",
+                            id="confirm-edit-visual",
                             className="ml-auto",
                             color="success",
                             disabled=True,
@@ -53,7 +55,20 @@ modal = html.Div(
     ],
 )
 
-def parameter_option(name, id, value, columns, multi = False):
+def unpack_edit_parameter(param, old_param):
+    label  =[]
+    id  =[]
+    value= []
+    multi  =[]
+    for p_id, p_info in param.items():
+
+        label.append( p_info['label'] )
+        id.append( p_id + '_edit_modal' )
+        value.append( old_param[p_id] )
+        multi.append( p_info['multi'] )
+    return zip(label, id, value, multi)
+
+def edit_parameter_option(columns, label, id, value, multi = False):
     if not multi:
         dropdown = dbc.Select(
             style={'width': '100%'},
@@ -72,14 +87,15 @@ def parameter_option(name, id, value, columns, multi = False):
     return  \
         dbc.FormGroup(
             [
-                dbc.Label(name, className="mr-2"),
+                dbc.Label(label, className="mr-2"),
                 dropdown,
             ],
             style={'width': '50%', 'padding':'5px'}
         )
 
 
-def time_format_option():
+def time_format_option(tformat):
+    value = get_key(tformat, TIME_FORMAT)
     return  \
         dbc.FormGroup(
                     [
@@ -89,10 +105,31 @@ def time_format_option():
                             id='time-format',
                             options=[{"label": i, "value": j} for i, j in
                                      zip(TIME_FORMAT.keys(), TIME_FORMAT.values())],
-                            value=YEAR
+                            value=value
                         )
                     ],
                     style={'width': '50%', 'padding':'5px'}
         )
 
-def edit_visual_portal_markup(vtype):
+def edit_visual_portal_markup(old_param, columns, tformat):
+    parameter={}
+    type = old_param['vtype']
+    for p_id, p_info in FIGURE_PARAM[type].items():
+        parameter[p_id] = p_info['value']
+    options = [ edit_parameter_option(columns, label, id, value, multi)
+                for label, id, value, multi in unpack_edit_parameter( FIGURE_PARAM[type], old_param['parameter'] ) ]
+    options.append(time_format_option(tformat))
+    return html.Div([
+        dcc.Store(id=SM_PARAM+EDIT_MODAL, data={'type': SCATTER_MAP,'parameter': parameter if type == SCATTER_MAP else None}),
+        # dcc.Store(id=SG_PARAM, data={'type': ,'parameter': parameter if type == SCATTER_GEO else None}),
+        dcc.Store(id=D_PARAM+EDIT_MODAL, data={'type': DENSITY,'parameter': parameter if type == DENSITY else None}),
+        dcc.Store(id=CH_PARAM+EDIT_MODAL, data={'type': CHOROPLETH,'parameter': parameter if type == CHOROPLETH else None}),
+        dcc.Store(id=CA_PARAM+EDIT_MODAL, data={'type': CAROUSEL,'parameter': parameter if type == CAROUSEL else None}),
+        dcc.Store(id=BC_PARAM+EDIT_MODAL, data={'type': BAR_CHART_RACE,'parameter': parameter if type == BAR_CHART_RACE else None}),
+
+        dbc.Form(
+            options,
+            inline=True,
+            # style={'background':'red'}
+        )
+    ])

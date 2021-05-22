@@ -25,7 +25,7 @@ TIME_FORMAT = {
 TIME = 'time'
 TAG = 'TAG'
 FIELD = 'FIELD'
-
+EDIT_MODAL = '_edit_modal'
 SCATTER_MAP = 'Scatter Map'
 # SCATTER_GEO = 'Scatter Geo'
 BAR_CHART_RACE = 'Bar Chart Race'

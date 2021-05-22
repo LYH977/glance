@@ -19,6 +19,7 @@ from geopy.geocoders import MapBox
 # print('scale', scale)
 # print('colorscale', colorscale)
 # print('----------------------')
+from components.edit_visual_modal import edit_modal
 from components.visual.utils.marker import test_marker_markup
 
 root = tk.Tk()
@@ -50,6 +51,7 @@ layout = html.Div(
         html.Div('Welcome to Glance', id='empty-scene', className='empty-scene'),
         html.Div(id = 'visual-collection', children=[], className='visual-collection' ),
         select_dataset_modal.modal,
+        edit_modal
         # test_marker_markup(),
 
     ]
