@@ -127,14 +127,25 @@ def mapbox_type_markup(create_clicks, hidden):
 def color_scale_markup(create_clicks, hidden):
     return html.Div([
         dbc.DropdownMenuItem(
-            dbc.Row([
-                dbc.Col(dbc.Label("Color Scale")),
-                dbc.Col(dbc.Select(
-                    id={'type': 'color-scale-dropdown', 'index': create_clicks},
-                    options=[{"label": c, "value": c} for c in SEQUENTIAL_COLOR],
-                    value='Pinkyl'
-                )),
-            ]),
+            [
+                dbc.Row([
+                    dbc.Col(dbc.Label("Color Scale" )),
+                    dbc.Col(dbc.Select(
+                        id={'type': 'color-scale-dropdown', 'index': create_clicks},
+                        options=[{"label": c, "value": c} for c in SEQUENTIAL_COLOR],
+                        value='Pinkyl'  # 2nd Plotly3
+                    )),
+                ]),
+                dbc.Row([
+                    dbc.Col(dbc.Label("Color Scale 2")),
+                    dbc.Col(dbc.Select(
+                        id={'type': 'color-scale-dropdown-2', 'index': create_clicks},
+                        options=[{"label": c, "value": c} for c in SEQUENTIAL_COLOR],
+                        value='Plotly3'
+                    )),
+                ]),
+            ],
+
             header=True
         ),
         dbc.DropdownMenuItem(divider=True),

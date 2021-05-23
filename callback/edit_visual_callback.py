@@ -69,7 +69,7 @@ def register_toggle_open_edit_modal(app):
                 if first != second:
                     diff_index = get_ctx_index(ctx)
                     header = f'Edit Visual {diff_index} ({old_param[index]["vtype"]})'
-
+                    # print(tformat[index])
                     return  True, \
                             header,\
                             edit_visual_portal_markup(old_param[index], columns[index], tformat[index]), \

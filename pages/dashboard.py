@@ -52,7 +52,6 @@ layout = html.Div(
         html.Div(id = 'visual-collection', children=[], className='visual-collection' ),
         select_dataset_modal.modal,
         edit_modal
-        # test_marker_markup(),
 
     ]
     ,className='main-container'

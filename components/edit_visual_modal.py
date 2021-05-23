@@ -100,17 +100,16 @@ def edit_parameter_option(columns, label, id, value, multi = False):
 
 
 def time_format_option(tformat):
-    value = get_key(tformat, TIME_FORMAT)
     return  \
         dbc.FormGroup(
                     [
-                        dbc.Label('Choose Time Format', className="mr-2"),
+                        dbc.Label('Choose Time Format ?', className="mr-2"),
                         dbc.Select(
                             style={'width': '100%'},
-                            id='time-format',
+                            id='time-format_edit_modal',
                             options=[{"label": i, "value": j} for i, j in
                                      zip(TIME_FORMAT.keys(), TIME_FORMAT.values())],
-                            value=value
+                            value = tformat
                         )
                     ],
                     style={'width': '50%', 'padding':'5px'}

@@ -233,10 +233,10 @@ def dropdown_markup(measurements):
     )
 
 def expression_box_markup(id):
-    operators = ['+', '-',]
+    operators = [{'label':'+', 'value':'+'}, {'label':'-', 'value':'-'},]
     if id != 0:
-        operators.append('×')
-        operators.append('÷')
+        operators.append({'label':'×', 'value':'*'})
+        operators.append({'label':'÷', 'value':'/'})
     return html.Div(
         className='expression-box',
         children=[
@@ -245,7 +245,7 @@ def expression_box_markup(id):
                     dbc.Label(f'Operator {id+1}',style={'fontSize':'10px'}  ),
                     dbc.Select(
                         id=f'operator-{id}',
-                        options=[{"label": i, "value": i} for i in operators],
+                        options=[{"label": i['label'], "value": i['value']} for i in operators],
                         value = '+' if id == 0 else ''
                     ),
 

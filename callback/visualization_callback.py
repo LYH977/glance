@@ -92,18 +92,33 @@ def register_update_figure(app):
 def register_update_color_scale(app):
     @app.callback(
         Output({'type': 'chosen-color-scale', 'index': MATCH}, 'data'),
-        Input({'type': 'color-scale-dropdown', 'index': MATCH}, 'value'),
+        [
+            Input({'type': 'color-scale-dropdown', 'index': MATCH}, 'value'),
+            Input({'type': 'color-scale-dropdown-2', 'index': MATCH}, 'value'),
+        ],
         State({'type': 'chosen-color-scale', 'index': MATCH}, 'data'),
         prevent_initial_call=True
     )
-    def update_color_scale(dropdown, chosen):
-        if dropdown == chosen[current_ind]['name']:
+    def update_color_scale(dropdown, dropdown2, chosen):
+        ctx = dash.callback_context
+        if not ctx.triggered:
             raise PreventUpdate
-        chosen_color = eval(f'px.colors.sequential.{dropdown}')
-        formatted_scale, scale = px.colors.convert_colors_to_same_type(chosen_color)
-        colorscale = px.colors.make_colorscale(formatted_scale, scale=scale)
-        # print(colorscale)
-        return store_template({'name': dropdown, 'value': colorscale})
+        else:
+            input_type = get_ctx_type(ctx)
+
+        if input_type =='color-scale-dropdown' and dropdown != chosen['0']['name'] :
+            chosen_color = eval(f'px.colors.sequential.{dropdown}')
+            formatted_scale, scale = px.colors.convert_colors_to_same_type(chosen_color)
+            colorscale = px.colors.make_colorscale(formatted_scale, scale=scale)
+            chosen['0'] = {'name': dropdown, 'value': colorscale}
+            return chosen
+        elif input_type =='color-scale-dropdown-2' and ( len(chosen['2']) == 0 or dropdown2 != chosen['2']['name']) :
+            chosen_color = eval(f'px.colors.sequential.{dropdown2}')
+            formatted_scale, scale = px.colors.convert_colors_to_same_type(chosen_color)
+            colorscale = px.colors.make_colorscale(formatted_scale, scale=scale)
+            chosen['2'] = {'name': dropdown2, 'value': colorscale}
+            return chosen
+        raise PreventUpdate
 
 ############################################################################################################################################## update slider according to interval
 def register_update_slider(app):
@@ -367,7 +382,9 @@ def register_update_live_data(app):
 
         elif input_type == 'chosen-color-scale':
             fig2 = buffer
-            fig2['layout']['coloraxis']['colorscale'] = colorscale[current_ind]['value']
+            fig2['layout']['coloraxis']['colorscale'] = colorscale['0']['value']
+            if len(secondary) != 0 and 'coloraxis2' in fig2['layout'] and len(colorscale['2']) != 0:
+                fig2['layout']['coloraxis2']['colorscale'] = colorscale['2']['value']
 
             # fig2['data'][1] = insert_marker()
             return dash.no_update, fig2, dash.no_update, dash.no_update
@@ -387,7 +404,6 @@ def register_update_live_data(app):
                 fig2['layout']['coloraxis']['colorbar']['title']['text'] = fig2['layout']['coloraxis']['colorbar']['title']['text'] + '(1)'
                 merged = merge_frames(fig2['frames'], secondary['frames'])
                 fig2['frames'] = merged['frames']
-                # print('figure', fig2)
                 return dash.no_update, fig2, True, {'frames0': merged['frames0'], 'frames2': merged['frames2']}
             else:
                 fig2 = buffer
@@ -485,7 +501,6 @@ def register_update_celery_data(app):
             try:
                 result = redis_instance.get(f'{index}-{now}').decode("utf-8")
                 result = json.loads(result)
-                # print(result)
                 ctx = dash.callback_context
                 input_index = get_ctx_index(ctx)
                 count = {
@@ -499,20 +514,6 @@ def register_update_celery_data(app):
             except Exception as e:
                 print('celery error', e)
                 return dash.no_update, False, dash.no_update, dash.no_update
-            # else: # multilayer mode
-            #     try:
-            #         result = redis_instance.get(f'{index}-{now}').decode("utf-8")
-            #         result = json.loads(result)
-            #         ctx = dash.callback_context
-            #         input_index = get_ctx_index(ctx)
-            #         count = {
-            #             MAXIMUM: result[str(slider)][MAXIMUM]['count'],
-            #             MINIMUM: result[str(slider)][MINIMUM]['count'],
-            #         }
-            #         return result, True, collapse_markup(input_index, count), dash.no_update
-            #     except Exception as e:
-            #         print('celery error', e)
-            #         return dash.no_update, False, dash.no_update, dash.no_update
 
 
         elif input_type == 'last-total-rows':
@@ -699,7 +700,6 @@ def register_handle_export_btn_click(app):
     def handle_export_btn_click(btn_click, disabled):
         if btn_click and not disabled:
             now = int(datetime.now().timestamp())
-            # print('btn part')
             return True, False, now
 
         raise PreventUpdate
@@ -913,9 +913,7 @@ def register_update_secondary_frames(app):
         if not ctx.triggered:
             raise PreventUpdate
         input_type = get_ctx_type(ctx)
-        print('------------------')
-        print('click = ', click)
-        print('type=', input_type)
+
         if input_type == 'secondary-action-click' and click >0:
             collection.temp = collection.temp.dropna()
             collection.temp.reset_index(drop=True, inplace=True)
