@@ -27,25 +27,6 @@ from datetime import  datetime
 import time
 
 
-
-# def assign_param(data, type):
-#
-#     ctx = dash.callback_context
-#     input_value = None
-#     if not ctx.triggered:
-#         input_type = 'No input yet'
-#         print(ctx.triggered)
-#         return data
-#     else:
-#         input_type = get_ctx_type(ctx)
-#         input_value = get_ctx_value(ctx)
-#     input_type = input_type.replace(EDIT_MODAL, '')
-#     data['parameter'][input_type] = input_value
-#     # data['type'] = type
-#     # print(data['parameter'])
-#     print('data:', data)
-#     return data
-
 #############################################################################################################################################
 
 
@@ -60,6 +41,7 @@ def register_toggle_open_edit_modal(app):
             Output("last-saved-tformat", "data"),
             Output("edit-location", "data"),
             Output("edit-index", "data"),
+            Output("edit-dbname", "data"),
 
         ],
         [
@@ -71,12 +53,13 @@ def register_toggle_open_edit_modal(app):
             State({'type': "last-edit-click-ts", 'index': ALL}, "data"),
             State({'type': "my_param", 'index': ALL}, "data"),
             State({'type': "frame-format", 'index': ALL}, "data"),
+            State({'type': "db-name", 'index': ALL}, "data"),
             State({'type': "dataset-column-name", 'index': ALL}, "data"),
             State("param-to-edit", "data"),
         ],
         prevent_initial_call=True
     )
-    def toggle_open_edit_modal(edit_ts, cancel, confirm, last_edit, old_param, tformat, columns, param_to_edit):
+    def toggle_open_edit_modal(edit_ts, cancel, confirm, last_edit, old_param, tformat,  dbname, columns, param_to_edit):
         ctx = dash.callback_context
         if not ctx.triggered:
             raise PreventUpdate
@@ -86,17 +69,18 @@ def register_toggle_open_edit_modal(app):
                 if first != second:
                     diff_index = get_ctx_index(ctx)
                     header = f'Edit Visual {diff_index} ({old_param[index]["vtype"]})'
+
                     return  True, \
                             header,\
                             edit_visual_portal_markup(old_param[index], columns[index], tformat[index]), \
                             edit_ts, \
-                            old_param[index], tformat[index], index, diff_index
+                            old_param[index], tformat[index], index, diff_index, dbname[index]
 
         elif input_type == 'cancel-edit-visual' and cancel >0:
-            return False, dash.no_update, None, edit_ts, dash.no_update, dash.no_update, dash.no_update, dash.no_update
+            return False, dash.no_update, None, edit_ts, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
         elif input_type == 'confirm-edit-visual' and confirm >0:
             print('b',param_to_edit)
-            return False, dash.no_update, None, edit_ts, dash.no_update, dash.no_update, dash.no_update, dash.no_update
+            return False, dash.no_update, None, edit_ts, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
         raise PreventUpdate
 
 
@@ -120,12 +104,12 @@ def register_validate_sm_create_edit_modal(app):
         # prevent_initial_call=True
     )
     def validate_sm_create_edit_modal (lat, long, size, color, name, msg, data):
-        data['parameter']['sm_latitude_edit_modal'] = lat
-        data['parameter']['sm_longitude_edit_modal'] = long
-        data['parameter']['sm_size_edit_modal'] = size
-        data['parameter']['sm_color_edit_modal'] = color
-        data['parameter']['sm_name_edit_modal'] = name
-        data['parameter']['sm_message_edit_modal'] = msg
+        data['parameter']['sm_latitude'] = lat
+        data['parameter']['sm_longitude'] = long
+        data['parameter']['sm_size'] = size
+        data['parameter']['sm_color'] = color
+        data['parameter']['sm_name'] = name
+        data['parameter']['sm_message'] = msg
 
 
         return data
@@ -146,7 +130,6 @@ def register_validate_bc_create_edit_modal(app):
         # prevent_initial_call=True
     )
     def validate_bc_create_edit_modal (item, value, data):
-        print('bc')
         data['parameter']['bc_item'] = item
         data['parameter']['bc_value'] = value
         return data
@@ -217,7 +200,6 @@ def register_validate_ca_create_edit_modal(app):
     )
     def validate_ca_create_edit_modal (item, data):
         data['parameter']['ca_item'] = item
-
         return data
 
 
@@ -280,13 +262,11 @@ def register_assign_param_to_edit(app):
                 if c['value']['parameter'] is None:
                     continue
                 input_value = c['value']
-                print('1', input_value)
                 return input_value
                 break
             raise PreventUpdate
         else:
             input_value = get_ctx_value(ctx)
-            print('2',input_value)
             return input_value
 
 

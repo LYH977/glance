@@ -19,6 +19,7 @@ from utils.method import get_key
 
 edit_modal = html.Div(
     [
+        dcc.Store(id='edit-dbname', data=None),
         dcc.Store(id='edit-index', data=None),
         dcc.Store(id='edit-location', data= None),
         dcc.Store(id='param-to-edit', data={}),

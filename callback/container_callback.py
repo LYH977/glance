@@ -39,9 +39,10 @@ def register_update_visual_container(app):
             State("chosen-tformat_edit_modal", "data"),
             State("edit-location", "data"),
             State("edit-index", "data"),
+            State("edit-dbname", "data"),
         ],
         prevent_initial_call=True)
-    def update_visual_container(create_clicks,  dlt_btn, left, right , confirm_edit, div_children, param, tformat, dbname, param_to_edit, chosen_tformat,edit_location, edit_index):
+    def update_visual_container(create_clicks,  dlt_btn, left, right , confirm_edit, div_children, param, tformat, dbname, param_to_edit, chosen_tformat,edit_location, edit_index, edit_dbname):
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
@@ -117,26 +118,26 @@ def register_update_visual_container(app):
 
         elif input_type == 'confirm-edit-visual' and confirm_edit>0 :
             # raise PreventUpdate
-
             collection.live_processing[create_clicks] = False
             now = datetime.now().timestamp()
-            if param['vtype'] == CAROUSEL:  # carousel
+            if param_to_edit['vtype'] == CAROUSEL:  # carousel
                 temp = []
-                for row in collection.temp.index:
-                    temp.append(create_ca_img(collection.temp.loc[row, param['parameter'][CAROUSEL_CONSTANT[ITEM]]]))
+                for row in collection.data[edit_index].index:
+                    temp.append(create_ca_img(collection.data[edit_index].loc[row, param_to_edit['parameter'][CAROUSEL_CONSTANT[ITEM]]]))
                 collection.img_container[create_clicks] = temp
             else:  # other than carousel
+                print(now)
                 result = task.process_dataset.delay(create_clicks, collection.data[edit_index].to_dict(), param_to_edit['vtype'],
                                                     param_to_edit['parameter'], now)
-                # task.process_dataset(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'], now)
-            # print(param)
-            new_child = container.render_container(edit_index, param_to_edit, chosen_tformat, dbname, now, collection.new_col)
-            div_children.append(new_child)
+
+            new_child = container.render_container(edit_index, param_to_edit, chosen_tformat, edit_dbname, now, collection.new_col)
+
+            div_children[edit_location] = new_child
             toast = {
-                'children': f"Visualization {create_clicks} is successfully created.",
+                'children': f"Visualization {create_clicks} is successfully edited.",
                 'is_open': True,
-                'icon': 'success',
-                'header': 'SUCCESS'
+                'icon': 'info',
+                'header': 'INFO'
             }
             collection.new_col = {'expression': [], 'numeric_col': []}
             return div_children, toast
