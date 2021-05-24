@@ -74,6 +74,8 @@ def register_update_after_upload(app):
                   prevent_initial_call=True
     )
     def update_after_upload( is_open, measurement, secondary):
+        # print('aaaa')
+
         ctx = dash.callback_context
         if not ctx.triggered:
             raise PreventUpdate
@@ -105,6 +107,8 @@ def register_update_output_form(app):
         prevent_initial_call=True
     )
     def update_output_form(type, secondary):
+        # print('asasas')
+
         ctx = dash.callback_context
         if not ctx.triggered:
             input_type = 'No input yet'
@@ -143,6 +147,8 @@ def register_toggle_modal_action_btn(app):
         prevent_initial_call=True
     )
     def toggle_modal_action_btn (open, close, create, secondary_visual, secondary_action,  is_open, last_secondary):
+        # print('adad')
+
         ctx = dash.callback_context
         if not ctx.triggered:
             raise PreventUpdate
@@ -195,6 +201,8 @@ def register_enable_create_btn(app):
         prevent_initial_call=True
     )
     def enable_create_btn (sm,  d, ch, ca, bc, create, vtype, secondary):
+        print('afaf')
+
         ctx = dash.callback_context
         if not ctx.triggered:
             raise PreventUpdate
@@ -220,8 +228,10 @@ def register_update_dt_dropdown(app):
         prevent_initial_call=True
     )
     def update_dt_dropdown (is_open):
+        # print('agagag')
 
         if is_open:
+            # return dropdown_markup(client.get_list_measurements())
             return dropdown_markup(client.get_list_measurements())
         return None
 
@@ -235,6 +245,8 @@ def register_update_chosen_dropdown(app):
         prevent_initial_call=True
     )
     def update_chosen_dropdown (value):
+        # print('ahahah')
+
         return value
 
 #############################################################################################################################################
@@ -256,6 +268,8 @@ def register_validate_sm_create(app):
         prevent_initial_call=True
     )
     def validate_sm_create (lat, long, size, color, name, msg, data):
+        # print('ajajaj')
+
         return validate_create(data)
 
 
@@ -274,6 +288,8 @@ def register_validate_bc_create(app):
         prevent_initial_call=True
     )
     def validate_bc_create (item, value, data):
+        # print('akakakka')
+
         return validate_create(data)
 
 
@@ -294,6 +310,8 @@ def register_validate_d_create(app):
         prevent_initial_call=True
     )
     def validate_d_create (lat, long, z, msg, data):
+        # print('alallal')
+
         return validate_create(data)
 
 
@@ -314,6 +332,8 @@ def register_validate_ch_create(app):
         prevent_initial_call=True
     )
     def validate_ch_create (loc, color, name, msg, data):
+        # print('zzzz')
+
         return validate_create(data)
 
 
@@ -331,6 +351,8 @@ def register_validate_ca_create(app):
         prevent_initial_call=True
     )
     def validate_ca_create (item, data):
+        # print('zxzx')
+
         return validate_create(data)
 
 
@@ -344,6 +366,8 @@ def register_update_chosen_tformat(app):
         prevent_initial_call=True
     )
     def update_chosen_tformat (value):
+        # print('zxzx')
+
         return value
 #############################################################################################################################################
 
@@ -364,6 +388,8 @@ def register_update_equation(app):
 
     )
     def update_equation( op1, op2, op3, or1, or2, or3):
+        # print('zxzx')
+
         ctx = dash.callback_context
         if not ctx.triggered:
             input_type = 'No input yet'
@@ -415,6 +441,7 @@ def register_update_new_column(app):
         prevent_initial_call=True
     )
     def update_new_column(click, eq, type,  od1, od2, od3, name):
+        # print('zxzx')
 
 
         if click:
@@ -502,6 +529,8 @@ def register_update_operand_type(app):
         prevent_initial_call=True
     )
     def update_operand_type (click0, click1, click2, class0, class1, class2, type):
+        # print('zxzx')
+
         ctx = dash.callback_context
         if not ctx.triggered:
             input_type = 'No input yet'
@@ -534,6 +563,8 @@ def register_toggle_new_column_btn(app):
         prevent_initial_call=True
     )
     def toggle_new_column_btn (value):
+        # print('zxzx')
+
         return True if value == '' else False
 
 #############################################################################################################################################
@@ -562,6 +593,8 @@ def register_clear_popup_value(app):
         prevent_initial_call=True
     )
     def clear_popup_value (confirm, reset, undo0, undo1, undo2):
+        # print('zxzx')
+
         ctx = dash.callback_context
         if not ctx.triggered:
             input_type = 'No input yet'
@@ -604,6 +637,8 @@ def register_close_popup(app):
         prevent_initial_call=True
     )
     def toggle_new_column_btn (confirm):
+        # print('zxzx')
+
         if confirm:
             return False
         raise PreventUpdate
@@ -622,5 +657,7 @@ def register_update_visual_dropdown(app):
         prevent_initial_call=True
     )
     def update_visual_dropdown (col):
+        # print('zxzx')
+
         return None
 

@@ -40,9 +40,9 @@ def insert_marker (name, coordinate):
     split_coordinate = coordinate.split(', ')
     lat = float(split_coordinate[0][1:])
     long = float(split_coordinate[1][:-1])
-
+    print('coo', coordinate)
     return {
-        'coloraxis': "coloraxis",
+        # 'coloraxis': "coloraxis",
         'hovertemplate': formatted_name,
         'lat': [lat],
         'lon': [long],
@@ -54,7 +54,7 @@ def insert_marker (name, coordinate):
         'mode': 'markers',
         'showlegend': False,
         'name': name,
-        'coordinate':coordinate,
+        'customdata':[coordinate],
         'subplot': 'mapbox',
         'type': 'scattermapbox'
     }
@@ -85,12 +85,6 @@ def select_query (measurement,  where=''):
     q = f'select * from "{measurement}" {where}'
     result = client.query(q, epoch='ns')
     if measurement in result:
-        # print(result)
-        # test = pd.DataFrame(result[measurement])
-        # eq = "- Magnitude"
-        # test['Latitude'] = pd.to_numeric(test["Latitude"])
-        # see = test.eval(eq)
-        # print(see)
         return pd.DataFrame(result[measurement])
     else:
         return None
@@ -102,7 +96,6 @@ def to_nanosecond_epoch(dt):
 def set_slider_calendar(dataframe):
     calendar = []
     for i in range(0, dataframe.shape[0]):
-        # value = formatted_time_value(dataframe[i], tformat) if i % 7 == 0 else ''
         value = dataframe[i] if i % 7 == 0 else ''
         calendar.append(value)
     return calendar

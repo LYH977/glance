@@ -43,13 +43,15 @@ def register_update_visual_container(app):
         ],
         prevent_initial_call=True)
     def update_visual_container(create_clicks,  dlt_btn, left, right , confirm_edit, div_children, param, tformat, dbname, param_to_edit, chosen_tformat,edit_location, edit_index, edit_dbname):
+
+
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
             input_type = 'No input yet'
         else:
             input_type = get_ctx_type(ctx)
-
+        print(input_type)
         if create_clicks and input_type == 'create-visual': # input from add button
             collection.temp = collection.temp.dropna()
             collection.temp.reset_index(drop=True, inplace=True)

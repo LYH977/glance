@@ -23,7 +23,7 @@ const current_ind = 0
 
 const reset_trace = () =>{
     return {
-        coloraxis:'coloraxis',
+//        coloraxis:'coloraxis',
         lat: [],
         lon: [],
         marker: {size: 0},
