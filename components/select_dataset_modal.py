@@ -5,16 +5,17 @@ from dash.dependencies import Input, Output, State
 import dash_table
 import dash
 from dash.exceptions import PreventUpdate
-
+import math
 from database.dbConfig import client
 from utils.constant import FIGURE_OPTION, FIGURE_PARAM, CREATE_BTN_ID, SM_PARAM, SG_PARAM, D_PARAM, CA_PARAM, CH_PARAM, \
-    BC_PARAM, SCATTER_MAP, DENSITY, CHOROPLETH, CAROUSEL, BAR_CHART_RACE, TIME_FORMAT, YEAR, SECONDARY_FIGURE_OPTION
+    BC_PARAM, SCATTER_MAP, DENSITY, CHOROPLETH, CAROUSEL, BAR_CHART_RACE, TIME_FORMAT, YEAR, SECONDARY_FIGURE_OPTION, \
+    STANDARD_T_FORMAT
 from utils import  collection
 from utils.method import unpack_parameter
 import base64
 import io
 import pandas as pd
-
+from datetime import  datetime
 
 
 modal = html.Div(
@@ -202,6 +203,34 @@ def parameter_option(name, id, multi = False):
         )
 
 def time_format_option():
+    pdd = collection.temp
+    length = len(pdd.index)
+    first_id = pdd.index[0]
+    middle_id = pdd.index[math.floor(length/2)]
+    last_id =  pdd.index[length-1]
+    list = []
+    for id in [first_id, middle_id, last_id]:
+        obj = pdd.loc[id, 'time']
+        if type(obj) is not str:
+            obj = obj[0]
+        lala = datetime.strptime(obj, STANDARD_T_FORMAT)
+        list.append(lala)
+
+    diff = []
+    for index in range(1, len(list)):
+        for period in ['year', 'month', 'day', 'hour', 'minute', 'second']:
+            obj1 = eval(f'list[{index}-1].{period}')
+            obj2 = eval(f'list[{index}].{period}')
+            # print(f'{obj1} and {obj2} in {period}')
+            if obj1 != obj2 and period.upper() not in diff:
+                diff.append(period.upper())
+    print(diff)
+    value = YEAR
+    for k in TIME_FORMAT.keys():
+        if all(e in k for e in diff):
+            value = TIME_FORMAT[k]
+            break
+    print(value)
     return  \
         dbc.FormGroup(
                     [
@@ -211,7 +240,7 @@ def time_format_option():
                             id='time-format',
                             options=[{"label": i, "value": j} for i, j in
                                      zip(TIME_FORMAT.keys(), TIME_FORMAT.values())],
-                            value=YEAR
+                            value=value
                         )
                     ],
                     style={'width': '50%', 'padding':'5px'}

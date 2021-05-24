@@ -130,12 +130,12 @@ CAROUSEL_CONSTANT = {
 }
 
 SCATTER_MAP_PARAM = {
-    SCATTER_MAP_CONSTANT[LATITUDE]: { 'label':'Latitude*', 'value': None , 'multi': False},
-    SCATTER_MAP_CONSTANT[LONGITUDE]: { 'label':'Longitude*', 'value': None , 'multi': False},
-    SCATTER_MAP_CONSTANT[SIZE]: { 'label':'Size*', 'value': None, 'multi': False },
-    SCATTER_MAP_CONSTANT[COLOR]: { 'label':'Color*', 'value': None, 'multi': False },
-    SCATTER_MAP_CONSTANT[NAME]: { 'label':'Name*', 'value': None , 'multi': False},
-    SCATTER_MAP_CONSTANT[MESSAGE]: { 'label':'Additional Message', 'value': [] , 'multi': True},
+    SCATTER_MAP_CONSTANT[LATITUDE]: { 'label':'Latitude*', 'value': None , 'multi': False, 'hint':['lat', 'latitude'] },
+    SCATTER_MAP_CONSTANT[LONGITUDE]: { 'label':'Longitude*', 'value': None , 'multi': False, 'hint':['lon', 'longitude']},
+    SCATTER_MAP_CONSTANT[SIZE]: { 'label':'Size*', 'value': None, 'multi': False, 'hint':['size'] },
+    SCATTER_MAP_CONSTANT[COLOR]: { 'label':'Color*', 'value': None, 'multi': False, 'hint':['col', 'color']},
+    SCATTER_MAP_CONSTANT[NAME]: { 'label':'Name*', 'value': None , 'multi': False, 'hint':['name']},
+    SCATTER_MAP_CONSTANT[MESSAGE]: { 'label':'Additional Message', 'value': [] , 'multi': True, 'hint':['msg', 'message', 'note', 'remark']},
 }
 
 # SCATTER_GEO_PARAM = {
@@ -148,29 +148,29 @@ SCATTER_MAP_PARAM = {
 # }
 
 BAR_CHART_RACE_PARAM = {
-    BAR_CHART_RACE_CONSTANT[ITEM] : { 'label':'Item*', 'value': None , 'multi': False},
-    BAR_CHART_RACE_CONSTANT[VALUE] : { 'label':'Value*', 'value': None , 'multi': False},
+    BAR_CHART_RACE_CONSTANT[ITEM] : { 'label':'Item*', 'value': None , 'multi': False , 'hint':['item'] },
+    BAR_CHART_RACE_CONSTANT[VALUE] : { 'label':'Value*', 'value': None , 'multi': False, 'hint':['val', 'value'] },
 
 }
 
 DENSITY_PARAM = {
-    DENSITY_CONSTANT[LATITUDE] : { 'label':'Latitude*', 'value': None , 'multi': False},
-    DENSITY_CONSTANT[LONGITUDE] : { 'label':'Longitude*', 'value': None , 'multi': False},
-    DENSITY_CONSTANT[Z] : {'label': 'Magnitude*', 'value': None, 'multi': False},
-    DENSITY_CONSTANT[MESSAGE] : { 'label':'Additional Message', 'value': [] , 'multi': True},
+    DENSITY_CONSTANT[LATITUDE] : { 'label':'Latitude*', 'value': None , 'multi': False, 'hint':['lat', 'latitude'] },
+    DENSITY_CONSTANT[LONGITUDE] : { 'label':'Longitude*', 'value': None , 'multi': False, 'hint':['lon', 'longitude'] },
+    DENSITY_CONSTANT[Z] : {'label': 'Magnitude*', 'value': None, 'multi': False, 'hint':['mag', 'magnitude'] },
+    DENSITY_CONSTANT[MESSAGE] : { 'label':'Additional Message', 'value': [] , 'multi': True, 'hint':['msg', 'message', 'note', 'remark'] },
 
 }
 
 CHOROPLETH_PARAM = {
-    CHOROPLETH_CONSTANT[LOCATIONS] : { 'label':'Locations*', 'value': None , 'multi': False},
-    CHOROPLETH_CONSTANT[COLOR] : { 'label':'Color*', 'value': None , 'multi': False},
-    CHOROPLETH_CONSTANT[NAME] : {'label': 'Name*', 'value': None, 'multi': False},
-    CHOROPLETH_CONSTANT[MESSAGE] : {'label': 'Additional Message', 'value': [], 'multi': True},
+    CHOROPLETH_CONSTANT[LOCATIONS] : { 'label':'Locations*', 'value': None , 'multi': False, 'hint':['loc', 'location']},
+    CHOROPLETH_CONSTANT[COLOR] : { 'label':'Color*', 'value': None , 'multi': False, 'hint':['col', 'color']},
+    CHOROPLETH_CONSTANT[NAME] : {'label': 'Name*', 'value': None, 'multi': False, 'hint':['name']},
+    CHOROPLETH_CONSTANT[MESSAGE] : {'label': 'Additional Message', 'value': [], 'multi': True, 'hint':['msg', 'message', 'note', 'remark']},
 
 }
 
 CAROUSEL_PARAM = {
-    CAROUSEL_CONSTANT[ITEM] : { 'label':'Item*', 'value': None , 'multi': False},
+    CAROUSEL_CONSTANT[ITEM] : { 'label':'Item*', 'value': None , 'multi': False, 'hint':['item', 'link']},
 
 }
 
