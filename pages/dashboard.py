@@ -36,6 +36,7 @@ screen_height = root.winfo_screenheight()
 
 layout = html.Div(
     [
+
         dcc.Store('resolution', data={'height':screen_height, 'width':screen_width}),
         html.Div('Welcome to Glance', id='empty-scene', className='empty-scene'),
         html.Div(id = 'visual-collection', children=[], className='visual-collection' ),

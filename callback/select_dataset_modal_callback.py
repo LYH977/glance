@@ -26,21 +26,44 @@ from datetime import  datetime
 import time
 
 
+# def assign_param(constant, data, param_list):
+#     columns =  [x.lower() for x in collection.temp.columns]
+#     print(columns)
+#     for id, key in enumerate(constant.keys()):  # sm_latitude, sm_size, sm_color...
+#
+#         if param_list[id] is None:
+#             if constant[key]['multi']:
+#                 param_list[id] = []
+#                 for col in columns:
+#                     if any(e in col for e in constant[key]['hint']):
+#                         param_list[id].append(col)
+#             else:
+#                 for col in columns:
+#                     if any(e in col for e in constant[key]['hint']):
+#                         print(param_list[id])
+#                         param_list[id] = col
+#                         print(param_list[id])
+#
+#                         break
+#         # else:
+#         print('last', param_list[id])
+#         data['parameter'][key] = param_list[id]
+#
+#     return data
 
-
-def validate_create(data):
-    ctx = dash.callback_context
-    input_value = None
-    if not ctx.triggered:
-        input_type = 'No input yet'
-        raise PreventUpdate
-    else:
-        input_type = get_ctx_type(ctx)
-        input_value = get_ctx_value(ctx)
-    data['parameter'][input_type] = input_value
-    is_filled = False if None in data['parameter'].values() else True
-    # print(data['parameter'])
-    return {'is_filled': is_filled, 'parameter': data['parameter']}
+# def validate_create(data):
+#     ctx = dash.callback_context
+#     input_value = None
+#     if not ctx.triggered:
+#         input_type = 'No input yet'
+#         raise PreventUpdate
+#     else:
+#         input_type = get_ctx_type(ctx)
+#         input_value = get_ctx_value(ctx)
+#     data['parameter'][input_type] = input_value
+#     is_filled = False if None in data['parameter'].values() else True
+#     # print(data['parameter'])
+#     return {'is_filled': is_filled, 'parameter': data['parameter']}
 
 
 def toggle_operand_type(type, id):
@@ -74,7 +97,6 @@ def register_update_after_upload(app):
                   prevent_initial_call=True
     )
     def update_after_upload( is_open, measurement, secondary):
-        # print('aaaa')
 
         ctx = dash.callback_context
         if not ctx.triggered:
@@ -101,13 +123,18 @@ def register_update_after_upload(app):
 
 def register_update_output_form(app):
     @app.callback(
-        Output('output-form', 'children'),
+        [
+            Output('output-form', 'children'),
+            Output('activate-click', 'data'),
+        ],
         Input("visual-type", "value"),
-        State("add-secondary-area", "children"),
+        [
+            State("add-secondary-area", "children"),
+            State('activate-click', 'data'),
+        ],
         prevent_initial_call=True
     )
-    def update_output_form(type, secondary):
-        # print('asasas')
+    def update_output_form(type, secondary, click):
 
         ctx = dash.callback_context
         if not ctx.triggered:
@@ -116,8 +143,14 @@ def register_update_output_form(app):
             input_type = ctx.triggered[0]['prop_id'].split('.')[0]
         if input_type == 'visual-type' and type is not None:
             is_secondary = False if secondary is None else True
-            return output_form_markup(type, is_secondary)
-        return None
+            results = output_form_markup(type, is_secondary)
+            if results['increment']:
+                click_data = click +1
+                print('yes')
+            else:
+                click_data = dash.no_update
+            return results['element'], click_data
+        return None,dash.no_update
 
 #############################################################################################################################################
 
@@ -147,7 +180,6 @@ def register_toggle_modal_action_btn(app):
         prevent_initial_call=True
     )
     def toggle_modal_action_btn (open, close, create, secondary_visual, secondary_action,  is_open, last_secondary):
-        # print('adad')
 
         ctx = dash.callback_context
         if not ctx.triggered:
@@ -155,7 +187,6 @@ def register_toggle_modal_action_btn(app):
         input_type = get_ctx_type(ctx)
 
         if input_type == 'secondary-visual-btn':
-            # print('secondary-visual-btn')
             style = {'display': 'none'}
             # input_index = get_ctx_index(ctx)
             for index, (first, second) in enumerate(zip(secondary_visual, last_secondary)):
@@ -166,7 +197,6 @@ def register_toggle_modal_action_btn(app):
             raise PreventUpdate
 
         elif input_type == 'secondary-action-btn':
-            # print('secondary-action-btn')
             return dash.no_update, dash.no_update, False, dash.no_update, secondary_visual
 
         #else
@@ -193,6 +223,8 @@ def register_enable_create_btn(app):
             Input(CA_PARAM, 'data'),
             Input(BC_PARAM, 'data'),
             Input('create-visual', 'n_clicks'),
+            Input('cancel-create-visual', 'n_clicks'),
+            Input('activate-click', 'data'),
         ],
         [
             State('visual-type', 'value'),
@@ -200,8 +232,7 @@ def register_enable_create_btn(app):
         ],
         prevent_initial_call=True
     )
-    def enable_create_btn (sm,  d, ch, ca, bc, create, vtype, secondary):
-        print('afaf')
+    def enable_create_btn (sm,  d, ch, ca, bc, create, cancel,act_click,  vtype, secondary):
 
         ctx = dash.callback_context
         if not ctx.triggered:
@@ -210,9 +241,16 @@ def register_enable_create_btn(app):
             input_type = get_ctx_type(ctx)
             input_value = get_ctx_value(ctx)
 
-        if input_type == 'create-visual':
+        if input_type == 'cancel-create-visual' and cancel>0:
+            return True, {}, [True for i in secondary]
+        if input_type == 'create-visual' and create>0:
             return True, dash.no_update, [True for i in secondary]
+        if input_type == 'activate-click':
+            print('clicked')
+            return False, dash.no_update, [True for i in secondary]
+
         if input_value['parameter'] is not None and input_value['is_filled'] is True:
+            print('called')
             data = {'vtype': vtype, 'parameter':input_value['parameter'] }
             return False, data, [False for i in secondary]
         raise PreventUpdate
@@ -228,7 +266,6 @@ def register_update_dt_dropdown(app):
         prevent_initial_call=True
     )
     def update_dt_dropdown (is_open):
-        # print('agagag')
 
         if is_open:
             # return dropdown_markup(client.get_list_measurements())
@@ -245,7 +282,6 @@ def register_update_chosen_dropdown(app):
         prevent_initial_call=True
     )
     def update_chosen_dropdown (value):
-        # print('ahahah')
 
         return value
 
@@ -265,12 +301,21 @@ def register_validate_sm_create(app):
             Input("sm_message", "value"),
         ],
         State(SM_PARAM, 'data'),
-        prevent_initial_call=True
+        # prevent_initial_call=True
     )
     def validate_sm_create (lat, long, size, color, name, msg, data):
-        # print('ajajaj')
 
-        return validate_create(data)
+        data['parameter']['sm_latitude'] = lat
+        data['parameter']['sm_longitude'] = long
+        data['parameter']['sm_size'] = size
+        data['parameter']['sm_color'] = color
+        data['parameter']['sm_name'] = name
+        data['parameter']['sm_message'] = msg
+        is_filled = False if None in data['parameter'].values() else True
+        return {'is_filled': is_filled, 'parameter': data['parameter']}
+        # return validate_create(data)
+
+
 
 
 #############################################################################################################################################
@@ -285,13 +330,14 @@ def register_validate_bc_create(app):
             # Input("bc_frame", "value"),
         ],
         State(BC_PARAM, 'data'),
-        prevent_initial_call=True
+        # prevent_initial_call=True
     )
     def validate_bc_create (item, value, data):
-        # print('akakakka')
 
-        return validate_create(data)
-
+        data['parameter']['bc_item'] = item
+        data['parameter']['bc_value'] = value
+        is_filled = False if None in data['parameter'].values() else True
+        return {'is_filled': is_filled, 'parameter': data['parameter']}
 
 #############################################################################################################################################
 
@@ -307,12 +353,16 @@ def register_validate_d_create(app):
             Input("d_message", "value"),
         ],
         State(D_PARAM, 'data'),
-        prevent_initial_call=True
+        # prevent_initial_call=True
     )
     def validate_d_create (lat, long, z, msg, data):
-        # print('alallal')
-
-        return validate_create(data)
+        data['parameter']['d_latitude'] = lat
+        data['parameter']['d_longitude'] = long
+        data['parameter']['d_z'] = z
+        data['parameter']['d_message'] = msg
+        # print(data['parameter'])
+        is_filled = False if None in data['parameter'].values() else True
+        return {'is_filled': is_filled, 'parameter': data['parameter']}
 
 
 #############################################################################################################################################
@@ -329,12 +379,15 @@ def register_validate_ch_create(app):
             Input("ch_message", "value"),
         ],
         State(CH_PARAM, 'data'),
-        prevent_initial_call=True
+        # prevent_initial_call=True
     )
     def validate_ch_create (loc, color, name, msg, data):
-        # print('zzzz')
-
-        return validate_create(data)
+        data['parameter']['ch_locations'] = loc
+        data['parameter']['ch_color'] = color
+        data['parameter']['ch_name'] = name
+        data['parameter']['ch_message'] = msg
+        is_filled = False if None in data['parameter'].values() else True
+        return {'is_filled': is_filled, 'parameter': data['parameter']}
 
 
 #############################################################################################################################################
@@ -348,12 +401,12 @@ def register_validate_ca_create(app):
             # Input("ca_frame", "value"),
         ],
         State(CA_PARAM, 'data'),
-        prevent_initial_call=True
+        # prevent_initial_call=True
     )
     def validate_ca_create (item, data):
-        # print('zxzx')
-
-        return validate_create(data)
+        data['parameter']['ca_item'] = item
+        is_filled = False if None in data['parameter'].values() else True
+        return {'is_filled': is_filled, 'parameter': data['parameter']}
 
 
 #############################################################################################################################################
@@ -388,8 +441,6 @@ def register_update_equation(app):
 
     )
     def update_equation( op1, op2, op3, or1, or2, or3):
-        # print('zxzx')
-
         ctx = dash.callback_context
         if not ctx.triggered:
             input_type = 'No input yet'
@@ -441,9 +492,6 @@ def register_update_new_column(app):
         prevent_initial_call=True
     )
     def update_new_column(click, eq, type,  od1, od2, od3, name):
-        # print('zxzx')
-
-
         if click:
             if name in collection.temp.columns:
                 toast = {
@@ -529,7 +577,6 @@ def register_update_operand_type(app):
         prevent_initial_call=True
     )
     def update_operand_type (click0, click1, click2, class0, class1, class2, type):
-        # print('zxzx')
 
         ctx = dash.callback_context
         if not ctx.triggered:
@@ -563,7 +610,6 @@ def register_toggle_new_column_btn(app):
         prevent_initial_call=True
     )
     def toggle_new_column_btn (value):
-        # print('zxzx')
 
         return True if value == '' else False
 
@@ -593,7 +639,6 @@ def register_clear_popup_value(app):
         prevent_initial_call=True
     )
     def clear_popup_value (confirm, reset, undo0, undo1, undo2):
-        # print('zxzx')
 
         ctx = dash.callback_context
         if not ctx.triggered:
@@ -637,7 +682,6 @@ def register_close_popup(app):
         prevent_initial_call=True
     )
     def toggle_new_column_btn (confirm):
-        # print('zxzx')
 
         if confirm:
             return False
@@ -657,7 +701,6 @@ def register_update_visual_dropdown(app):
         prevent_initial_call=True
     )
     def update_visual_dropdown (col):
-        # print('zxzx')
 
         return None
 

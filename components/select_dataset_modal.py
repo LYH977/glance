@@ -26,6 +26,7 @@ modal = html.Div(
             className='floating_area'
         ),
         dcc.Store(id='last-param', data={}),
+        dcc.Store(id='activate-click', data=0),
         dcc.Store(id='chosen-tformat', data= YEAR),
         dcc.Store(id='chosen-dropdown', data= None),
         dbc.Modal(
@@ -158,40 +159,92 @@ def output_form_markup(type, is_secondary):
     parameter={}
     for p_id, p_info in FIGURE_PARAM[type].items():
         parameter[p_id] = p_info['value']
-    options = [ parameter_option(i, j, k) for i,j,k in unpack_parameter(FIGURE_PARAM[type]) ]
+    options = [ parameter_option(i, j, FIGURE_PARAM[type],parameter, k) for i,j,k in unpack_parameter(FIGURE_PARAM[type]) ]
     if not is_secondary:
         options.append(time_format_option())
-    return html.Div([
-        dcc.Store(id=SM_PARAM, data={'is_filled': False, 'parameter': parameter if type == SCATTER_MAP else None}),
-        # dcc.Store(id=SG_PARAM, data={'is_filled': False, 'parameter': parameter if type == SCATTER_GEO else None}),
-        dcc.Store(id=D_PARAM, data={'is_filled': False, 'parameter': parameter if type == DENSITY else None}),
-        dcc.Store(id=CH_PARAM, data={'is_filled': False, 'parameter': parameter if type == CHOROPLETH else None}),
-        dcc.Store(id=CA_PARAM, data={'is_filled': False, 'parameter': parameter if type == CAROUSEL else None}),
-        dcc.Store(id=BC_PARAM, data={'is_filled': False, 'parameter': parameter if type == BAR_CHART_RACE else None}),
+    print('sdfsdf',parameter)
+    print('ss', False if None in parameter.values() else True)
+    results = {
+        'increment': False if None in parameter.values() else True,
+        'element':
+            html.Div([
+                dcc.Store(id=SM_PARAM, data={'is_filled': False, 'parameter': parameter if type == SCATTER_MAP else None}),
+                # dcc.Store(id=SG_PARAM, data={'is_filled': False, 'parameter': parameter if type == SCATTER_GEO else None}),
+                dcc.Store(id=D_PARAM, data={'is_filled': False, 'parameter': parameter if type == DENSITY else None}),
+                dcc.Store(id=CH_PARAM, data={'is_filled': False, 'parameter': parameter if type == CHOROPLETH else None}),
+                dcc.Store(id=CA_PARAM, data={'is_filled': False, 'parameter': parameter if type == CAROUSEL else None}),
+                dcc.Store(id=BC_PARAM, data={'is_filled': False, 'parameter': parameter if type == BAR_CHART_RACE else None}),
 
-        dbc.Form(
-            options,
-            inline=True,
-            # style={'background':'red'}
-        )
-    ])
+                dbc.Form(
+                    options,
+                    inline=True,
+                    # style={'background':'red'}
+                )
+        ])
+    }
+    return results
+    # return html.Div([
+    #     dcc.Store(id=SM_PARAM, data={'is_filled': False, 'parameter': parameter if type == SCATTER_MAP else None}),
+    #     # dcc.Store(id=SG_PARAM, data={'is_filled': False, 'parameter': parameter if type == SCATTER_GEO else None}),
+    #     dcc.Store(id=D_PARAM, data={'is_filled': False, 'parameter': parameter if type == DENSITY else None}),
+    #     dcc.Store(id=CH_PARAM, data={'is_filled': False, 'parameter': parameter if type == CHOROPLETH else None}),
+    #     dcc.Store(id=CA_PARAM, data={'is_filled': False, 'parameter': parameter if type == CAROUSEL else None}),
+    #     dcc.Store(id=BC_PARAM, data={'is_filled': False, 'parameter': parameter if type == BAR_CHART_RACE else None}),
+    #
+    #     dbc.Form(
+    #         options,
+    #         inline=True,
+    #         # style={'background':'red'}
+    #     )
+    # ])
 
 
-def parameter_option(name, id, multi = False):
-
-    if not multi:
-        dropdown = dbc.Select(
-            style={'width': '100%'},
-            id=id,
-            options=[{"label": i, "value": i} for i in collection.temp.columns],
-        )
-    else:
+def parameter_option(name, id, type, parameter, multi = False):
+    columns = collection.temp.columns
+    if multi:
+        value =  []
+        for col in columns:
+            temp = col
+            if any(e in temp.lower() for e in type[id]['hint']):
+                value.append(col)
+        parameter[id] = value
         dropdown = dcc.Dropdown(
             style={'width': '100%'},
             id=id,
-            options=[{"label": i, "value": i} for i in collection.temp.columns],
-            multi= multi
+            options=[{"label": i, "value": i} for i in columns],
+            multi=multi,
+            value=value
         )
+    else:
+        value = None
+        for col in columns:
+            temp = col
+            if any(e in temp.lower()  for e in type[id]['hint']):
+                value = col
+                parameter[id] = value
+                break
+        dropdown = dbc.Select(
+            style={'width': '100%'},
+            id=id,
+            options=[{"label": i, "value": i} for i in columns],
+            value=value
+        )
+
+    # if not multi:
+    #     dropdown = dbc.Select(
+    #         style={'width': '100%'},
+    #         id=id,
+    #         options=[{"label": i, "value": i} for i in collection.temp.columns],
+    #         value = value
+    #     )
+    # else:
+    #     dropdown = dcc.Dropdown(
+    #         style={'width': '100%'},
+    #         id=id,
+    #         options=[{"label": i, "value": i} for i in collection.temp.columns],
+    #         multi= multi,
+    #         value = value
+    #     )
     return  \
         dbc.FormGroup(
                     [
@@ -224,13 +277,13 @@ def time_format_option():
             # print(f'{obj1} and {obj2} in {period}')
             if obj1 != obj2 and period.upper() not in diff:
                 diff.append(period.upper())
-    print(diff)
+    # print(diff)
     value = YEAR
     for k in TIME_FORMAT.keys():
         if all(e in k for e in diff):
             value = TIME_FORMAT[k]
             break
-    print(value)
+    # print(value)
     return  \
         dbc.FormGroup(
                     [
