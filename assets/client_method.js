@@ -4,7 +4,7 @@ const FULL = 'FULL'
 const FIRST = 'FIRST'
 const SECOND = 'SECOND'
 const HIDDEN = 'HIDDEN'
-const EXTRA_FOOTER = '</extra>'
+//const EXTRA_FOOTER = '</extra>'
 
 const LEGEND_STYLE = {
     HIDDEN : {  y: 0.01,  len: 0  },
@@ -38,8 +38,13 @@ const modify_hovertemplate = (fig2, number) =>{
     if(number === 1){
         id = 0
     }
-    let to_split = fig2['data'][id]['hovertemplate'].split(EXTRA_FOOTER)
-    fig2['data'][id]['hovertemplate'] = to_split[0] + 'Layer '+ number + EXTRA_FOOTER
+//    console.log(fig2['data'][id]['hovertemplate'])
+//    let to_split = fig2['data'][id]['hovertemplate'].split(EXTRA_FOOTER)
+//    fig2['data'][id]['hovertemplate'] = to_split[0] + 'Layer '+ number + EXTRA_FOOTER
+
+    let text = fig2['data'][id]['hovertemplate']
+    fig2['data'][id]['hovertemplate'] = '<b>(Layer '+ number + ')</b><br>'+ text
+
     return fig2
 }
 
@@ -73,9 +78,7 @@ const change_frame = (ftype, fig2, value, backup_frames) => {
             fig2['data'][2] = JSON.parse(JSON.stringify(eval('backup_frames' + pointers[1]))) //deepcopy
             fig2 = set_full_legend_style(fig2, 'coloraxis', FIRST)
             fig2 = set_full_legend_style(fig2, 'coloraxis2', SECOND)
-//            let to_split_1 = fig2['data'][0]['hovertemplate'].split(EXTRA_FOOTER)
-//            fig2['data'][0]['hovertemplate'] = to_split_1[0] + 'Layer 1'+ EXTRA_FOOTER
-            console.log(fig2)
+//            console.log(fig2)
             fig2 = modify_hovertemplate(fig2, 1)
             fig2 = modify_hovertemplate(fig2, 2)
         }

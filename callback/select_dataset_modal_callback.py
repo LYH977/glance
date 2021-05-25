@@ -125,7 +125,7 @@ def register_update_output_form(app):
     @app.callback(
 
         Output('output-form', 'children'),
-        Input("visual-type", "value"),
+        Input("visual-type-data", "data"),
         State("add-secondary-area", "children"),
         prevent_initial_call=True
     )
@@ -136,7 +136,7 @@ def register_update_output_form(app):
             input_type = 'No input yet'
         else:
             input_type = ctx.triggered[0]['prop_id'].split('.')[0]
-        if input_type == 'visual-type' and type is not None:
+        if input_type == 'visual-type-data' and type is not None:
             is_secondary = False if secondary is None else True
             return output_form_markup(type, is_secondary)
 
@@ -216,7 +216,7 @@ def register_enable_create_btn(app):
             # Input('activate-click', 'data'),
         ],
         [
-            State('visual-type', 'value'),
+            State('visual-type-data', 'data'),
             State({'type': 'secondary-action-btn', 'index': ALL}, 'disabled')
         ],
         prevent_initial_call=True
@@ -695,3 +695,15 @@ def register_update_visual_dropdown(app):
 
         return None
 
+#############################################################################################################################################
+
+def register_update_visual_type_data(app):
+    @app.callback(
+        Output('visual-type-data', 'data') ,
+        Input('visual-type', 'value') ,
+
+        prevent_initial_call=True
+    )
+    def update_visual_type_data (value):
+
+        return value

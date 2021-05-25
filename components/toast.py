@@ -16,5 +16,6 @@ layout = html.Div([
     dcc.Store(id='dashboard-toast', data=None),
     dcc.Store(id='upload-toast', data=None),
     dcc.Store(id='create-new-column-toast', data=None),
+    dcc.Store(id='edit-toast', data=None),
 
 ])

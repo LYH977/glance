@@ -26,7 +26,7 @@ modal = html.Div(
             className='floating_area'
         ),
         dcc.Store(id='last-param', data={}),
-        # dcc.Store(id='activate-click', data=0),
+        dcc.Store(id='visual-type-data', data= None),
         dcc.Store(id='chosen-tformat', data= YEAR),
         dcc.Store(id='chosen-dropdown', data= None),
         dcc.Store(id=SM_PARAM, data={ 'parameter': {} }),

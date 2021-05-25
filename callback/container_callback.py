@@ -59,25 +59,38 @@ def register_update_visual_container(app):
             collection.data[create_clicks] = collection.temp
             collection.live_processing[create_clicks] = False
             now = datetime.now().timestamp()
-            if param['vtype'] == CAROUSEL: #  carousel
-                temp = []
-                for row in collection.temp.index:
-                    temp.append( create_ca_img(collection.temp.loc[row, param['parameter'][CAROUSEL_CONSTANT[ITEM]]]) )
-                collection.img_container[create_clicks] = temp
-            else: # other than carousel
-                result = task.process_dataset.delay(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'], now)
-                # task.process_dataset(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'], now)
-            # print(param)
-            new_child = container.render_container(create_clicks, param, tformat, dbname, now, collection.new_col)
-            div_children.append(new_child)
-            toast = {
-                'children': f"Visualization {create_clicks} is successfully created.",
-                'is_open': True,
-                'icon': 'success',
-                'header': 'SUCCESS'
-            }
-            collection.new_col = {'expression': [], 'numeric_col': []}
-            return div_children, toast
+            try:
+                new_child = container.render_container(create_clicks, param, tformat, dbname, now, collection.new_col)
+                if param['vtype'] == CAROUSEL:  # carousel
+                    temp = []
+                    for row in collection.temp.index:
+                        temp.append(
+                            create_ca_img(collection.temp.loc[row, param['parameter'][CAROUSEL_CONSTANT[ITEM]]]))
+                    collection.img_container[create_clicks] = temp
+                else:  # other than carousel
+                    result = task.process_dataset.delay(create_clicks, collection.temp.to_dict(), param['vtype'],
+                                                        param['parameter'], now)
+                    # task.process_dataset(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'], now)
+                div_children.append(new_child)
+                toast = {
+                    'children': f"Visualization {create_clicks} is successfully created.",
+                    'is_open': True,
+                    'icon': 'success',
+                    'header': 'SUCCESS'
+                }
+                collection.new_col = {'expression': [], 'numeric_col': []}
+                return div_children, toast
+            except Exception as e:
+                print('create visual error: ', e)
+                remove_from_collection(create_clicks)
+                collection.new_col = {'expression': [], 'numeric_col': []}
+                toast = {
+                    'children': f"Data format is not accepted. Please try again with other format.",
+                    'is_open': True,
+                    'icon': 'danger',
+                    'header': 'DANGER'
+                }
+                return dash.no_update, toast
 
         elif input_type=='dlt-btn' : # input from delete action
             delete_index = get_ctx_index(ctx)
@@ -94,6 +107,7 @@ def register_update_visual_container(app):
                 'icon': 'info',
                 'header': 'SUCCESS'
             }
+
             return div_children, toast
 
         elif input_type == 'left-arrow' :

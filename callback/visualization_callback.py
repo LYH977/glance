@@ -907,7 +907,12 @@ def register_update_secondary_action_click(app):
 
 def register_update_secondary_frames(app):
     @app.callback(
-        Output({'type': 'secondary-data', 'index': MATCH}, 'data'),
+        [
+            Output({'type': 'secondary-data', 'index': MATCH}, 'data'),
+            # Output('edit-toast', 'data')
+            Output({'type': 'edit-toast', 'index': MATCH}, 'data'),
+
+        ],
         [
             Input({'type': 'secondary-action-click', 'index': MATCH}, 'data'),
             Input({'type': 'del-secondary-btn', 'index': MATCH}, 'n_clicks'),
@@ -930,25 +935,68 @@ def register_update_secondary_frames(app):
             collection.temp = collection.temp.dropna()
             collection.temp.reset_index(drop=True, inplace=True)
             collection.temp[FRAME] = collection.temp[TIME].map(lambda x: formatted_time_value(x, tformat))
-            figure = create_figure(collection.temp, param['parameter'], param['vtype'], False)
-            configure_coloraxis(figure)
-            figure = figure.to_dict()
-            for f in figure['frames']:
-                # f['data'][0]['secondary'] = True
-                if param['vtype'] == DENSITY:
-                    f['data'][0]['coloraxis'] = 'coloraxis2'
-                else:
-                    f['data'][0]['marker']['coloraxis'] = 'coloraxis2'
-            secondary_data = {
-                'frames': figure['frames'],
-                'coloraxis': figure['layout']['coloraxis']
-            }
-            secondary_data['coloraxis']['colorbar']['y'] = 0.01
-            secondary_data['coloraxis']['colorbar']['len'] = 0.495
-            secondary_data['coloraxis']['colorbar']['title']['text'] = secondary_data['coloraxis']['colorbar']['title']['text'] + '(2)'
-            return secondary_data
+
+            # figure = create_figure(collection.temp, param['parameter'], param['vtype'], False)
+            # configure_coloraxis(figure)
+            # figure = figure.to_dict()
+            # for f in figure['frames']:
+            #     if param['vtype'] == DENSITY:
+            #         f['data'][0]['coloraxis'] = 'coloraxis2'
+            #     else:
+            #         f['data'][0]['marker']['coloraxis'] = 'coloraxis2'
+            # secondary_data = {
+            #     'frames': figure['frames'],
+            #     'coloraxis': figure['layout']['coloraxis']
+            # }
+            # secondary_data['coloraxis']['colorbar']['y'] = 0.01
+            # secondary_data['coloraxis']['colorbar']['len'] = 0.495
+            # secondary_data['coloraxis']['colorbar']['title']['text'] = secondary_data['coloraxis']['colorbar']['title']['text'] + '(2)'
+            #
+            try:
+                figure = create_figure(collection.temp, param['parameter'], param['vtype'], False)
+                configure_coloraxis(figure)
+                figure = figure.to_dict()
+                for f in figure['frames']:
+                    if param['vtype'] == DENSITY:
+                        f['data'][0]['coloraxis'] = 'coloraxis2'
+                    else:
+                        f['data'][0]['marker']['coloraxis'] = 'coloraxis2'
+                secondary_data = {
+                    'frames': figure['frames'],
+                    'coloraxis': figure['layout']['coloraxis']
+                }
+                secondary_data['coloraxis']['colorbar']['y'] = 0.01
+                secondary_data['coloraxis']['colorbar']['len'] = 0.495
+                secondary_data['coloraxis']['colorbar']['title']['text'] = \
+                secondary_data['coloraxis']['colorbar']['title']['text'] + '(2)'
+
+                toast = {
+                    'children': f"Layer 2 is successfully added.",
+                    'is_open': True,
+                    'icon': 'success',
+                    'header': 'SUCCESS'
+                }
+                return secondary_data, toast
+            except Exception as e:
+                print('edit error:', e)
+                toast = {
+                    'children': f"Data format is not accepted. Please try again with other format.",
+                    'is_open': True,
+                    'icon': 'danger',
+                    'header': 'DANGER'
+                }
+                return dash.no_update, toast
+            # return secondary_data
+
         elif input_type == 'del-secondary-btn' and del_click>0:
-            return {}
+            toast = {
+                'children': f"Layer 2 is successfully deleted.",
+                'is_open': True,
+                'icon': 'info',
+                'header': 'SUCCESS'
+            }
+            return {}, toast
+
         raise PreventUpdate
 
 
