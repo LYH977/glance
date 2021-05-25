@@ -51,7 +51,7 @@ def register_update_visual_container(app):
             input_type = 'No input yet'
         else:
             input_type = get_ctx_type(ctx)
-        print(input_type)
+        # print(input_type)
         if create_clicks and input_type == 'create-visual': # input from add button
             collection.temp = collection.temp.dropna()
             collection.temp.reset_index(drop=True, inplace=True)
@@ -128,7 +128,7 @@ def register_update_visual_container(app):
                     temp.append(create_ca_img(collection.data[edit_index].loc[row, param_to_edit['parameter'][CAROUSEL_CONSTANT[ITEM]]]))
                 collection.img_container[create_clicks] = temp
             else:  # other than carousel
-                print(now)
+                # print(now)
                 result = task.process_dataset.delay(create_clicks, collection.data[edit_index].to_dict(), param_to_edit['vtype'],
                                                     param_to_edit['parameter'], now)
 

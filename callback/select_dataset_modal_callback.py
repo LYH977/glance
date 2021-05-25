@@ -123,18 +123,13 @@ def register_update_after_upload(app):
 
 def register_update_output_form(app):
     @app.callback(
-        [
-            Output('output-form', 'children'),
-            Output('activate-click', 'data'),
-        ],
+
+        Output('output-form', 'children'),
         Input("visual-type", "value"),
-        [
-            State("add-secondary-area", "children"),
-            State('activate-click', 'data'),
-        ],
+        State("add-secondary-area", "children"),
         prevent_initial_call=True
     )
-    def update_output_form(type, secondary, click):
+    def update_output_form(type, secondary):
 
         ctx = dash.callback_context
         if not ctx.triggered:
@@ -143,14 +138,9 @@ def register_update_output_form(app):
             input_type = ctx.triggered[0]['prop_id'].split('.')[0]
         if input_type == 'visual-type' and type is not None:
             is_secondary = False if secondary is None else True
-            results = output_form_markup(type, is_secondary)
-            if results['increment']:
-                click_data = click +1
-                print('yes')
-            else:
-                click_data = dash.no_update
-            return results['element'], click_data
-        return None,dash.no_update
+            return output_form_markup(type, is_secondary)
+
+        return None
 
 #############################################################################################################################################
 
@@ -217,14 +207,13 @@ def register_enable_create_btn(app):
         ] ,
         [
             Input(SM_PARAM,'data'),
-            # Input(SG_PARAM, 'data'),
             Input(D_PARAM, 'data'),
             Input(CH_PARAM, 'data'),
             Input(CA_PARAM, 'data'),
             Input(BC_PARAM, 'data'),
             Input('create-visual', 'n_clicks'),
             Input('cancel-create-visual', 'n_clicks'),
-            Input('activate-click', 'data'),
+            # Input('activate-click', 'data'),
         ],
         [
             State('visual-type', 'value'),
@@ -232,7 +221,7 @@ def register_enable_create_btn(app):
         ],
         prevent_initial_call=True
     )
-    def enable_create_btn (sm,  d, ch, ca, bc, create, cancel,act_click,  vtype, secondary):
+    def enable_create_btn (sm,  d, ch, ca, bc, create, cancel,  vtype, secondary):
 
         ctx = dash.callback_context
         if not ctx.triggered:
@@ -240,19 +229,21 @@ def register_enable_create_btn(app):
         else:
             input_type = get_ctx_type(ctx)
             input_value = get_ctx_value(ctx)
+        # print('input_value',input_value)
+        # print('input_type',input_type)
 
         if input_type == 'cancel-create-visual' and cancel>0:
             return True, {}, [True for i in secondary]
         if input_type == 'create-visual' and create>0:
             return True, dash.no_update, [True for i in secondary]
-        if input_type == 'activate-click':
-            print('clicked')
-            return False, dash.no_update, [True for i in secondary]
+        # if input_type == 'activate-click':
+        #     print('clicked')
+        #     return False, dash.no_update, [True for i in secondary]
 
-        if input_value['parameter'] is not None and input_value['is_filled'] is True:
-            print('called')
+        if isinstance(input_value, dict):
+            # print('called:', input_value)
             data = {'vtype': vtype, 'parameter':input_value['parameter'] }
-            return False, data, [False for i in secondary]
+            return not input_value['is_filled'], data, [False for i in secondary]
         raise PreventUpdate
 #############################################################################################################################################
 

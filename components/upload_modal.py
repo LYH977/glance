@@ -101,7 +101,12 @@ def dt_modifier_markup(value):
             dbc.Label('Specify datetime format of "{}"'.format(dt)),
             dbc.Input(id='dt-input', placeholder="Input goes here...", type="text", autoComplete= 'off'),
             dbc.FormText("20.12.2016 09:38:42,76  ->  %d.%m.%Y %H:%M:%S,%f"),
-            dbc.FormText("DAY=%d, MONTH=%m, YEAR=%Y, HOUR=%H, MINUTE=%M, SECOND=%S, MILLISEC=%f"),
+            dbc.FormText("DAY        : %d        HOUR     : %H        MILLISEC  : %f", style={'whiteSpace':'pre'}),
+            dbc.FormText("MONTH : %m       MINUTE  : %M", style={'whiteSpace':'pre'}),
+            dbc.FormText("YEAR      : %Y        SECOND : %S", style={'whiteSpace':'pre'}),
+
+            # dbc.FormText("DAY   = %d, MONTH=%m, YEAR=%Y, HOUR=%H, MINUTE=%M, SECOND=%S, MILLISEC=%f"),
+
             dbc.Button("Check format", id="check-dt-format", className="ml-auto", color="secondary")
         ]
     )
