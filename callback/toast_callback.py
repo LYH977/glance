@@ -42,7 +42,6 @@ def register_update_toast(app):
             input_type = 'No input yet'
         else:
             input_type = get_ctx_type(ctx)
-        print('input_type',input_type)
         if input_type == 'upload-toast' and upload is not None:
             return upload['children'], upload['is_open'], upload['icon'], upload['header'], [x for x in edit]
 
@@ -53,7 +52,6 @@ def register_update_toast(app):
             return new_column['children'], new_column['is_open'], new_column['icon'], new_column['header'], [x for x in edit]
 
         elif input_type == 'edit-toast' :
-            print('edit', edit)
             for index, (first, second) in enumerate(zip(edit, last_edit)):
                 if first != second:
                     return first['children'], first['is_open'], first['icon'], first['header'], [x for x in edit]

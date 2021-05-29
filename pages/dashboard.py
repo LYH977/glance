@@ -9,7 +9,6 @@ import tkinter as tk
 from geopy.geocoders import MapBox
 
 from components.edit_visual_modal import edit_modal
-from components.visual.utils.marker import test_marker_markup
 
 root = tk.Tk()
 screen_width = root.winfo_screenwidth()

@@ -9,7 +9,7 @@ from components.visual.utils.setting import setting_markup
 from components.visual.utils.stores import stores_markup
 
 
-def visual_box_markup(create_clicks, param, figure, tformat, first_frame, dbname, now, new_col,maxValue):
+def visual_box_markup(create_clicks, param, figure, tformat, first_frame, dbname, now, new_col,maxValue, ):
 
     return html.Div(
         className='visual-box',
@@ -18,7 +18,7 @@ def visual_box_markup(create_clicks, param, figure, tformat, first_frame, dbname
             intervals_markup(create_clicks, maxValue),
             dbc.Row(
                 [
-                    dbc.Col(name_section_markup(create_clicks), width='auto'),
+                    dbc.Col(name_section_markup(create_clicks, dbname, param['vtype']), width='auto'),
                     dbc.Col(
                         dbc.Row([
                             dbc.Col(setting_markup(create_clicks, param['vtype'])),

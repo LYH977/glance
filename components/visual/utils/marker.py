@@ -21,18 +21,6 @@ def namelist_item_not_found_markup(query):
         ], className='marker-group-item'
     )
 
-# def namelist_marked_item_markup(name, coordinate,):
-#     return dbc.ListGroupItem([
-#             dbc.ListGroupItemHeading(
-#                 name,
-#                 className='marker-item-heading',
-#             ),
-#             dbc.ListGroupItemText(
-#                 coordinate,
-#                 className='marker-item-text' ,
-#             ),
-#             dbc.Badge("Success", color="success", className="mr-1 marker-item-btn"),
-#         ], color="success", className='marker-group-item')
 
 
 def namelist_item_markup(name, coordinate, id, index, color=''):
@@ -163,7 +151,6 @@ def marker_markup(create_clicks):
         [
             html.Span(
                 html.I(className="fa fa-map-marker fa-lg"),
-                # id={'type': 'marker-btn', 'index': create_clicks},
                 id=f"popover-div-wrapper-{create_clicks}",
                 n_clicks=0
             ),
@@ -171,36 +158,34 @@ def marker_markup(create_clicks):
 
                 popover_children_markup(create_clicks),
                 id="legacy",
-                # target="{'type': 'marker-btn', 'index': "+str(create_clicks)+"}",
                 target=f"popover-div-wrapper-{create_clicks}",
                 trigger="legacy",
                 placement='bottom-end',
-                # style={'maxWidth': '400px'},
             ),
         ],
 
     )
 
 
-def test_marker_markup():
-    create_clicks=1
-    return html.Div(
-        [
-            html.Span(
-                html.I(className="fa fa-map-marker fa-lg"),
-                # id={'type': 'marker-btn', 'index': create_clicks},
-                id=f"popover-div-wrapper-",
-                n_clicks=0
-            ),
-            dbc.Popover(
-                popover_children_markup(create_clicks),
-                id="legacy",
-                # target="{'type': 'marker-btn', 'index': "+str(create_clicks)+"}",
-                target=f"popover-div-wrapper-",
-                trigger="legacy",
-                placement='bottom-end',
-                style={'maxWidth': '400px'},
-            ),
-        ],
-
-    )
+# def test_marker_markup():
+#     create_clicks=1
+#     return html.Div(
+#         [
+#             html.Span(
+#                 html.I(className="fa fa-map-marker fa-lg"),
+#                 # id={'type': 'marker-btn', 'index': create_clicks},
+#                 id=f"popover-div-wrapper-",
+#                 n_clicks=0
+#             ),
+#             dbc.Popover(
+#                 popover_children_markup(create_clicks),
+#                 id="legacy",
+#                 # target="{'type': 'marker-btn', 'index': "+str(create_clicks)+"}",
+#                 target=f"popover-div-wrapper-",
+#                 trigger="legacy",
+#                 placement='bottom-end',
+#                 style={'maxWidth': '400px'},
+#             ),
+#         ],
+#
+#     )

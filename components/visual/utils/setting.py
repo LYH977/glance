@@ -21,7 +21,7 @@ def setting_markup(create_clicks, type):
 
             mapbox_type_markup(create_clicks, hide_mapbox) ,
 
-            color_scale_markup(create_clicks, hide_mapbox),
+            # color_scale_markup(create_clicks, hide_mapbox),
 
             live_mode_markup(create_clicks),
 

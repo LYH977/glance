@@ -30,58 +30,58 @@ df = pd.DataFrame(
     }
 )
 
-
-data = pd.read_csv('C:/Users/FORGE-15/PycharmProjects/glance/datasets/time-series-19-covid-combined.csv')
-fig = px.scatter_mapbox(
-        data, lat = 'Lat',
-        lon = 'Long',
-        size = 'Confirmed', size_max = 50,
-        color = 'Deaths', color_continuous_scale = px.colors.sequential.Pinkyl,
-        hover_name = 'Country/Region',
-        mapbox_style = 'light', zoom=1,
-        title='testing',
-        animation_frame='Date',
-    )
-fig.layout.margin.t = 0
-fig.layout.margin.b = 0
-fig.layout.margin.r = 0
-fig.layout.margin.l = 0
-
-fig.layout.title.pad.t = 0
-fig.layout.title.pad.b = 0
-fig.layout.title.pad.r = 0
-fig.layout.title.pad.l = 0
-fig.layout.title.font.color = 'red'
-fig.layout.title.font.size = 50
-fig.layout.title.y = 0.98
-fig.layout.title.x = 0.2
-
-fig.layout.coloraxis.colorbar.len = 0.49
-fig.layout.coloraxis.colorbar.yanchor = 'bottom'
-# fig.layout.coloraxis.colorbar.xanchor = 'right'
-
-fig.layout.coloraxis.colorbar.xpad = 7
-# fig.layout.coloraxis.colorbar.ypad = 50
-
-fig.layout.coloraxis.colorbar.x = -0.04
-fig.layout.coloraxis.colorbar.y = 0.5
-fig.layout.coloraxis.colorbar.thickness = 10
-
-# fig.layout.coloraxis.colorbar.outlinewidth =1
-
-fig.layout.coloraxis.colorbar.borderwidth = 0.1
-
-# #dark
-# fig.layout.coloraxis.colorbar.bgcolor = 'rgba(0,0,0,1)'
-# fig.layout.coloraxis.colorbar.title.font.color = 'rgba(255,255,255,1)'
-# fig.layout.coloraxis.colorbar.tickfont.color = 'rgba(255,255,255,1)'
-#white
-fig.layout.coloraxis.colorbar.bgcolor = 'rgba(255,255,255,1)'
-fig.layout.coloraxis.colorbar.title.font.color = 'rgba(0,0,0,1)'
-fig.layout.coloraxis.colorbar.tickfont.color = 'rgba(0,0,0,1)'
+################################################################################################################
+# data = pd.read_csv('C:/Users/FORGE-15/PycharmProjects/glance/datasets/time-series-19-covid-combined.csv')
+# fig = px.scatter_mapbox(
+#         data, lat = 'Lat',
+#         lon = 'Long',
+#         size = 'Confirmed', size_max = 50,
+#         color = 'Deaths', color_continuous_scale = px.colors.sequential.Pinkyl,
+#         hover_name = 'Country/Region',
+#         mapbox_style = 'light', zoom=1,
+#         title='testing',
+#         animation_frame='Date',
+#     )
+# fig.layout.margin.t = 0
+# fig.layout.margin.b = 0
+# fig.layout.margin.r = 0
+# fig.layout.margin.l = 0
 #
-fig.layout.sliders[0].visible = False
-fig.layout.updatemenus[0].visible = False
+# fig.layout.title.pad.t = 0
+# fig.layout.title.pad.b = 0
+# fig.layout.title.pad.r = 0
+# fig.layout.title.pad.l = 0
+# fig.layout.title.font.color = 'red'
+# fig.layout.title.font.size = 50
+# fig.layout.title.y = 0.98
+# fig.layout.title.x = 0.2
+#
+# fig.layout.coloraxis.colorbar.len = 0.49
+# fig.layout.coloraxis.colorbar.yanchor = 'bottom'
+# # fig.layout.coloraxis.colorbar.xanchor = 'right'
+#
+# fig.layout.coloraxis.colorbar.xpad = 7
+# # fig.layout.coloraxis.colorbar.ypad = 50
+#
+# fig.layout.coloraxis.colorbar.x = -0.04
+# fig.layout.coloraxis.colorbar.y = 0.5
+# fig.layout.coloraxis.colorbar.thickness = 10
+#
+# # fig.layout.coloraxis.colorbar.outlinewidth =1
+#
+# fig.layout.coloraxis.colorbar.borderwidth = 0.1
+#
+# # #dark
+# # fig.layout.coloraxis.colorbar.bgcolor = 'rgba(0,0,0,1)'
+# # fig.layout.coloraxis.colorbar.title.font.color = 'rgba(255,255,255,1)'
+# # fig.layout.coloraxis.colorbar.tickfont.color = 'rgba(255,255,255,1)'
+# #white
+# fig.layout.coloraxis.colorbar.bgcolor = 'rgba(255,255,255,1)'
+# fig.layout.coloraxis.colorbar.title.font.color = 'rgba(0,0,0,1)'
+# fig.layout.coloraxis.colorbar.tickfont.color = 'rgba(0,0,0,1)'
+# #
+# fig.layout.sliders[0].visible = False
+# fig.layout.updatemenus[0].visible = False
 
 
 ######################################################################################################
@@ -103,9 +103,34 @@ fig.layout.updatemenus[0].visible = False
 #         'style': "outdoors", 'zoom': 0.7},
 #     showlegend = True
 # )
+################################################################################################################
+table_header = [
+    html.Thead(html.Tr([html.Th("First Name"), html.Th("Last Name")]))
+]
+
+row1 = html.Tr([html.Td("Arthur"), html.Td("Dent")])
+row2 = html.Tr([html.Td("Ford"), html.Td("Prefect")])
+row3 = html.Tr([html.Td("Zaphod"), html.Td("Beeblebrox")], style={'display': 'none'})
+row4 = html.Tr([html.Td("Trillian"), dbc.Select(
+    options=[
+        {"label": "Option 1", "value": "1"},
+        {"label": "Option 2", "value": "2"},
+        {"label": "Disabled option", "value": "3", "disabled": True},
+    ],
+)])
+
+table_body = [html.Tbody([row1, row2, row3, row4])]
+
+table = dbc.Table(
+    table_header + table_body,
+    borderless=True,
+    responsive= True,
+     hover= True,
+    size='sm'
+)
 
 
-
+################################################################################################################
 toast = html.Div(
     [
         dbc.Button(
@@ -126,28 +151,28 @@ toast = html.Div(
 
     ]
 )
-
+################################################################################################################
 layout = dbc.Jumbotron(
     [   toast,
         # html.Span(id='submit-button', n_clicks=0, className='fa fa-send'),
         dcc.Download(id="new-download"),
         html.Button('test new dl btn', id='new-dl-btn'),
-        dcc.Store(id='testing-js', data=fig),
+        # dcc.Store(id='testing-js', data=fig),
         # dcc.Store(id='testing-plot', data= fig),
         html.Button('multiple layer figure', id='multi-layer-btn'),
 
-        dcc.Graph(id='hp-fig', figure = fig, config={
-                    'modeBarButtonsToRemove': [
-                        'pan2d', 'select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox',
-                        'toggleHover',
-                        'zoom2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toggleSpikelines',
-                        'hoverClosestCartesian', 'hoverCompareCartesian', 'zoomInGeo', 'zoomOutGeo',
-                        'hoverClosestGeo', 'resetGeo'
-                    ],
-                    'displaylogo': False,
-                    # 'responsive': False,
-                    # 'displayModeBar': False
-                }),
+        # dcc.Graph(id='hp-fig', figure = fig, config={
+        #             'modeBarButtonsToRemove': [
+        #                 'pan2d', 'select2d', 'lasso2d', 'zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox',
+        #                 'toggleHover',
+        #                 'zoom2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toggleSpikelines',
+        #                 'hoverClosestCartesian', 'hoverCompareCartesian', 'zoomInGeo', 'zoomOutGeo',
+        #                 'hoverClosestGeo', 'resetGeo'
+        #             ],
+        #             'displaylogo': False,
+        #             # 'responsive': False,
+        #             # 'displayModeBar': False
+        #         }),
         html.A('Download test.mp4', id='export-test-link',
                download='',
                href='',
@@ -190,6 +215,7 @@ layout = dbc.Jumbotron(
             "spacing to suit the larger container."
         ),
         html.P(dbc.Button("Learn more", color="primary"), className="lead"),
+        table
 
 
     ]

@@ -100,7 +100,6 @@ def register_update_color_scale(app):
         prevent_initial_call=True
     )
     def update_color_scale(dropdown, dropdown2, chosen):
-        # print(1111)
         ctx = dash.callback_context
         if not ctx.triggered:
             raise PreventUpdate
@@ -142,7 +141,6 @@ def register_update_slider(app):
         prevent_initial_call=True
     )
     def update_slider(value, ts, mode, animate, atmax, buffer):
-        # print(11122)
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
@@ -163,7 +161,6 @@ def register_update_slider(app):
             return maxValue if atmax else dash.no_update, maxValue, maxValue
 
         elif input_type == 'secondary-mode' :
-            # print(buffer)
             maxValue = len(buffer['frames']) - 1
             return 0, maxValue, maxValue
 
@@ -180,7 +177,6 @@ def register_update_play_btn(app):
         prevent_initial_call=True
     )
     def update_play_btn(playing):
-        # print(333)
         if playing is True:
             return 'pause', False
         else:
@@ -211,7 +207,6 @@ def register_update_playing_status(app):
         prevent_initial_call=True
     )
     def update_playing_status(play_clicked, s_value, live, playing, interval, buffer):
-        # print(4444)
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
@@ -258,7 +253,6 @@ def register_reset_slider_n_interval(app):
         prevent_initial_call=True
     )
     def reset_slider_n_interval(play, slider, buffer):
-        # print(5555)
         maxValue = len(buffer['frames']) - 1
 
         return slider if slider != maxValue else 0
@@ -274,7 +268,6 @@ def register_update_atmax(app):
         prevent_initial_call=True
     )
     def update_atmax(slider, smax):
-        # print(66666)
         return True if slider == smax else False
 
 
@@ -291,7 +284,6 @@ def register_update_live_mode(app):
         prevent_initial_call=True
     )
     def update_live_mode(live):
-        # print(77777)
         return not live, live
 
 
@@ -329,7 +321,6 @@ def register_update_live_data(app):
         prevent_initial_call=True
     )
     def update_live_data(live, legend, mapbox, colorscale, marker, secondary,  ts, format,  param, dbname, buffer, info, backup_frames):
-        # print(8888)
         ctx = dash.callback_context
         input_index = None
         if not ctx.triggered:
@@ -441,7 +432,6 @@ def register_toggle_collapse(app):
         prevent_initial_call=True
     )
     def toggle_collapse(celery, max, min, state, is_open):
-        # print(9999)
         ctx = dash.callback_context
         if not ctx.triggered:
             input_type = 'No input yet'
@@ -488,7 +478,6 @@ def register_update_celery_data(app):
         # prevent_initial_call=True
     )
     def update_celery_data(interval,rows, secondary, slider, index, now, celery, backup_celery):
-        # print(10)
         ctx = dash.callback_context
         if not ctx.triggered:
             input_type = 'No input yet'
@@ -573,7 +562,6 @@ def register_toggle_badge_color(app):
         prevent_initial_call=True
     )
     def toggle_badge_color(max, min, state, is_open):
-        # print(1212)
         ctx = dash.callback_context
         if not ctx.triggered:
             input_type = 'No input yet'
@@ -616,7 +604,6 @@ def register_update_last_celery_key(app):
         prevent_initial_call=True
     )
     def update_last_celery_key( live, interval,secondary, last_rows, param, modal_param, old_celery):
-        # print(1313)
         ctx = dash.callback_context
         input_index= None
         if not ctx.triggered:
@@ -674,7 +661,6 @@ def register_export_visual(app):
         prevent_initial_call=True
     )
     def export_visual(disabled, name, fig, backup):
-        # print(1414)
         if disabled:
             export_mp4(fig, name, backup)
             dl = f'{name}.mp4'
@@ -700,7 +686,6 @@ def register_handle_export_btn_click(app):
         prevent_initial_call=True
     )
     def handle_export_btn_click(btn_click, disabled):
-        # print(15515)
         if btn_click and not disabled:
             now = int(datetime.now().timestamp())
             return True, False, now
@@ -717,7 +702,6 @@ def register_reset_export_interval(app):
         prevent_initial_call=True
     )
     def reset_export_interval(click):
-        # print(161616)
         return 0
 
 # ############################################################################################################################################
@@ -734,7 +718,6 @@ def register_update_marker_namelist(app):
         prevent_initial_call=True
     )
     def update_marker_namelist(value,  index):
-        # print(17717)
         if len(value.strip()) == 0:
             raise PreventUpdate
         try:
@@ -752,7 +735,7 @@ def register_update_marker_namelist(app):
 
             return namelist
         except Exception as e:
-            print(e)
+            print('marker error',e)
             return [namelist_item_not_found_markup(value)]
 
 # ############################################################################################################################################
@@ -773,7 +756,6 @@ def register_update_marker_data(app):
         prevent_initial_call=True
     )
     def update_marker_data(name, reset, apply, lat, long):
-        # print(18181881)
         ctx = dash.callback_context
         if not ctx.triggered:
             raise PreventUpdate
@@ -814,7 +796,6 @@ def register_update_marker_name_section_data(app):
         prevent_initial_call=True
     )
     def update_marker_name_section_data(btn0, btn1, btn2, btn3, btn4, name0, name1, name2, name3, name4, coo0, coo1, coo2, coo3, coo4):
-        # print(19999)
         ctx = dash.callback_context
         if not ctx.triggered:
             raise PreventUpdate
@@ -842,7 +823,6 @@ def register_update_marker_marked_name(app):
         prevent_initial_call=True
     )
     def update_marker_marked_name(marker):
-        # print(2000)
         if len(marker['lat']) != 0:  # if marker is specified
             name = marker['name']
             coordinate = marker['customdata'][0]
@@ -865,7 +845,6 @@ def register_reset_lat_long(app):
         prevent_initial_call=True
     )
     def reset_export_interval(reset):
-        # print(2111)
         return '',''
 
 # ############################################################################################################################################
@@ -882,7 +861,6 @@ def register_toggle_coordinate_apply_btn(app):
         prevent_initial_call=True
     )
     def toggle_coordinate_apply_btn(lat, long):
-        # print(2333)
         if check_valid_lat(lat) and check_valid_long(long):
             return False
         return True
@@ -897,7 +875,6 @@ def register_update_secondary_action_click(app):
         prevent_initial_call=True
     )
     def toggle_secondary_btn_visibility(btn, click):
-        # print(2444)
         if btn:
             return click +1
         raise PreventUpdate
@@ -909,8 +886,8 @@ def register_update_secondary_frames(app):
     @app.callback(
         [
             Output({'type': 'secondary-data', 'index': MATCH}, 'data'),
-            # Output('edit-toast', 'data')
             Output({'type': 'edit-toast', 'index': MATCH}, 'data'),
+            Output({'type': 'secondary-info', 'index': MATCH}, 'data'),
 
         ],
         [
@@ -925,7 +902,6 @@ def register_update_secondary_frames(app):
         prevent_initial_call=True
     )
     def update_secondary_frames(click, del_click, param, tformat, dbname):
-        # print(25555)
         ctx = dash.callback_context
         if not ctx.triggered:
             raise PreventUpdate
@@ -936,22 +912,6 @@ def register_update_secondary_frames(app):
             collection.temp.reset_index(drop=True, inplace=True)
             collection.temp[FRAME] = collection.temp[TIME].map(lambda x: formatted_time_value(x, tformat))
 
-            # figure = create_figure(collection.temp, param['parameter'], param['vtype'], False)
-            # configure_coloraxis(figure)
-            # figure = figure.to_dict()
-            # for f in figure['frames']:
-            #     if param['vtype'] == DENSITY:
-            #         f['data'][0]['coloraxis'] = 'coloraxis2'
-            #     else:
-            #         f['data'][0]['marker']['coloraxis'] = 'coloraxis2'
-            # secondary_data = {
-            #     'frames': figure['frames'],
-            #     'coloraxis': figure['layout']['coloraxis']
-            # }
-            # secondary_data['coloraxis']['colorbar']['y'] = 0.01
-            # secondary_data['coloraxis']['colorbar']['len'] = 0.495
-            # secondary_data['coloraxis']['colorbar']['title']['text'] = secondary_data['coloraxis']['colorbar']['title']['text'] + '(2)'
-            #
             try:
                 figure = create_figure(collection.temp, param['parameter'], param['vtype'], False)
                 configure_coloraxis(figure)
@@ -976,7 +936,7 @@ def register_update_secondary_frames(app):
                     'icon': 'success',
                     'header': 'SUCCESS'
                 }
-                return secondary_data, toast
+                return secondary_data, toast, {'name':dbname, 'type':  param['vtype']}
             except Exception as e:
                 print('edit error:', e)
                 toast = {
@@ -985,7 +945,7 @@ def register_update_secondary_frames(app):
                     'icon': 'danger',
                     'header': 'DANGER'
                 }
-                return dash.no_update, toast
+                return dash.no_update, toast, None
             # return secondary_data
 
         elif input_type == 'del-secondary-btn' and del_click>0:
@@ -995,7 +955,7 @@ def register_update_secondary_frames(app):
                 'icon': 'info',
                 'header': 'SUCCESS'
             }
-            return {}, toast
+            return {}, toast, None
 
         raise PreventUpdate
 
@@ -1012,7 +972,6 @@ def register_toggle_secondary_btn_visibility(app):
         prevent_initial_call=True
     )
     def toggle_secondary_btn_visibility(secondary):
-        # print(266666)
         display1 = 'none' if secondary else 'block'
         display2 = 'block' if secondary else 'none'
         return {'display':display1}, {'display':display2}
@@ -1044,5 +1003,38 @@ def register_toggle_add_secondary_visual_btn(app):
         prevent_initial_call=True
     )
     def toggle_add_secondary_visual_btn(live):
-        # print(27777)
         return True if live else False
+
+
+# ############################################################################################################################################
+
+def register_update_info_secondary(app):
+    @app.callback(
+
+        [
+            Output({'type': 'td-name-2', 'index': MATCH}, 'children'),
+            Output({'type': 'td-type-2', 'index': MATCH}, 'children'),
+            Output({'type': 'tr-info-2', 'index': MATCH}, 'style'),
+        ],
+        Input({'type': 'secondary-mode', 'index': MATCH}, 'data'),
+        [
+            State({'type': 'secondary-info', 'index': MATCH}, 'data'),
+        ],
+        prevent_initial_call=True
+    )
+    def update_info_secondary(mode, info):
+        if mode:
+            return info['name'], info['type'], {'display': 'table-row' }
+        else:
+            return 'None', 'None', {'display': 'none'}
+# ############################################################################################################################################
+
+def register_update_secondary_colorscale(app):
+    @app.callback(
+
+        Output({'type': 'color-scale-dropdown-2', 'index': MATCH}, 'value'),
+        Input({'type': 'secondary-data', 'index': MATCH}, 'data'),
+        prevent_initial_call=True
+    )
+    def update_secondary_colorscale(data):
+        return 'Plotly3'  if data else dash.no_update
