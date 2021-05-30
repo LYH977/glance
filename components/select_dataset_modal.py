@@ -278,16 +278,13 @@ def time_format_option():
         for period in ['year', 'month', 'day', 'hour', 'minute', 'second']:
             obj1 = eval(f'list[{index}-1].{period}')
             obj2 = eval(f'list[{index}].{period}')
-            # print(f'{obj1} and {obj2} in {period}')
             if obj1 != obj2 and period.upper() not in diff:
                 diff.append(period.upper())
-    # print(diff)
     value = YEAR
     for k in TIME_FORMAT.keys():
         if all(e in k for e in diff):
             value = TIME_FORMAT[k]
             break
-    # print(value)
     return  \
         dbc.FormGroup(
                     [
@@ -377,7 +374,6 @@ def operand_container_markup(type, id):
         )
 
 def secondary_action_btn_markup(create_click):
-    # print('received', create_click)
     return dbc.Button(
         'Create',
         id = {'type':'secondary-action-btn', 'index':create_click},

@@ -29,10 +29,8 @@ def create_scattermap(data, parameter, toConfigure ):
         # hover_data=['Active', 'Confirmed']
         # custom_data=['Date']
     )
-    # print(fig)
     if toConfigure:
         configure_fig(fig, SCATTER_MAP, True)
-    # print(fig)
 
     return fig
 

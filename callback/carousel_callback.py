@@ -240,8 +240,7 @@ def register_ca_update_live_data(app):
                 result[FRAME] = result[TIME].map(lambda x: formatted_time_value(x, format))
                 last_nano = get_last_timestamp(result[TIME])
                 collection.data[input_index] = collection.data[input_index].append(result, ignore_index=True)
-                # print('result', result.columns)
-                # print('param', param)
+
 
                 for row in result.index:
                     collection.img_container[input_index].append( create_ca_img(result.loc[row, param[CAROUSEL_CONSTANT[ITEM]]]) )

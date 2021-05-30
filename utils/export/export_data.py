@@ -6,7 +6,7 @@ def export_mp4(fig, filename, backup):
     images = []
     frames = []
     num_frames = len(fig['frames'])
-    print(fig)
+    # print(fig)
     for i in range(3):
         if 'pointers' in fig['frames'][i]:
             export_data= [ fig['data'][1]]
@@ -15,7 +15,7 @@ def export_mp4(fig, filename, backup):
                 export_data.append(temp)
             # export_data = [fig['frames'][i]['data'][0], fig['data'][1]]
         else:
-            export_data=[ fig['frames'][i]['data'][0], fig['data'][1] ]
+            export_data=[ fig['frames'][i]['data'][0], fig['data'][1] ] if len(fig['data']) > 1 else  fig['frames'][i]['data'][0]
         # fig2 = go.Figure(data=fig['frames'][i]['data'][0], layout=fig['layout'])
         fig2 = go.Figure(data=export_data, layout=fig['layout'])
 

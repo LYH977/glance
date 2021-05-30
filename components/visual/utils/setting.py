@@ -86,7 +86,7 @@ def generate_btn_markup(create_clicks):
     return dbc.DropdownMenuItem(
         dbc.Button(
             'Generate MP4',
-            id={'type': 'export-btn', 'index': create_clicks},
+            id={'type': 'generate-btn', 'index': create_clicks},
             color="info",
             className="mr-1"
         ),
@@ -97,14 +97,14 @@ def download_btn_markup(create_clicks):
     return dbc.DropdownMenuItem(
         html.A(
             'Download MP4',
-            id={'type': 'export-link', 'index': create_clicks},
-            download='1618213227.mp4',
-            href='/assets/export/1618213227.mp4',  # /assets/test.mp4
+            id={'type': 'download-btn', 'index': create_clicks},
+            # download='1618213227.mp4',
+            # href='/assets/export/1618213227.mp4',
             style={'width': '50%'},
         ),
         className='export-link',
         style={'display': 'none'},
-        id={'type': 'export-link-wrapper', 'index': create_clicks},
+        id={'type': 'download-btn-wrapper', 'index': create_clicks},
     )
 
 def mapbox_type_markup(create_clicks, hidden):

@@ -60,7 +60,6 @@ def register_toggle_open_edit_modal(app):
         prevent_initial_call=True
     )
     def toggle_open_edit_modal(edit_ts, cancel, confirm, last_edit, old_param, tformat,  dbname, columns, param_to_edit):
-        # print('qqqq')
         ctx = dash.callback_context
         if not ctx.triggered:
             raise PreventUpdate
@@ -70,7 +69,6 @@ def register_toggle_open_edit_modal(app):
                 if first != second:
                     diff_index = get_ctx_index(ctx)
                     header = f'Edit Visual {diff_index} ({old_param[index]["vtype"]})'
-                    # print(tformat[index])
                     return  True, \
                             header,\
                             edit_visual_portal_markup(old_param[index], columns[index], tformat[index]), \
@@ -80,7 +78,6 @@ def register_toggle_open_edit_modal(app):
         elif input_type == 'cancel-edit-visual' and cancel >0:
             return False, dash.no_update, None, edit_ts, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
         elif input_type == 'confirm-edit-visual' and confirm >0:
-            # print('b',param_to_edit)
             return False, dash.no_update, None, edit_ts, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
         raise PreventUpdate
 
@@ -105,8 +102,6 @@ def register_validate_sm_create_edit_modal(app):
         # prevent_initial_call=True
     )
     def validate_sm_create_edit_modal (lat, long, size, color, name, msg, data):
-        # print('qwqw')
-
         data['parameter']['sm_latitude'] = lat
         data['parameter']['sm_longitude'] = long
         data['parameter']['sm_size'] = size
@@ -133,8 +128,6 @@ def register_validate_bc_create_edit_modal(app):
         # prevent_initial_call=True
     )
     def validate_bc_create_edit_modal (item, value, data):
-        # print('qeqe')
-
         data['parameter']['bc_item'] = item
         data['parameter']['bc_value'] = value
         return data
@@ -157,8 +150,6 @@ def register_validate_d_create_edit_modal(app):
         # prevent_initial_call=True
     )
     def validate_d_create_edit_modal (lat, long, z, msg, data):
-        # print('qrqr')
-
         data['parameter']['d_latitude'] = lat
         data['parameter']['d_longitude'] = long
         data['parameter']['d_z'] = z
@@ -184,8 +175,6 @@ def register_validate_ch_create_edit_modal(app):
         # prevent_initial_call=True
     )
     def validate_ch_create_edit_modal (loc, color, name, msg, data):
-        # print('qtqtqt')
-
         data['parameter']['ch_locations'] = loc
         data['parameter']['ch_color'] = color
         data['parameter']['ch_name'] = name
@@ -207,8 +196,6 @@ def register_validate_ca_create_edit_modal(app):
         # prevent_initial_call=True
     )
     def validate_ca_create_edit_modal (item, data):
-        # print('qyqy')
-
         data['parameter']['ca_item'] = item
         return data
 
@@ -225,8 +212,6 @@ def register_update_chosen_tformat_edit_modal(app):
         prevent_initial_call=True
     )
     def update_chosen_tformat_edit_modal (value):
-        # print('ququu')
-
         ctx = dash.callback_context
         if not ctx.triggered:
             raise PreventUpdate
@@ -259,7 +244,6 @@ def register_assign_param_to_edit(app):
         prevent_initial_call=True
     )
     def assign_param_to_edit (sm,  d, ch, ca, bc, last):
-        # print('qiqi')
 
         ctx = dash.callback_context
         if not ctx.triggered:
@@ -269,7 +253,6 @@ def register_assign_param_to_edit(app):
             # input_value = get_ctx_value(ctx)
 
         if input_type == 'last-saved-param':
-            # print(1)
             return last
         if len(ctx.triggered)>1:
             for c in ctx.triggered:
@@ -301,8 +284,6 @@ def register_toggle_edit_btn(app):
         prevent_initial_call=True
     )
     def toggle_edit_btn (param, tformat, last_param, last_tformat):
-        # print('qaqa')
-
         return True if param == last_param and tformat == last_tformat else False
 
 #############################################################################################################################################

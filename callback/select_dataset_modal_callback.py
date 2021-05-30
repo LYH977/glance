@@ -229,8 +229,7 @@ def register_enable_create_btn(app):
         else:
             input_type = get_ctx_type(ctx)
             input_value = get_ctx_value(ctx)
-        # print('input_value',input_value)
-        # print('input_type',input_type)
+
 
         if input_type == 'cancel-create-visual' and cancel>0:
             return True, {}, [True for i in secondary]
@@ -241,7 +240,6 @@ def register_enable_create_btn(app):
         #     return False, dash.no_update, [True for i in secondary]
 
         if isinstance(input_value, dict):
-            # print('called:', input_value)
             data = {'vtype': vtype, 'parameter':input_value['parameter'] }
             return not input_value['is_filled'], data, [False for i in secondary]
         raise PreventUpdate
@@ -351,7 +349,6 @@ def register_validate_d_create(app):
         data['parameter']['d_longitude'] = long
         data['parameter']['d_z'] = z
         data['parameter']['d_message'] = msg
-        # print(data['parameter'])
         is_filled = False if None in data['parameter'].values() else True
         return {'is_filled': is_filled, 'parameter': data['parameter']}
 
@@ -410,8 +407,6 @@ def register_update_chosen_tformat(app):
         prevent_initial_call=True
     )
     def update_chosen_tformat (value):
-        # print('zxzx')
-
         return value
 #############################################################################################################################################
 

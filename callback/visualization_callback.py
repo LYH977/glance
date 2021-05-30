@@ -117,8 +117,6 @@ def register_update_color_scale(app):
             chosen_color = eval(f'px.colors.sequential.{dropdown2}')
             formatted_scale, scale = px.colors.convert_colors_to_same_type(chosen_color)
             colorscale = px.colors.make_colorscale(formatted_scale, scale=scale)
-            # print('true bo : ', 'None' in chosen['0']['value'])
-            # print(chosen['0']['value'])
             chosen['2'] = {'name': dropdown2, 'value': colorscale}
             if None in chosen['0']['value']:
                 chosen_color = eval(f"px.colors.sequential.{chosen['0']['name']}")
@@ -394,8 +392,6 @@ def register_update_live_data(app):
         elif input_type == 'secondary-data':
             if len(secondary) != 0:
                 fig2 = buffer
-                # print('1st: ', fig2['layout']['coloraxis']['colorscale'])
-                # print('2nd: ', secondary['coloraxis']['colorscale'])
                 fig2['data'][2] = secondary['frames'][0]['data'][0]
                 fig2['layout']['coloraxis2'] = secondary['coloraxis']
                 fig2['layout']['coloraxis']['colorbar']['y'] = 0.496
@@ -403,7 +399,6 @@ def register_update_live_data(app):
                 fig2['layout']['coloraxis']['colorbar']['title']['text'] = fig2['layout']['coloraxis']['colorbar']['title']['text'] + '(1)'
                 merged = merge_frames(fig2['frames'], secondary['frames'])
                 fig2['frames'] = merged['frames']
-                # print(fig2['layout']['coloraxis'])
                 return dash.no_update, fig2, True, {'frames0': merged['frames0'], 'frames2': merged['frames2']}
             else:
                 fig2 = buffer
@@ -616,13 +611,10 @@ def register_update_last_celery_key(app):
     )
     def update_last_celery_key( live, interval,secondary, last_rows, param, modal_param, old_celery):
         ctx = dash.callback_context
-        input_index= None
         if not ctx.triggered:
-            input_type = 'No input yet'
-        else:
-            input_type = get_ctx_type(ctx)
-            input_index = get_ctx_index(ctx)
-
+            raise  PreventUpdate
+        input_type = get_ctx_type(ctx)
+        input_index = get_ctx_index(ctx)
         if input_type == 'live-mode' and  not live:
             current_rows = len(collection.data[input_index].index)
             if last_rows < current_rows:
@@ -658,12 +650,12 @@ def register_update_last_celery_key(app):
 def register_export_visual(app):
     @app.callback(
         [
-            Output({'type': 'export-link', 'index': MATCH}, 'download'),
-            Output({'type': 'export-link', 'index': MATCH}, 'href'),
-            Output({'type': 'export-link-wrapper', 'index': MATCH}, 'style'),
-            Output({'type': 'export-btn', 'index': MATCH}, 'hidden'),
+            Output({'type': 'download-btn', 'index': MATCH}, 'download'),
+            Output({'type': 'download-btn', 'index': MATCH}, 'href'),
+            Output({'type': 'download-btn-wrapper', 'index': MATCH}, 'style'),
+            # Output({'type': 'generate-btn', 'index': MATCH}, 'hidden'),
         ],
-        [Input({'type': 'export-btn', 'index': MATCH}, 'disabled')],
+        [Input({'type': 'generate-btn', 'index': MATCH}, 'disabled')],
         [
             State({'type': 'export-name', 'index': MATCH}, 'data'),
             State({'type': 'visualization', 'index': MATCH}, 'figure'),
@@ -678,29 +670,38 @@ def register_export_visual(app):
             path = app.get_asset_url(f'export/{dl}')
 
             print(f'habis href {name}')
-            return dl, path, {'display': 'block'}, True
-        return None, None, {'display': 'none'}, dash.no_update
+            return dl, path, {'display': 'block'}
+        return None, None, {'display': 'none'}
 
 # ############################################################################################################################################
 
 def register_handle_export_btn_click(app):
     @app.callback(
         [
-            Output({'type': 'export-btn', 'index': MATCH}, 'disabled'),
+            Output({'type': 'generate-btn', 'index': MATCH}, 'disabled'),
             Output({'type': 'export-interval', 'index': MATCH}, 'disabled'),
             Output({'type': 'export-name', 'index': MATCH}, 'data'),
         ],
-        [Input({'type': 'export-btn', 'index': MATCH}, 'n_clicks')],
         [
-            State({'type': 'export-btn', 'index': MATCH}, 'disabled'),
+            Input({'type': 'generate-btn', 'index': MATCH}, 'n_clicks'),
+            # Input({'type': 'download-btn', 'index': MATCH}, 'href'),
+
+        ],
+        [
+            State({'type': 'generate-btn', 'index': MATCH}, 'disabled'),
         ],
         prevent_initial_call=True
     )
-    def handle_export_btn_click(btn_click, disabled):
-        if btn_click and not disabled:
+    def handle_export_btn_click(btn_click,  disabled):
+        ctx = dash.callback_context
+        if not ctx.triggered:
+            raise PreventUpdate
+        input_type = get_ctx_type(ctx)
+        if input_type== 'generate-btn' and btn_click and not disabled:
             now = int(datetime.now().timestamp())
-            return True, False, now
-
+            return  True, False, now
+        # elif input_type =='download-btn' and dl is not None:
+        #     return False, dash.no_update, dash.no_update
         raise PreventUpdate
 
 
@@ -709,7 +710,7 @@ def register_handle_export_btn_click(app):
 def register_reset_export_interval(app):
     @app.callback(
         Output({'type': 'export-interval', 'index': MATCH}, 'n_intervals'),
-        [Input({'type': 'export-link', 'index': MATCH}, 'n_clicks')],
+        [Input({'type': 'download-btn', 'index': MATCH}, 'n_clicks')],
         prevent_initial_call=True
     )
     def reset_export_interval(click):
@@ -988,13 +989,9 @@ def register_toggle_secondary_btn_visibility(app):
         if not ctx.triggered:
             raise PreventUpdate
         input_type = get_ctx_type(ctx)
-        print('called: ', input_type)
         if input_type == 'secondary-mode':
-
-
             return True if secondary else False
-        # elif input_type == 'live-mode':
-        #     return True if live else False
+
         raise PreventUpdate
 
 

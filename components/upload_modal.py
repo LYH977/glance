@@ -78,7 +78,6 @@ def preview_markup(filename):
 
 def dt_modifier_markup(value):
     dt = collection.temp.loc[0, value]
-    # print(list(collection.temp.columns))
     newCol = list(collection.temp.columns)
     newCol.remove(value)
     options = [{"label": i, "value": i} for i in newCol]
