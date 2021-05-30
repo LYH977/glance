@@ -54,8 +54,7 @@ edit_modal = html.Div(
             is_open=False,
             autoFocus=False,
             # style={'background': 'red'}
-            contentClassName='select-modal-content'
-
+            contentClassName='select-modal-content',
         ),
     ],
 )

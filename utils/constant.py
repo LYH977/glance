@@ -229,34 +229,38 @@ VISUAL_HEIGHT = 300
 
 MAPBOX_TYPES = [ 'streets',  'light', 'dark', 'satellite-streets']
 
+# SEQUENTIAL_COLOR = [
+#     'Aggrnyl' ,'Agsunset',
+#      'Blackbody' ,  'Bluered', 'Blues',   'Blugrn',  'Bluyl',   'Brwnyl', 'BuGn','BuPu','Burg','Burgyl',
+#     'Cividis',
+#     'Darkmint',
+#      'Electric','Emrld',
+#     'GnBu','Greens',  'Greys',
+#      'Hot',
+#     'Inferno',
+#     'Jet',
+#     'Magenta', 'Magma', 'Mint',
+#     'OrRd','Oranges', 'Oryel',
+#     'Peach',   'Pinkyl',  'Plasma',  'Plotly3', 'PuBu','PuBuGn',  'PuRd','Purp','Purples', 'Purpor',
+#     'Rainbow', 'RdBu', 'RdPu','Redor',   'Reds',
+#     'Sunset',  'Sunsetdark',
+#      'Teal','Tealgrn', 'Turbo',
+#     'Viridis',
+#     'YlGn','YlGnBu',
+#     'algae',   'amp',
+#     'deep', 'dense',
+#      'gray',
+#     'haline',
+#     'ice',
+#     'matter',
+#     'solar',   'speed',
+#     'tempo','thermal', 'turbid',
+# ]
+
 SEQUENTIAL_COLOR = [
-'Aggrnyl' ,'Agsunset',
- 'Blackbody' ,  'Bluered', 'Blues',   'Blugrn',  'Bluyl',   'Brwnyl', 'BuGn','BuPu','Burg','Burgyl',
-'Cividis',
-'Darkmint',
- 'Electric','Emrld',
-'GnBu','Greens',  'Greys',
- 'Hot',
-'Inferno',
-'Jet',
-'Magenta', 'Magma', 'Mint',
-'OrRd','Oranges', 'Oryel',
-'Peach',   'Pinkyl',  'Plasma',  'Plotly3', 'PuBu','PuBuGn',  'PuRd','Purp','Purples', 'Purpor',
-'Rainbow', 'RdBu', 'RdPu','Redor',   'Reds',
-'Sunset',  'Sunsetdark',
- 'Teal','Tealgrn', 'Turbo',
-'Viridis',
-'YlGn','YlGnBu',
-'algae',   'amp',
-'deep', 'dense',
- 'gray',
-'haline',
-'ice',
-'matter',
-'solar',   'speed',
-'tempo','thermal', 'turbid',
+
+   'Pinkyl',  'Purples',  'Plotly3', 'PuBu','PuBuGn',  'PuRd','Purp', 'Purpor',
+
 
 ]
-
-# MAPBOX_GEOCODER = MapBox(os.environ['MAP_TOKEN'])
 

@@ -6,9 +6,9 @@ import dash_bootstrap_components as dbc
 from utils.constant import SEQUENTIAL_COLOR, SCATTER_MAP, DENSITY
 
 
-def info_table_markup(create_clicks, name1, type1):
-    hasMapbox = [SCATTER_MAP, DENSITY]
-    hidden = not type1 in hasMapbox
+def info_table_markup(create_clicks, name1, type1,hidden):
+    # hasMapbox = [SCATTER_MAP, DENSITY]
+    # hidden = not type1 in hasMapbox
     table_header = [
         html.Thead(html.Tr([
             html.Th("No"),
@@ -28,10 +28,17 @@ def info_table_markup(create_clicks, name1, type1):
                 dbc.Select(
                     id={'type': 'color-scale-dropdown', 'index': create_clicks},
                     options=[{"label": c, "value": c} for c in SEQUENTIAL_COLOR],
-                    value='Pinkyl'  # 2nd Pinkyl
+                    value='Pinkyl' ,
+                    bs_size='sm'
                 ),style={'display': 'none' if hidden else 'block' }
             ),
-            html.Td('action'),
+            html.Td(
+                html.Span(
+                    html.I(className="fa fa-edit fa-lg"),
+                    id={'type': 'edit-visual-btn', 'index': create_clicks},
+                    n_clicks=0
+                ),
+            ),
         ]))
 
     rows.append(
@@ -43,10 +50,17 @@ def info_table_markup(create_clicks, name1, type1):
                 dbc.Select(
                     id={'type': 'color-scale-dropdown-2', 'index': create_clicks},
                     options=[{"label": c, "value": c} for c in SEQUENTIAL_COLOR],
-                    value= 'Plotly3' # 2nd Plotly3
+                    value= 'Plotly3', # 2nd Plotly3
+                    bs_size= 'sm'
                 ),style={'display': 'none'if hidden else 'block'  }
             ),
-            html.Td('action',id={'type': 'td-action-2', 'index': create_clicks},),
+            html.Td(
+                html.Span(
+                    html.I(className="fa fa-trash fa-lg"),
+                    id={'type': 'del-secondary-btn', 'index': create_clicks},
+                    n_clicks=0
+                ),
+            ),
 
         ],
         id={'type': 'tr-info-2', 'index': create_clicks},
@@ -67,6 +81,8 @@ def info_table_markup(create_clicks, name1, type1):
     )
 #
 def info_markup(create_clicks, name1, type1 ):
+    hasMapbox = [SCATTER_MAP, DENSITY]
+    hidden = not type1 in hasMapbox
     return html.Div(
         [
             dbc.Badge(
@@ -74,13 +90,21 @@ def info_markup(create_clicks, name1, type1 ):
                 id=f"popover-badge-{create_clicks}",
                 pill=True,
                 color="primary",
-                className="mr-1",
+                className="mr-1 visual-badge",
                 n_clicks=0
             ),
             dbc.Popover(
 
-                info_table_markup(create_clicks, name1, type1,),
-                id="legacy",
+                [
+                    info_table_markup(create_clicks, name1, type1, hidden),
+                    html.Span(
+                        html.I(className="fa fa-plus-square fa-lg"),
+                        id={'type': 'secondary-visual-btn', 'index': create_clicks},
+                        n_clicks=0,
+                        hidden= hidden
+                    )
+                ],
+                id={'type': 'legacy-popover', 'index': create_clicks},
                 target=f"popover-badge-{create_clicks}",
                 trigger="legacy",
                 placement='bottom-start',

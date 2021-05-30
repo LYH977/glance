@@ -111,12 +111,20 @@ def register_update_color_scale(app):
             formatted_scale, scale = px.colors.convert_colors_to_same_type(chosen_color)
             colorscale = px.colors.make_colorscale(formatted_scale, scale=scale)
             chosen['0'] = {'name': dropdown, 'value': colorscale}
+
             return chosen
         elif input_type =='color-scale-dropdown-2' and ( len(chosen['2']) == 0 or dropdown2 != chosen['2']['name']) :
             chosen_color = eval(f'px.colors.sequential.{dropdown2}')
             formatted_scale, scale = px.colors.convert_colors_to_same_type(chosen_color)
             colorscale = px.colors.make_colorscale(formatted_scale, scale=scale)
+            # print('true bo : ', 'None' in chosen['0']['value'])
+            # print(chosen['0']['value'])
             chosen['2'] = {'name': dropdown2, 'value': colorscale}
+            if None in chosen['0']['value']:
+                chosen_color = eval(f"px.colors.sequential.{chosen['0']['name']}")
+                formatted_scale, scale = px.colors.convert_colors_to_same_type(chosen_color)
+                colorscale = px.colors.make_colorscale(formatted_scale, scale=scale)
+                chosen['0']['value'] = colorscale
             return chosen
         raise PreventUpdate
 
@@ -386,6 +394,8 @@ def register_update_live_data(app):
         elif input_type == 'secondary-data':
             if len(secondary) != 0:
                 fig2 = buffer
+                # print('1st: ', fig2['layout']['coloraxis']['colorscale'])
+                # print('2nd: ', secondary['coloraxis']['colorscale'])
                 fig2['data'][2] = secondary['frames'][0]['data'][0]
                 fig2['layout']['coloraxis2'] = secondary['coloraxis']
                 fig2['layout']['coloraxis']['colorbar']['y'] = 0.496
@@ -393,6 +403,7 @@ def register_update_live_data(app):
                 fig2['layout']['coloraxis']['colorbar']['title']['text'] = fig2['layout']['coloraxis']['colorbar']['title']['text'] + '(1)'
                 merged = merge_frames(fig2['frames'], secondary['frames'])
                 fig2['frames'] = merged['frames']
+                # print(fig2['layout']['coloraxis'])
                 return dash.no_update, fig2, True, {'frames0': merged['frames0'], 'frames2': merged['frames2']}
             else:
                 fig2 = buffer
@@ -964,17 +975,28 @@ def register_update_secondary_frames(app):
 
 def register_toggle_secondary_btn_visibility(app):
     @app.callback(
+
+        Output({'type': 'secondary-visual-btn', 'index': MATCH}, 'hidden'),
         [
-            Output({'type': 'secondary-visual-btn', 'index': MATCH}, 'style'),
-            Output({'type': 'del-secondary-btn', 'index': MATCH}, 'style'),
+            Input({'type': 'secondary-mode', 'index': MATCH}, 'data'),
+            # Input({'type': 'live-mode', 'index': MATCH}, 'on'),
         ],
-        Input({'type': 'secondary-mode', 'index': MATCH}, 'data'),
         prevent_initial_call=True
     )
     def toggle_secondary_btn_visibility(secondary):
-        display1 = 'none' if secondary else 'block'
-        display2 = 'block' if secondary else 'none'
-        return {'display':display1}, {'display':display2}
+        ctx = dash.callback_context
+        if not ctx.triggered:
+            raise PreventUpdate
+        input_type = get_ctx_type(ctx)
+        print('called: ', input_type)
+        if input_type == 'secondary-mode':
+
+
+            return True if secondary else False
+        # elif input_type == 'live-mode':
+        #     return True if live else False
+        raise PreventUpdate
+
 
 # ############################################################################################################################################
 
@@ -995,15 +1017,15 @@ def register_toggle_live_mode(app):
 
 # ############################################################################################################################################
 
-def register_toggle_add_secondary_visual_btn(app):
-    @app.callback(
-
-        Output({'type': 'secondary-visual-btn', 'index': MATCH}, 'disabled'),
-        Input({'type': 'live-mode', 'index': MATCH}, 'on'),
-        prevent_initial_call=True
-    )
-    def toggle_add_secondary_visual_btn(live):
-        return True if live else False
+# def register_toggle_add_secondary_visual_btn(app):
+#     @app.callback(
+#
+#         Output({'type': 'secondary-visual-btn', 'index': MATCH}, 'disabled'),
+#         Input({'type': 'live-mode', 'index': MATCH}, 'on'),
+#         prevent_initial_call=True
+#     )
+#     def toggle_add_secondary_visual_btn(live):
+#         return True if live else False
 
 
 # ############################################################################################################################################
@@ -1024,7 +1046,8 @@ def register_update_info_secondary(app):
     )
     def update_info_secondary(mode, info):
         if mode:
-            return info['name'], info['type'], {'display': 'table-row' }
+            name = info['name'] if len(info['name']) <15 else info['name'][0:15] + '...'
+            return name, info['type'], {'display': 'table-row' }
         else:
             return 'None', 'None', {'display': 'none'}
 # ############################################################################################################################################
@@ -1038,3 +1061,27 @@ def register_update_secondary_colorscale(app):
     )
     def update_secondary_colorscale(data):
         return 'Plotly3'  if data else dash.no_update
+
+# ############################################################################################################################################
+
+def register_close_legacy_popover(app):
+    @app.callback(
+
+        Output({'type': 'legacy-popover', 'index': MATCH}, 'is_open'),
+        [
+            Input({'type': 'edit-visual-btn', 'index': MATCH}, 'n_clicks'),
+            Input({'type': 'secondary-visual-btn', 'index': MATCH}, 'n_clicks'),
+
+        ],
+        prevent_initial_call=True
+    )
+    def update_secondary_colorscale(edit, secondary):
+        ctx = dash.callback_context
+        if not ctx.triggered:
+            raise PreventUpdate
+        input_type = get_ctx_type(ctx)
+        if input_type == 'edit-visual-btn' and edit:
+            return False
+        elif input_type == 'secondary-visual-btn' and secondary:
+            return False
+        raise PreventUpdate

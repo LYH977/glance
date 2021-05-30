@@ -4,6 +4,8 @@ import dash_daq as daq
 import dash_bootstrap_components as dbc
 import plotly.express as px
 
+from utils.constant import SCATTER_MAP, DENSITY
+
 label_style  ={
             "color": "black",
         }
@@ -146,7 +148,9 @@ def popover_children_markup(create_clicks):
         ),
     ]
 
-def marker_markup(create_clicks):
+def marker_markup(create_clicks, type):
+    hasMapbox = [SCATTER_MAP, DENSITY]
+    hidden = not type in hasMapbox
     return html.Div(
         [
             html.Span(
@@ -163,6 +167,7 @@ def marker_markup(create_clicks):
                 placement='bottom-end',
             ),
         ],
+        hidden= hidden
 
     )
 

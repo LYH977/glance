@@ -208,5 +208,13 @@
     bottom:0;
     right:0;
 
+}
 
+.visual-badge  {
+
+    cursor: pointer;
+}
+
+.visual-badge:hover  {
+     filter: brightness(150%);
 }
