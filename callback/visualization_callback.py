@@ -16,7 +16,7 @@ from utils import collection
 from utils.collection import redis_instance
 from utils.export.export_data import export_mp4
 from utils.method import get_ctx_type, get_ctx_index, formatted_time_value, \
-    select_query, get_last_timestamp, insert_marker, reset_marker_trace, store_template, merge_frames
+    select_query, get_last_timestamp, insert_marker, reset_marker_trace, store_template, merge_frames, get_ctx_property
 from utils.constant import SCATTER_MAP, DENSITY, CHOROPLETH, BAR_CHART_RACE, \
     FRAME, TIME, MAXIMUM, MINIMUM
 
@@ -653,7 +653,7 @@ def register_export_visual(app):
             Output({'type': 'download-btn', 'index': MATCH}, 'download'),
             Output({'type': 'download-btn', 'index': MATCH}, 'href'),
             Output({'type': 'download-btn-wrapper', 'index': MATCH}, 'style'),
-            # Output({'type': 'generate-btn', 'index': MATCH}, 'hidden'),
+            Output({'type': 'generate-btn', 'index': MATCH}, 'hidden'),
         ],
         [Input({'type': 'generate-btn', 'index': MATCH}, 'disabled')],
         [
@@ -670,8 +670,8 @@ def register_export_visual(app):
             path = app.get_asset_url(f'export/{dl}')
 
             print(f'habis href {name}')
-            return dl, path, {'display': 'block'}
-        return None, None, {'display': 'none'}
+            return dl, path, {'display': 'block'}, True
+        return None, None, {'display': 'none'}, False
 
 # ############################################################################################################################################
 
@@ -679,12 +679,13 @@ def register_handle_export_btn_click(app):
     @app.callback(
         [
             Output({'type': 'generate-btn', 'index': MATCH}, 'disabled'),
-            Output({'type': 'export-interval', 'index': MATCH}, 'disabled'),
+            # Output({'type': 'export-interval', 'index': MATCH}, 'disabled'),
             Output({'type': 'export-name', 'index': MATCH}, 'data'),
         ],
         [
             Input({'type': 'generate-btn', 'index': MATCH}, 'n_clicks'),
-            # Input({'type': 'download-btn', 'index': MATCH}, 'href'),
+            Input({'type': 'regenerate-btn', 'index': MATCH}, 'n_clicks'),
+            # Input({'type': 'export-interval', 'index': MATCH}, 'n_clicks'),
 
         ],
         [
@@ -692,16 +693,17 @@ def register_handle_export_btn_click(app):
         ],
         prevent_initial_call=True
     )
-    def handle_export_btn_click(btn_click,  disabled):
+    def handle_export_btn_click(btn_click, enable,   disabled):
         ctx = dash.callback_context
         if not ctx.triggered:
             raise PreventUpdate
         input_type = get_ctx_type(ctx)
         if input_type== 'generate-btn' and btn_click and not disabled:
             now = int(datetime.now().timestamp())
-            return  True, False, now
-        # elif input_type =='download-btn' and dl is not None:
-        #     return False, dash.no_update, dash.no_update
+            return  True, now
+        elif input_type =='regenerate-btn' and enable :
+            return False,  dash.no_update
+
         raise PreventUpdate
 
 
@@ -715,6 +717,46 @@ def register_reset_export_interval(app):
     )
     def reset_export_interval(click):
         return 0
+
+# ############################################################################################################################################
+
+def register_update_generate_btn_name(app):
+    @app.callback(
+        [
+            Output({'type': 'generate-btn', 'index': MATCH}, 'children'),
+            Output({'type': 'export-interval', 'index': MATCH}, 'disabled'),
+        ],
+        [
+            Input({'type': 'export-interval', 'index': MATCH}, 'n_intervals'),
+            Input({'type': 'generate-btn', 'index': MATCH}, 'disabled'),
+        ],
+        State({'type': 'back-buffer', 'index': MATCH}, 'data'),
+        prevent_initial_call=True
+    )
+    def update_generate_btn_name(interval, disabled, buffer):
+        ctx = dash.callback_context
+        if not ctx.triggered:
+            raise PreventUpdate
+        input_type = get_ctx_type(ctx)
+        if input_type == 'export-interval':
+            # estimate = len(buffer['frames']) *2 +1
+            estimate = 3+1
+            result = estimate - interval
+            if result > 0:
+                name = f'Ready in {result}s'
+                itv = dash.no_update
+            else:
+                name =  'Ready soon'
+                itv = True
+            return name, itv
+
+        elif input_type == 'generate-btn' :
+            if disabled:
+                return 'Generating...', False
+            else:
+                return 'Generate MP4', dash.no_update
+        raise  PreventUpdate
+
 
 # ############################################################################################################################################
 
@@ -1082,3 +1124,29 @@ def register_close_legacy_popover(app):
         elif input_type == 'secondary-visual-btn' and secondary:
             return False
         raise PreventUpdate
+
+# ############################################################################################################################################
+
+def register_toggle_enable_btn(app):
+    @app.callback(
+
+        Output({'type': 'regenerate-btn', 'index': MATCH}, 'style'),
+        Input({'type': 'download-btn', 'index': MATCH}, 'download'),
+
+        prevent_initial_call=True
+    )
+    def toggle_enable_btn(data):
+        return {'display':'block'}  if data is not None else  {'display':'none'}
+
+# ############################################################################################################################################
+
+# def register_toggle_generate_btn(app):
+#     @app.callback(
+#
+#         Output({'type': 'generate-btn', 'index': MATCH}, 'disabled'),
+#         Input({'type': 'enable-btn', 'index': MATCH}, 'n_clicks'),
+#         prevent_initial_call=True
+#     )
+#     def toggle_enable_btn(click):
+#         if click:
+#             return False

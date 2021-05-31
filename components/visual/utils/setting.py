@@ -29,6 +29,7 @@ def setting_markup(create_clicks, type):
 
             generate_btn_markup(create_clicks),
             download_btn_markup(create_clicks),
+            enable_generate_markup(create_clicks)
         ],
     )
 
@@ -70,11 +71,17 @@ def live_mode_markup(create_clicks):
 def delete_btn_markup(create_clicks):
     return html.Div([
         dbc.DropdownMenuItem(
-            dbc.Button(
-                'Delete',
+            # dbc.Button(
+            #     'Delete',
+            #     id={'type': 'dlt-btn', 'index': create_clicks},
+            #     color="danger",
+            #     className="mr-1"
+            # ),
+            html.Span(
+                html.I(className="fa fa-trash fa-lg"),
+                style={'color':'red'},
                 id={'type': 'dlt-btn', 'index': create_clicks},
-                color="danger",
-                className="mr-1"
+                n_clicks=0
             ),
             header=True
         ),
@@ -88,7 +95,8 @@ def generate_btn_markup(create_clicks):
             'Generate MP4',
             id={'type': 'generate-btn', 'index': create_clicks},
             color="info",
-            className="mr-1"
+            # className="mr-1",
+            size='sm',
         ),
         header=True,
     )
@@ -103,8 +111,25 @@ def download_btn_markup(create_clicks):
             style={'width': '50%'},
         ),
         className='export-link',
-        style={'display': 'none'},
+        style = {'display': 'none' },
         id={'type': 'download-btn-wrapper', 'index': create_clicks},
+    )
+
+def enable_generate_markup(create_clicks):
+    return dbc.DropdownMenuItem(
+        dbc.Button(
+            'Generate Again',
+            id={'type': 'regenerate-btn', 'index': create_clicks},
+            outline=True,
+            color="secondary",
+            # className="mr-1",
+            size= 'sm',
+            style={'display':'none'},
+        ),
+        # className='enable-btn',
+        # style={'display':'none'},
+        # id={'type': 'enable-btn-wrapper', 'index': create_clicks},
+        header=True,
     )
 
 def mapbox_type_markup(create_clicks, hidden):

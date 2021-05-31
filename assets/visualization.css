@@ -148,7 +148,10 @@
 
 
 
-
+.enable-btn {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
 
 .export-link {
     margin: 10px;
@@ -157,6 +160,7 @@
     width: auto;
     border-radius: 5px;
     color: white;
+    margin-bottom: 0;
 }
 .export-link a {
     color: white;
