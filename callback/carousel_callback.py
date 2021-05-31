@@ -243,7 +243,7 @@ def register_ca_update_live_data(app):
 
 
                 for row in result.index:
-                    collection.img_container[input_index].append( create_ca_img(result.loc[row, param[CAROUSEL_CONSTANT[ITEM]]]) )
+                    collection.img_container[input_index].append( create_ca_img(result.loc[row, param['parameter'][CAROUSEL_CONSTANT[ITEM]]]) )
 
                 # fig = create_figure(collection.data[input_index], param, ftype)
                 return last_nano

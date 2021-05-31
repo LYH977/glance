@@ -179,8 +179,8 @@
 
 .export-link:hover {
     background: green;
-    border-style: none;
-    outline: none;
+    /*border-style: none;
+    outline: none;*/
     filter: brightness(90%);
     color: white;
 
@@ -189,6 +189,18 @@
 .export-link:focus {
     border-style: none;
     outline: none;
+    box-shadow: none;
+}
+
+.play-btn {
+    border-style: none;
+    outline: none;
+}
+.play-btn:focus,
+.play-btn:active{
+    border-style: none;
+    outline: none;
+    box-shadow: none;
 }
 
 .popover {
@@ -227,11 +239,44 @@
 }
 
 .visual-badge  {
-
     cursor: pointer;
 }
 
 .visual-badge:hover  {
+    filter: brightness(110%);
 
+}
+
+.icon-btn  {
+    padding:5px;
+    margin-bottom:5px;
+    border-radius: 50%;
+
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    line-height: 23px;
+    vertical-align: middle;
+}
+
+.icon-red  {
+    color: red;
+}
+
+.icon-grey  {
+    color: #949494;
+}
+
+.icon-black  {
+    color: black;
+}
+
+.icon-red:hover  {
+    background: #ffcccc;
+}
+
+.icon-grey:hover,
+.icon-black:hover{
+    background: #c7c7c7;
 }
 

@@ -85,9 +85,15 @@ def register_toggle_mask_interface(app):
 #############################################################################################################################################
 def register_disable_floating_btn(app):
     @app.callback(
-        Output('open-select-modal', 'hidden'),
+        [
+            Output('open-select-modal', 'disabled'),
+            Output('open-select-wrapper', 'style'),
+        ],
         Input('is-adjusting', 'data'),
         prevent_initial_call=True
     )
     def disable_floating_btn(status):
-        return True if status is True else False
+        if status:
+            return True, {'filter': 'brightness(200%)', 'cursor': 'no-drop'}
+        else:
+            return False,{}

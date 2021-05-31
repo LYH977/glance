@@ -4,13 +4,14 @@ import dash_html_components as html
 import dash_bootstrap_components as dbc
 import dash_daq as daq
 
-
+from components.visual.utils.info import info_markup
 from utils import collection
-from utils.constant import CAROUSEL_CONSTANT, ITEM, TIME
+from utils.constant import CAROUSEL_CONSTANT, ITEM, TIME, CAROUSEL
 from utils.method import set_slider_calendar, get_last_timestamp
 
 
 def create_carousel(screen_height, screen_width, create_clicks, param, maxValue, df_frame, tformat, dbname):
+
     last_nano = get_last_timestamp(collection.temp[TIME])
 
     return html.Div(
@@ -33,6 +34,7 @@ def create_carousel(screen_height, screen_width, create_clicks, param, maxValue,
             dcc.Store(id={'type': 'ca-at-max', 'index': create_clicks}, data=False),
             dcc.Store(id={'type': 'ca-current-frame', 'index': create_clicks}, data=df_frame[0]),
             dcc.Store(id={'type': 'ca-db-name', 'index': create_clicks}, data=dbname),
+            dcc.Store(id={'type': 'last-edit-click-ts', 'index': create_clicks}, data=None),
 
             dcc.Interval(
                 id={'type': 'ca-interval', 'index': create_clicks},
@@ -48,19 +50,34 @@ def create_carousel(screen_height, screen_width, create_clicks, param, maxValue,
                 disabled=True
             ),
             dbc.Row([
-                dbc.Col(html.Label(create_clicks)),
-                dbc.Col(daq.BooleanSwitch(
-                    id={'type': 'ca-live-mode', 'index': create_clicks},
-                    on=False,
-                    color="#9B51E0"
-                )),
-                dbc.Col(html.Button('Delete', id={'type': 'dlt-btn', 'index': create_clicks})),
+                # dbc.Col(html.Label(create_clicks)),
+                dbc.Col(ca_name_section_markup(create_clicks, dbname, CAROUSEL), width='auto'),
+                dbc.Col(html.Div(
+                    [
+                        html.Span(
+                            html.I(className="fa fa-cog fa-lg icon-btn icon-grey"),
+                            id=f"popover-setting-wrapper-{create_clicks}",
+                            n_clicks=0,
+                            # style={'color': 'red'}
+                        ),
+                        dbc.Popover(
+
+                            ca_popover_children_markup(create_clicks),
+                            id="legacy",
+                            target=f"popover-setting-wrapper-{create_clicks}",
+                            trigger="legacy",
+                            placement='bottom-end',
+                        ),
+                    ],
+                    # hidden=hidden
+
+                ))
 
             ]),
             html.Div(
-                create_ca_img(collection.temp.loc[0,param[CAROUSEL_CONSTANT[ITEM]]]),
+                create_ca_img(collection.temp.loc[0,param['parameter'][CAROUSEL_CONSTANT[ITEM]]]),
                 id={'type': 'fade1', 'index': create_clicks},
-                style={ 'height': '450px', 'width': '100%'},
+                style={ 'height': '480px', 'width': '100%'},
             ),
 
             dcc.Slider(
@@ -73,7 +90,13 @@ def create_carousel(screen_height, screen_width, create_clicks, param, maxValue,
                 #        zip(range(0, df_frame.shape[0]), set_slider_calendar(df_frame))},
             ),
             html.Div([
-                html.Button('play', id={'type': 'ca-play-btn', 'index': create_clicks}),
+                dbc.Button(
+                    'play',
+                    id={'type': 'ca-play-btn', 'index': create_clicks},
+                    color="light",
+                    size='sm',
+                    className='play-btn'
+                ),
                 html.Label(df_frame[0], id={'type': 'ca-slider-label', 'index': create_clicks}, style={'color':'white'})
             ]),
         ]),
@@ -84,3 +107,51 @@ def create_ca_img(src):
         src=src,
         style={'height': '100%', 'width': '100%', 'overflow':'hidden'}
     )
+
+
+def ca_popover_children_markup(create_clicks):
+
+    return [
+        dbc.PopoverHeader(
+            [
+                dbc.DropdownMenuItem(divider=True),
+
+                daq.BooleanSwitch(
+                    id={'type': 'ca-live-mode', 'index': create_clicks},
+                    on=False,
+                    color="#9B51E0",
+                    label='Live Mode',
+                ),
+                dbc.DropdownMenuItem(divider=True),
+
+                # html.Button('Delete', id={'type': 'dlt-btn', 'index': create_clicks}),
+
+                html.Div([
+                    html.Span(
+                        html.I( className="fa fa-trash fa-lg icon-btn icon-red"),
+                        id={'type': 'dlt-btn', 'index': create_clicks},
+                        n_clicks=0,
+                    ),
+
+                ])
+
+
+            ],
+            # style={'maxWidth': '400px'},
+        ),
+    ]
+
+def ca_name_section_markup(create_clicks, name1, type1):
+    return html.Div([
+        info_markup(create_clicks, name1, type1),
+        dcc.Input(
+            id={'type': 'visual-title', 'index': create_clicks},
+            type="text",
+            value=f'Visualization {create_clicks}',
+            maxLength=18,
+            autoFocus=False,
+            autoComplete='off',
+            size='13',
+            className='visual-title'
+        ),
+    ], className='flex')

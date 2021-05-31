@@ -9,7 +9,6 @@ from components.visual.utils.info import info_markup
 
 def name_section_markup(create_clicks, name1, type1):
     return html.Div([
-        # dbc.Badge(create_clicks, pill=True, color="primary", className="mr-1"),
         info_markup(create_clicks, name1, type1),
         dcc.Input(
             id={'type': 'visual-title', 'index': create_clicks},

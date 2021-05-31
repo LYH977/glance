@@ -160,6 +160,13 @@ layout = dbc.Jumbotron(
         # dcc.Store(id='testing-js', data=fig),
         # dcc.Store(id='testing-plot', data= fig),
         html.Button('multiple layer figure', id='multi-layer-btn'),
+        html.Span(
+            html.I(className="fa fa-cog fa-lg icon-btn"),
+            id=f"popover-setting-wrapper-",
+            n_clicks=0,
+            style={'color':'grey'},
+            className='icon-btn-wrapper'
+        ),
 
         # dcc.Graph(id='hp-fig', figure = fig, config={
         #             'modeBarButtonsToRemove': [

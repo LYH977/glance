@@ -184,9 +184,9 @@ def register_update_play_btn(app):
     )
     def update_play_btn(playing):
         if playing is True:
-            return 'pause', False
+            return 'Pause', False
         else:
-            return 'play', True
+            return 'Play', True
 
 
 #############################################################################################################################################

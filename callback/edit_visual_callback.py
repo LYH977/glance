@@ -65,6 +65,9 @@ def register_toggle_open_edit_modal(app):
             raise PreventUpdate
         input_type = get_ctx_type(ctx)
         if input_type == 'edit-visual-btn':
+            print('edit_ts',edit_ts)
+            print('last_edit',last_edit)
+
             for index, (first, second) in enumerate(zip(edit_ts, last_edit)):
                 if first != second:
                     diff_index = get_ctx_index(ctx)

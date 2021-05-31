@@ -23,25 +23,9 @@ def visual_box_markup(create_clicks, param, figure, tformat, first_frame, dbname
                         dbc.Row([
                             dbc.Col(setting_markup(create_clicks, param['vtype'])),
                             dbc.Col(marker_markup(create_clicks, param['vtype'])),
-                            # dbc.Button(
-                            #     'edit',
-                            #     id={'type': 'edit-visual-btn', 'index': create_clicks},
-                            #     disabled=False
-                            # ),
-                            # dbc.Button(
-                            #     'add 2nd',
-                            #     id={'type': 'secondary-visual-btn', 'index': create_clicks},
-                            #     disabled= False
-                            # ),
-                            # dbc.Button(
-                            #     'delete 2nd',
-                            #     id={'type': 'del-secondary-btn', 'index': create_clicks},
-                            #     # style={'display':'none'}
-                            # ),
 
                         ],justify="center"), width='auto', ),
-                    # dbc.Col(setting_markup(create_clicks, param['vtype']), width='auto'),
-                    # html.I(className="fa fa-arrows-alt", id='adjust-svg'),
+
                 ],
                 justify="around",
                 align='center',

@@ -3,6 +3,19 @@ import dash_core_components as dcc
 import dash_html_components as html
 import base64
 
+def select_btn_markup():
+    return dbc.NavItem(
+        dbc.NavLink(
+            html.I(className="fa fa-plus"),
+            id="open-select-modal",
+            n_clicks=0
+        ),
+        active=True,
+        className='nav-icon',
+        id='open-select-wrapper',
+        style={}
+    )
+
 def upload_btn_markup():
     return dbc.NavItem(
         dbc.NavLink(
@@ -32,6 +45,7 @@ navbar = dbc.NavbarSimple(
         dcc.Location(id='url', refresh=False),
         adjust_btn_markup(),
         upload_btn_markup(),
+        select_btn_markup()
 
     ],
     brand="Glance",

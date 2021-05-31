@@ -20,11 +20,11 @@ from datetime import  datetime
 
 modal = html.Div(
     [
-        html.Button(
-            html.I(className="fa fa-plus fa-lg"),
-            id="open-select-modal",
-            className='floating_area'
-        ),
+        # html.Button(
+        #     html.I(className="fa fa-plus fa-lg "),
+        #     id="open-select-modal",
+        #     className='floating_area'
+        # ),
         dcc.Store(id='last-param', data={}),
         dcc.Store(id='visual-type-data', data= None),
         dcc.Store(id='chosen-tformat', data= YEAR),
@@ -102,7 +102,7 @@ def snapshot_markup (filename, is_secondary):
 
             ),
             html.Div([
-                html.I(className="fa fa-plus-square", id="click-target", style={}),
+                html.I(className="fa fa-plus-square icon-btn icon-black", id="click-target", style={}),
                 dbc.Popover(
                     [
                         dbc.PopoverHeader(

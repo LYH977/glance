@@ -154,9 +154,10 @@ def marker_markup(create_clicks, type):
     return html.Div(
         [
             html.Span(
-                html.I(className="fa fa-map-marker fa-lg"),
+                html.I(className="fa fa-map-marker fa-lg icon-btn icon-red"),
                 id=f"popover-div-wrapper-{create_clicks}",
-                n_clicks=0
+                n_clicks=0,
+                # style={'color': 'red'}
             ),
             dbc.Popover(
 

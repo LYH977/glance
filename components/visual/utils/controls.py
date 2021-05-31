@@ -5,7 +5,15 @@ import dash_bootstrap_components as dbc
 
 def controls_markup(create_clicks, maxValue, initial_label):
     return dbc.Row([
-                dbc.Col(html.Button('play', id={'type': 'play-btn', 'index': create_clicks}), width='auto'),
+                dbc.Col(
+                    dbc.Button(
+                        'Play',
+                        id={'type': 'play-btn', 'index': create_clicks},
+                        color="light",
+                        size='sm',
+                        className='play-btn'
+                    ), width='auto'
+                ),
                 dbc.Col(html.Label(initial_label, id={'type': 'slider-label', 'index': create_clicks},
                                    style={'color': 'white'}), width='auto'),
                 dbc.Col(dcc.Slider(

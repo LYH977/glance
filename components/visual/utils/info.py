@@ -34,7 +34,7 @@ def info_table_markup(create_clicks, name1, type1,hidden):
             ),
             html.Td(
                 html.Span(
-                    html.I(className="fa fa-edit fa-lg"),
+                    html.I(className="fa fa-edit fa-lg icon-btn icon-black"),
                     id={'type': 'edit-visual-btn', 'index': create_clicks},
                     n_clicks=0
                 ),
@@ -56,7 +56,7 @@ def info_table_markup(create_clicks, name1, type1,hidden):
             ),
             html.Td(
                 html.Span(
-                    html.I(className="fa fa-trash fa-lg"),
+                    html.I(className="fa fa-trash fa-lg icon-btn icon-red"),
                     id={'type': 'del-secondary-btn', 'index': create_clicks},
                     n_clicks=0
                 ),
@@ -98,7 +98,7 @@ def info_markup(create_clicks, name1, type1 ):
                 [
                     info_table_markup(create_clicks, name1, type1, hidden),
                     html.Span(
-                        html.I(className="fa fa-plus-square fa-lg"),
+                        html.I(className="fa fa-plus-square fa-lg icon-btn icon-black"),
                         id={'type': 'secondary-visual-btn', 'index': create_clicks},
                         n_clicks=0,
                         hidden= hidden
