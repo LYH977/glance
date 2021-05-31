@@ -6,6 +6,49 @@ import plotly.express as px
 
 from utils.constant import MAPBOX_TYPES, SCATTER_MAP, CHOROPLETH, DENSITY, SEQUENTIAL_COLOR
 
+def popover_children_markup(create_clicks, type):
+    hasLegend = [SCATTER_MAP, DENSITY, CHOROPLETH]
+    hasMapbox = [SCATTER_MAP, DENSITY]
+    hide_legend = not type in hasLegend
+    hide_mapbox = not type in hasMapbox
+    return [
+        dbc.PopoverHeader(
+            [
+                dbc.DropdownMenuItem(divider=True),
+                dbc.Row([
+                    dbc.Col(legend_theme_markup(create_clicks, hide_legend)),
+                    dbc.Col(live_mode_markup(create_clicks)),
+                ]),
+                dbc.DropdownMenuItem(divider=True),
+
+                dbc.Row([
+                    dbc.Col(mapbox_type_markup(create_clicks, hide_mapbox)),
+                    dbc.Col(html.Div([
+                        generate_btn_markup(create_clicks),
+                        download_btn_markup(create_clicks),
+                        enable_generate_markup(create_clicks)
+                    ], className='flex-col')),
+                ], align= 'center'),
+
+                # mapbox_type_markup(create_clicks, hide_mapbox),
+
+                dbc.DropdownMenuItem(divider=True),
+
+                dbc.Row([
+                    dbc.Col(
+                        delete_btn_markup(create_clicks),
+                        width={"size": 6, "offset": 3}
+                    )]
+                    ,align="center"),
+
+
+                # generate_btn_markup(create_clicks),
+                # download_btn_markup(create_clicks),
+                # enable_generate_markup(create_clicks)
+            ],
+            # style={'maxWidth': '400px'},
+        ),
+    ]
 
 def setting_markup(create_clicks, type):
     hasLegend = [SCATTER_MAP, DENSITY, CHOROPLETH]
@@ -13,96 +56,89 @@ def setting_markup(create_clicks, type):
     hide_legend = not type in hasLegend
     hide_mapbox = not type in hasMapbox
 
-    return dbc.DropdownMenu(
-        label = 'setting',
 
-        children = [
-            legend_theme_markup(create_clicks, hide_legend) ,
+    return html.Div(
+        [
+            html.Span(
+                html.I(className="fa fa-cog fa-lg"),
+                id=f"popover-setting-wrapper-{create_clicks}",
+                n_clicks=0
+            ),
+            dbc.Popover(
 
-            mapbox_type_markup(create_clicks, hide_mapbox) ,
-
-            # color_scale_markup(create_clicks, hide_mapbox),
-
-            live_mode_markup(create_clicks),
-
-            delete_btn_markup(create_clicks),
-
-            generate_btn_markup(create_clicks),
-            download_btn_markup(create_clicks),
-            enable_generate_markup(create_clicks)
+                popover_children_markup(create_clicks, type),
+                id="legacy",
+                target=f"popover-setting-wrapper-{create_clicks}",
+                trigger="legacy",
+                placement='bottom-end',
+            ),
         ],
+
     )
-
-
-
 
 
 def legend_theme_markup(create_clicks, hidden):
     return html.Div([
-        dbc.DropdownMenuItem(
+        # dbc.DropdownMenuItem(
             daq.BooleanSwitch(
                 id={'type': 'legend-theme', 'index': create_clicks},
                 on=False,
                 color="#000000",
                 label='Legend Theme'
             ),
-            header=True
-        ),
-        dbc.DropdownMenuItem(divider=True),
+        #     header=True
+        # ),
+        # dbc.DropdownMenuItem(divider=True),
     ],hidden = hidden)
 
 def live_mode_markup(create_clicks):
     return html.Div([
-        dbc.DropdownMenuItem(
+        # dbc.DropdownMenuItem(
             daq.BooleanSwitch(
                 id={'type': 'live-mode', 'index': create_clicks},
                 on=False,
                 color="#9B51E0",
-                label=f'Live Mode {create_clicks}',
+                label='Live Mode',
                 disabled=False
             ),
-            header=True
-        ),
-        dbc.DropdownMenuItem(divider=True),
+        #     header=True
+        # ),
+        # dbc.DropdownMenuItem(divider=True),
 
     ])
 
 
 def delete_btn_markup(create_clicks):
     return html.Div([
-        dbc.DropdownMenuItem(
-            # dbc.Button(
-            #     'Delete',
-            #     id={'type': 'dlt-btn', 'index': create_clicks},
-            #     color="danger",
-            #     className="mr-1"
-            # ),
+        # dbc.DropdownMenuItem(
             html.Span(
-                html.I(className="fa fa-trash fa-lg"),
+                html.I(
+                    className="fa fa-trash fa-lg"),
                 style={'color':'red'},
                 id={'type': 'dlt-btn', 'index': create_clicks},
-                n_clicks=0
+                n_clicks=0,
+                # className='icon-wrapper'
             ),
-            header=True
-        ),
-        dbc.DropdownMenuItem(divider=True),
+        #     header=True
+        # ),
+        # dbc.DropdownMenuItem(divider=True),
 
     ])
 
 def generate_btn_markup(create_clicks):
-    return dbc.DropdownMenuItem(
-        dbc.Button(
+    # return dbc.DropdownMenuItem(
+    return dbc.Button(
             'Generate MP4',
             id={'type': 'generate-btn', 'index': create_clicks},
             color="info",
             # className="mr-1",
             size='sm',
-        ),
-        header=True,
-    )
+        )
+    #     header=True,
+    # )
 
 def download_btn_markup(create_clicks):
-    return dbc.DropdownMenuItem(
+    return html.Div(
         html.A(
             'Download MP4',
             id={'type': 'download-btn', 'index': create_clicks},
@@ -116,43 +152,40 @@ def download_btn_markup(create_clicks):
     )
 
 def enable_generate_markup(create_clicks):
-    return dbc.DropdownMenuItem(
-        dbc.Button(
+    # return dbc.DropdownMenuItem(
+    return dbc.Button(
             'Generate Again',
             id={'type': 'regenerate-btn', 'index': create_clicks},
-            outline=True,
-            color="secondary",
-            # className="mr-1",
+            color="link",
+            className="regenerate-btn shadow-none",
             size= 'sm',
             style={'display':'none'},
-        ),
-        # className='enable-btn',
-        # style={'display':'none'},
-        # id={'type': 'enable-btn-wrapper', 'index': create_clicks},
-        header=True,
-    )
+        )
+
+    #     header=True,
+    # )
 
 def mapbox_type_markup(create_clicks, hidden):
     return html.Div([
-        dbc.DropdownMenuItem(
-            dbc.Row([
-                dbc.Col(dbc.Label("Mapbox type")),
-                dbc.Col(dbc.Select(
+        # dbc.DropdownMenuItem(
+            dbc.Col([
+                dbc.Row(dbc.Label("Mapbox type")),
+                dbc.Row(dbc.Select(
                     id={'type': 'mapbox-type', 'index': create_clicks},
                     options=[{"label": t, "value": t} for t in MAPBOX_TYPES],
                     value='dark'
                 )),
-            ]),
-            header=True
-        ),
-        dbc.DropdownMenuItem(divider=True),
+            ], align= 'center'),
+        #     header=True
+        # ),
+        # dbc.DropdownMenuItem(divider=True),
     ],hidden =hidden)
 
 
 def color_scale_markup(create_clicks, hidden):
     return html.Div([
-        dbc.DropdownMenuItem(
-            [
+        # dbc.DropdownMenuItem(
+        #     [
                 dbc.Row([
                     dbc.Col(dbc.Label("Color Scale" )),
                     dbc.Col(dbc.Select(
@@ -169,9 +202,9 @@ def color_scale_markup(create_clicks, hidden):
                         value='Plotly3'
                     )),
                 ]),
-            ],
-
-            header=True
-        ),
-        dbc.DropdownMenuItem(divider=True),
+        #     ],
+        #
+        #     header=True
+        # ),
+        # dbc.DropdownMenuItem(divider=True),
     ],hidden =hidden)

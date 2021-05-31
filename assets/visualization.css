@@ -145,22 +145,32 @@
     align-items: center;
 }
 
+.flex-col {
 
-
-
-.enable-btn {
-    margin-bottom: 0;
-    padding-bottom: 0;
+    display : flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
+
+
+
+.regenerate-btn {
+    font-size: 10px;
+}
+
+
+
 .export-link {
-    margin: 10px;
+    margin: 5px;
+    padding:5px ;
     background: green;
     outline: none;
     width: auto;
     border-radius: 5px;
     color: white;
-    margin-bottom: 0;
+
 }
 .export-link a {
     color: white;
@@ -222,5 +232,6 @@
 }
 
 .visual-badge:hover  {
-     filter: brightness(150%);
+
 }
+

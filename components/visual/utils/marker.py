@@ -172,25 +172,3 @@ def marker_markup(create_clicks, type):
     )
 
 
-# def test_marker_markup():
-#     create_clicks=1
-#     return html.Div(
-#         [
-#             html.Span(
-#                 html.I(className="fa fa-map-marker fa-lg"),
-#                 # id={'type': 'marker-btn', 'index': create_clicks},
-#                 id=f"popover-div-wrapper-",
-#                 n_clicks=0
-#             ),
-#             dbc.Popover(
-#                 popover_children_markup(create_clicks),
-#                 id="legacy",
-#                 # target="{'type': 'marker-btn', 'index': "+str(create_clicks)+"}",
-#                 target=f"popover-div-wrapper-",
-#                 trigger="legacy",
-#                 placement='bottom-end',
-#                 style={'maxWidth': '400px'},
-#             ),
-#         ],
-#
-#     )
