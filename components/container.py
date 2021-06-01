@@ -11,7 +11,7 @@ screen_height = root.winfo_screenheight()
 
 def render_container(create_clicks, param, tformat, dbname, now, new_col):
     # data = collection.temp.dropna()
-    df_frame = collection.temp[FRAME].unique()
+    df_frame = collection.data[create_clicks][FRAME].unique()
     maxValue = df_frame.shape[0] - 1
     if(param['vtype'] != CAROUSEL):
         return create_visualization(screen_height, screen_width, create_clicks,  param, maxValue, df_frame, tformat, dbname, now, new_col)

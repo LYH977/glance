@@ -184,11 +184,21 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                     fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(0,0,0,1)'
                     fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(255,255,255,1)'
                     fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(255,255,255,1)'
+                    if (fig2['layout'].hasOwnProperty("coloraxis2")){
+                        fig2['layout']['coloraxis2']['colorbar']['bgcolor'] = 'rgba(0,0,0,1)'
+                        fig2['layout']['coloraxis2']['colorbar']['title']['font']['color'] = 'rgba(255,255,255,1)'
+                        fig2['layout']['coloraxis2']['colorbar']['tickfont']['color'] = 'rgba(255,255,255,1)'
+                    }
                 }
                 else{// light theme
                     fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(255,255,255,1)'
                     fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(0,0,0,1)'
                     fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
+                    if (fig2['layout'].hasOwnProperty("coloraxis2")){
+                        fig2['layout']['coloraxis2']['colorbar']['bgcolor'] = 'rgba(255,255,255,1)'
+                        fig2['layout']['coloraxis2']['colorbar']['title']['font']['color'] = 'rgba(0,0,0,1)'
+                        fig2['layout']['coloraxis2']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
+                    }
                 }
                 change_frame(param['vtype'], fig2, value, backup_frames)
                 return fig2

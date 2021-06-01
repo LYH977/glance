@@ -135,6 +135,8 @@ def setup_periodic_tasks(sender, **kwargs):
 def process_dataset(create_click, dataframe, vtype, parameter, now, old_celery = {}):
     dataframe = pd.DataFrame.from_dict(dataframe)
     print('starting',now)
+
+
     tags = []
     obj = {}
     extract = [MAXIMUM, MINIMUM]
@@ -210,13 +212,14 @@ def process_dataset(create_click, dataframe, vtype, parameter, now, old_celery =
                 obj[k][e].pop('temp', None)
 
     print('done obj')
+    print('create_click', create_click)
+    print('now', now)
 
     if len(old_celery) == 0:
-        # print('see 1')
         obj = json.dumps(obj, cls=plotly.utils.PlotlyJSONEncoder)
         redis_instance.set( f'{create_click}-{now}', obj, 30)
+
     else:
-        # print('see 2')
         list1 = list(old_celery.values())
         list2 = list(obj.values())
         merged_list = list1 + list2

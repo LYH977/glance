@@ -44,13 +44,12 @@ def register_update_visual_container(app):
         prevent_initial_call=True)
     def update_visual_container(create_clicks,  dlt_btn, left, right , confirm_edit, div_children, param, tformat, dbname, param_to_edit, chosen_tformat,edit_location, edit_index, edit_dbname):
 
-
         ctx = dash.callback_context
-        input_index = None
         if not ctx.triggered:
-            input_type = 'No input yet'
-        else:
-            input_type = get_ctx_type(ctx)
+            raise  PreventUpdate
+        input_type = get_ctx_type(ctx)
+
+
         if create_clicks and input_type == 'create-visual': # input from add button
             collection.temp = collection.temp.dropna()
             collection.temp.reset_index(drop=True, inplace=True)
@@ -67,8 +66,7 @@ def register_update_visual_container(app):
                             create_ca_img(collection.temp.loc[row, param['parameter'][CAROUSEL_CONSTANT[ITEM]]]))
                     collection.img_container[create_clicks] = temp
                 else:  # other than carousel
-                    result = task.process_dataset.delay(create_clicks, collection.temp.to_dict(), param['vtype'],
-                                                        param['parameter'], now)
+                    result = task.process_dataset.delay(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'], now)
                     # task.process_dataset(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'], now)
                 div_children.append(new_child)
                 toast = {
@@ -91,6 +89,9 @@ def register_update_visual_container(app):
                 }
                 return dash.no_update, toast
 
+
+
+
         elif input_type=='dlt-btn' : # input from delete action
             delete_index = get_ctx_index(ctx)
             # time.sleep(0.7) # wait for delete animation
@@ -106,8 +107,10 @@ def register_update_visual_container(app):
                 'icon': 'info',
                 'header': 'SUCCESS'
             }
-
             return div_children, toast
+
+
+
 
         elif input_type == 'left-arrow' :
             target_index = get_ctx_index(ctx)
@@ -120,6 +123,9 @@ def register_update_visual_container(app):
                     break
             return div_children, dash.no_update
 
+
+
+
         elif input_type == 'right-arrow' :
             target_index = get_ctx_index(ctx)
             for vs, i in zip(div_children, range(len(div_children))):
@@ -131,24 +137,24 @@ def register_update_visual_container(app):
                     break
             return div_children, dash.no_update
 
+
+
         elif input_type == 'confirm-edit-visual' and confirm_edit>0 :
-            # raise PreventUpdate
-            collection.live_processing[create_clicks] = False
+            collection.live_processing[edit_index] = False
             now = datetime.now().timestamp()
             if param_to_edit['vtype'] == CAROUSEL:  # carousel
                 temp = []
                 for row in collection.data[edit_index].index:
                     temp.append(create_ca_img(collection.data[edit_index].loc[row, param_to_edit['parameter'][CAROUSEL_CONSTANT[ITEM]]]))
-                collection.img_container[create_clicks] = temp
+                collection.img_container[edit_index] = temp
             else:  # other than carousel
-                result = task.process_dataset.delay(create_clicks, collection.data[edit_index].to_dict(), param_to_edit['vtype'],
-                                                    param_to_edit['parameter'], now)
+
+                result = task.process_dataset.delay(edit_index, collection.data[edit_index].to_dict(), param_to_edit['vtype'], param_to_edit['parameter'], now)
 
             new_child = container.render_container(edit_index, param_to_edit, chosen_tformat, edit_dbname, now, collection.new_col)
-
             div_children[edit_location] = new_child
             toast = {
-                'children': f"Visualization {create_clicks} is successfully edited.",
+                'children': f"Visualization {edit_index} is successfully edited.",
                 'is_open': True,
                 'icon': 'info',
                 'header': 'INFO'

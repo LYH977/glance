@@ -361,12 +361,20 @@ def register_update_live_data(app):
                 fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(255,255,255,1)'
                 fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(255,255,255,1)'
                 # fig2['layout']['paper_bgcolor'] = '#000'
+                if 'coloraxis2' in fig2['layout']:
+                    fig2['layout']['coloraxis2']['colorbar']['bgcolor'] = 'rgba(0,0,0,1)'
+                    fig2['layout']['coloraxis2']['colorbar']['title']['font']['color'] = 'rgba(255,255,255,1)'
+                    fig2['layout']['coloraxis2']['colorbar']['tickfont']['color'] = 'rgba(255,255,255,1)'
 
             else: # light theme
                 fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(255,255,255,1)'
                 fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(0,0,0,1)'
                 fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
                 # fig2['layout']['paper_bgcolor'] = '#fff'
+                if 'coloraxis2' in fig2['layout']:
+                    fig2['layout']['coloraxis2']['colorbar']['bgcolor'] = 'rgba(255,255,255,1)'
+                    fig2['layout']['coloraxis2']['colorbar']['title']['font']['color'] = 'rgba(0,0,0,1)'
+                    fig2['layout']['coloraxis2']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
 
             return dash.no_update,fig2, dash.no_update, dash.no_update
 
@@ -493,8 +501,14 @@ def register_update_celery_data(app):
         if input_type == 'celery-interval':
             # if not secondary: # not multilayer
             try:
+                # print('index ', index)
+                # print('now ', now)
                 result = redis_instance.get(f'{index}-{now}').decode("utf-8")
+                # print('result: ', result)
+                # result = result.decode("utf-8")
+
                 result = json.loads(result)
+                # print('decoded')
                 ctx = dash.callback_context
                 input_index = get_ctx_index(ctx)
                 count = {
@@ -940,7 +954,7 @@ def register_update_secondary_frames(app):
     @app.callback(
         [
             Output({'type': 'secondary-data', 'index': MATCH}, 'data'),
-            Output({'type': 'edit-toast', 'index': MATCH}, 'data'),
+            # Output({'type': 'edit-toast', 'index': MATCH}, 'data'),
             Output({'type': 'secondary-info', 'index': MATCH}, 'data'),
 
         ],
@@ -960,7 +974,7 @@ def register_update_secondary_frames(app):
         if not ctx.triggered:
             raise PreventUpdate
         input_type = get_ctx_type(ctx)
-
+        print('see here: ', input_type)
         if input_type == 'secondary-action-click' and click >0:
             collection.temp = collection.temp.dropna()
             collection.temp.reset_index(drop=True, inplace=True)
@@ -984,32 +998,32 @@ def register_update_secondary_frames(app):
                 secondary_data['coloraxis']['colorbar']['title']['text'] = \
                 secondary_data['coloraxis']['colorbar']['title']['text'] + '(2)'
 
-                toast = {
-                    'children': f"Layer 2 is successfully added.",
-                    'is_open': True,
-                    'icon': 'success',
-                    'header': 'SUCCESS'
-                }
-                return secondary_data, toast, {'name':dbname, 'type':  param['vtype']}
+                # toast = {
+                #     'children': f"Layer 2 is successfully added.",
+                #     'is_open': True,
+                #     'icon': 'success',
+                #     'header': 'SUCCESS'
+                # }
+                return secondary_data,  {'name':dbname, 'type':  param['vtype']}
             except Exception as e:
                 print('edit error:', e)
-                toast = {
-                    'children': f"Data format is not accepted. Please try again with other format.",
-                    'is_open': True,
-                    'icon': 'danger',
-                    'header': 'DANGER'
-                }
-                return dash.no_update, toast, None
+                # toast = {
+                #     'children': f"Data format is not accepted. Please try again with other format.",
+                #     'is_open': True,
+                #     'icon': 'danger',
+                #     'header': 'DANGER'
+                # }
+                return dash.no_update,  None
             # return secondary_data
 
         elif input_type == 'del-secondary-btn' and del_click>0:
-            toast = {
-                'children': f"Layer 2 is successfully deleted.",
-                'is_open': True,
-                'icon': 'info',
-                'header': 'SUCCESS'
-            }
-            return {}, toast, None
+            # toast = {
+            #     'children': f"Layer 2 is successfully deleted.",
+            #     'is_open': True,
+            #     'icon': 'info',
+            #     'header': 'SUCCESS'
+            # }
+            return {},  None
 
         raise PreventUpdate
 

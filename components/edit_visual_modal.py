@@ -1,21 +1,11 @@
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output, State
-import dash_table
-import dash
-from dash.exceptions import PreventUpdate
 
-from database.dbConfig import client
 from utils.constant import FIGURE_OPTION, FIGURE_PARAM, CREATE_BTN_ID, SM_PARAM, SG_PARAM, D_PARAM, CA_PARAM, CH_PARAM, \
     BC_PARAM, SCATTER_MAP, DENSITY, CHOROPLETH, CAROUSEL, BAR_CHART_RACE, TIME_FORMAT, YEAR, SECONDARY_FIGURE_OPTION, \
     EDIT_MODAL
-from utils import  collection
-import base64
-import io
-import pandas as pd
 
-from utils.method import get_key
 
 edit_modal = html.Div(
     [
