@@ -17,8 +17,8 @@ px.set_mapbox_access_token(access_token)
 
 
 def create_visualization(screen_height, screen_width, create_clicks,  param, maxValue, df_frame, tformat,dbname, now, new_col):
+    # print(collection.data[create_clicks])
     figure = create_figure(collection.data[create_clicks], param['parameter'], param['vtype'])
-
     return html.Div(
 
         id={'type': 'visualization-container', 'index': create_clicks},

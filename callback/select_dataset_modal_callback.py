@@ -189,7 +189,9 @@ def register_toggle_modal_action_btn(app):
         elif input_type == 'secondary-action-btn':
             return dash.no_update, dash.no_update, False, dash.no_update, secondary_visual
 
-        #else
+        # print('visual: ', secondary_visual)
+        # print('action: ', secondary_action)
+        # print('last_secondary: ', last_secondary)
         header = dash.no_update if input_type == 'cancel-create-visual' else 'Create Visualization'
         style = {'display':'block'}
         return style, None, not is_open, header, secondary_visual

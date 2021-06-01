@@ -54,11 +54,15 @@ def register_update_visual_container(app):
             collection.temp = collection.temp.dropna()
             collection.temp.reset_index(drop=True, inplace=True)
             collection.temp[FRAME] = collection.temp[TIME].map(lambda x: formatted_time_value(x, tformat))
+            print(collection.temp[FRAME] )
             collection.data[create_clicks] = collection.temp
             collection.live_processing[create_clicks] = False
             now = datetime.now().timestamp()
             try:
+                # print('param', param)
+
                 new_child = container.render_container(create_clicks, param, tformat, dbname, now, collection.new_col)
+                print('????????')
                 if param['vtype'] == CAROUSEL:  # carousel
                     temp = []
                     for row in collection.temp.index:
@@ -142,25 +146,42 @@ def register_update_visual_container(app):
         elif input_type == 'confirm-edit-visual' and confirm_edit>0 :
             collection.live_processing[edit_index] = False
             now = datetime.now().timestamp()
-            if param_to_edit['vtype'] == CAROUSEL:  # carousel
-                temp = []
-                for row in collection.data[edit_index].index:
-                    temp.append(create_ca_img(collection.data[edit_index].loc[row, param_to_edit['parameter'][CAROUSEL_CONSTANT[ITEM]]]))
-                collection.img_container[edit_index] = temp
-            else:  # other than carousel
+            # print('chosen_tformat', chosen_tformat)
+            # print('param_to_edit', param_to_edit)
 
-                result = task.process_dataset.delay(edit_index, collection.data[edit_index].to_dict(), param_to_edit['vtype'], param_to_edit['parameter'], now)
+            try:
+                new_child = container.render_container(edit_index, param_to_edit, chosen_tformat, edit_dbname, now,  collection.new_col)
+                if param_to_edit['vtype'] == CAROUSEL:  # carousel
+                    temp = []
+                    for row in collection.data[edit_index].index:
+                        temp.append(create_ca_img(
+                            collection.data[edit_index].loc[row, param_to_edit['parameter'][CAROUSEL_CONSTANT[ITEM]]]))
+                    collection.img_container[edit_index] = temp
+                else:  # other than carousel
+                    result = task.process_dataset.delay(edit_index, collection.data[edit_index].to_dict(),
+                                                        param_to_edit['vtype'], param_to_edit['parameter'], now)
+                div_children[edit_location] = new_child
+                toast = {
+                    'children': f"Visualization {edit_index} is successfully edited.",
+                    'is_open': True,
+                    'icon': 'info',
+                    'header': 'INFO'
+                }
+                collection.new_col = {'expression': [], 'numeric_col': []}
+                return div_children, toast
+            except Exception as e:
+                print('edit visual error: ', e)
+                # remove_from_collection(create_clicks)
+                collection.new_col = {'expression': [], 'numeric_col': []}
+                toast = {
+                    'children': f"Data format is not accepted. Please try again with other format.",
+                    'is_open': True,
+                    'icon': 'danger',
+                    'header': 'DANGER'
+                }
+                return dash.no_update, toast
 
-            new_child = container.render_container(edit_index, param_to_edit, chosen_tformat, edit_dbname, now, collection.new_col)
-            div_children[edit_location] = new_child
-            toast = {
-                'children': f"Visualization {edit_index} is successfully edited.",
-                'is_open': True,
-                'icon': 'info',
-                'header': 'INFO'
-            }
-            collection.new_col = {'expression': [], 'numeric_col': []}
-            return div_children, toast
+
 
         raise PreventUpdate
 

@@ -47,7 +47,6 @@ def register_update_toast(app):
                 # , [x for x in edit]
 
         elif input_type == 'dashboard-toast' and dashboard is not None:
-            print('toast called')
             return dashboard['children'], dashboard['is_open'], dashboard['icon'], dashboard['header']
                 # , [x for x in edit]
 

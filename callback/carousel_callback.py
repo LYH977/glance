@@ -213,9 +213,9 @@ def register_ca_update_live_data(app):
         [Input({'type':'ca-live-interval', 'index': MATCH}, 'n_intervals')],
         [
             State({'type':'ca-last-timestamp', 'index': MATCH}, 'data'),
-            State({'type':'ca-frame-format', 'index': MATCH}, 'data'),
-            State({'type': 'ca-my_param', 'index': MATCH}, 'data'),
-            State({'type': 'ca-db-name', 'index': MATCH}, 'data')
+            State({'type':'frame-format', 'index': MATCH}, 'data'),
+            State({'type': 'my_param', 'index': MATCH}, 'data'),
+            State({'type': 'db-name', 'index': MATCH}, 'data')
 
         ],
         prevent_initial_call=True

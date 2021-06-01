@@ -88,7 +88,12 @@ def snapshot_markup (filename, is_secondary):
                 id = 'portal-datatable',
                 data = collection.temp.head(5).to_dict('records'),
                 columns = [{'name': i, 'id': i} for i in collection.temp.columns],
-                style_cell={'textAlign': 'left'},
+                style_cell={
+                    'textAlign': 'center',
+                    'overflow': 'hidden',
+                    'textOverflow': 'ellipsis',
+                    'maxWidth': 0
+                },
                 style_data_conditional=[
                     {
                         'if': {'row_index': 'odd'},
@@ -125,11 +130,10 @@ def snapshot_markup (filename, is_secondary):
                             [
                                 dcc.Store(id=f'operand-type', data={ 0:'dropdown', 1:'dropdown', 2:'dropdown' }),
                                 html.Div([    expression_box_markup(n) for n in range(0,3)  ], className='expression-wrapper' ),
-                                # html.Div( 'Equation will appear here', className = 'equation-window', id = 'equation-window' ),
-                                html.Div([
-                                    dbc.Button( "Confirm", id="confirm-new-col", className="mb-3", color="primary" , disabled= True),
-                                    dbc.Button( "Reset", id="reset-new-col", className="mb-3", color="danger"  ),
-                                ]),
+                                dbc.Row([
+                                    dbc.Col(dbc.Button( "Confirm", id="confirm-new-col", className="mb-3", color="primary", outline=True , disabled= True), width='auto'),
+                                    dbc.Col(dbc.Button( "Reset", id="reset-new-col", className="mb-3", color="danger"  ), width='auto'),
+                                ], justify='around', align='center'),
 
                             ],
                             # style={'background': 'lightgrey'}

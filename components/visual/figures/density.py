@@ -5,6 +5,7 @@ from utils.constant import DENSITY_CONSTANT, LATITUDE, LONGITUDE, Z, MESSAGE, FR
 
 
 def create_density(data, parameter, toConfigure ):
+    print('toConfigure', toConfigure)
     color_scale = px.colors.sequential.Pinkyl if toConfigure else px.colors.sequential.Plotly3
 
     convert_to_float(data, parameter, [
@@ -12,6 +13,8 @@ def create_density(data, parameter, toConfigure ):
         DENSITY_CONSTANT[LONGITUDE],
         DENSITY_CONSTANT[Z]
     ])
+    print('before fig')
+
     fig = px.density_mapbox(
         data,
         lat = parameter[DENSITY_CONSTANT[LATITUDE]],
@@ -27,6 +30,8 @@ def create_density(data, parameter, toConfigure ):
         # height= 200
 
     )
+    # print('after fig', fig)
     if toConfigure:
         configure_fig(fig, DENSITY, True)
+    # print('after fig')
     return fig

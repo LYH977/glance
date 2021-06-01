@@ -52,6 +52,8 @@ navbar = dbc.NavbarSimple(
     brand_href="/pages/home",
     color="dark",
     dark=True,
+    sticky= 'top',
+    style= {'zIndex':45}
 )
 
 
