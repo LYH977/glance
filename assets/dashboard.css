@@ -1,5 +1,8 @@
-.empty-scene {
+
+
+/*.empty-scene {
     width:100vw;
+    height: 100vh;
     padding:0 ;
     margin:  0;
     border: none;
@@ -7,11 +10,10 @@
     text-decoration: none;
     font-size: 40px;
     font-weight: bold;
+    position : relative;;
+    background: red;
     overflow : hidden;
-    position : absolute;
-    top: 0;
-    left: 0;
-}
+}*/
 
 .visual-collection {
     display: grid;

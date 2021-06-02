@@ -4,6 +4,7 @@ from dash.dependencies import Input, Output
 # Connect to main app.py file
 
 from app import app
+from components.home.landing import landing_page
 
 from pages import homepage, dashboard
 from components import upload_modal, toast
@@ -13,13 +14,15 @@ from utils.method import reset_var
 
 app.layout = html.Div([
     navbar,
+    landing_page,
+
     html.Div(id='page-content', children=[]),
     upload_modal.layout,
     toast.layout
 
 ],style={
      # 'background-image': 'linear-gradient(to bottom right, #189de4, #52b7e9, #146ca4, #46648c, #242444)',
-    # 'background':'#242444'
+    'position':'relative'
     })
 
 

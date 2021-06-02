@@ -1,0 +1,87 @@
+.landing-scene {
+    width:100vw;
+    height: 100vh;
+    padding:0 ;
+    margin:  0;
+    text-align: center;
+    text-decoration: none;
+    font-size: 40px;
+
+    overflow: hidden;
+    position : absolute;
+    top: 0;
+    left: 0;
+    background: white     ;
+    /*clip-path: ellipse(61% 63% at 50% 25%);*/
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;
+}
+
+.clip-container {
+    position:relative;
+    height: 100%;
+    width: 100%;
+
+
+}
+
+.landing-img {
+    height: 100%;
+     width: 100%;
+    filter: grayscale(20%);
+    clip-path: ellipse(61% 63% at 50% 25%);
+     position:relative;
+/*
+
+
+*/
+}
+
+.clip-background {
+
+    background:#b0eaf9;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 105%;
+    height: 102%;
+    opacity:0.6;
+    clip-path: ellipse(61% 63% at 50% 25%);
+    margin-left : -4%;
+
+/*
+
+
+
+*/
+}
+
+
+.landing-caption {
+    color: white;
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    margin-left: -250px;
+    width: 500px;
+text-shadow: 0 0 10px #fff, 0 0 20px #0770a5, 0 0 30px #0770a5, 0 0 40px #0770a5, 0 0 50px #0770a5, 0 0 60px #0770a5, 0 0 70px #0770a5;
+
+
+/*
+      animation: glow 2s ease-in-out infinite alternate;
+
+*/
+}
+
+
+@-webkit-keyframes glow {
+  from {
+    text-shadow: 0 0 10px #fff, 0 0 20px #0770a5, 0 0 30px #0770a5, 0 0 40px #0770a5, 0 0 50px #0770a5, 0 0 60px #0770a5, 0 0 70px #0770a5;
+  }
+
+  to {
+    text-shadow: 0 0 20px #fff, 0 0 30px #66d0f7, 0 0 40px #66d0f7, 0 0 50px #66d0f7, 0 0 60px #66d0f7, 0 0 70px #66d0f7, 0 0 80px #66d0f7;
+  }
+}

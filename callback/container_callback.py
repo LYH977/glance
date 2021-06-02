@@ -54,7 +54,7 @@ def register_update_visual_container(app):
             collection.temp = collection.temp.dropna()
             collection.temp.reset_index(drop=True, inplace=True)
             collection.temp[FRAME] = collection.temp[TIME].map(lambda x: formatted_time_value(x, tformat))
-            print(collection.temp[FRAME] )
+            # print(collection.temp[FRAME] )
             collection.data[create_clicks] = collection.temp
             collection.live_processing[create_clicks] = False
             now = datetime.now().timestamp()
@@ -146,6 +146,11 @@ def register_update_visual_container(app):
         elif input_type == 'confirm-edit-visual' and confirm_edit>0 :
             collection.live_processing[edit_index] = False
             now = datetime.now().timestamp()
+            backup_frame = collection.data[edit_index][FRAME].map(lambda x: x)
+            # print(backup_frame)
+            # print(type(backup_frame))
+            collection.data[edit_index][FRAME] = collection.data[edit_index][TIME].map(lambda x: formatted_time_value(x, chosen_tformat))
+
             # print('chosen_tformat', chosen_tformat)
             # print('param_to_edit', param_to_edit)
 
@@ -168,11 +173,16 @@ def register_update_visual_container(app):
                     'header': 'INFO'
                 }
                 collection.new_col = {'expression': [], 'numeric_col': []}
+                # print(collection.data[edit_index][FRAME])
                 return div_children, toast
             except Exception as e:
                 print('edit visual error: ', e)
                 # remove_from_collection(create_clicks)
                 collection.new_col = {'expression': [], 'numeric_col': []}
+                # print(backup_frame)
+
+                collection.data[edit_index][FRAME] = backup_frame
+                # print(collection.data[edit_index][FRAME])
                 toast = {
                     'children': f"Data format is not accepted. Please try again with other format.",
                     'is_open': True,

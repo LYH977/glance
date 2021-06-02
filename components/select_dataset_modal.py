@@ -20,11 +20,6 @@ from datetime import  datetime
 
 modal = html.Div(
     [
-        # html.Button(
-        #     html.I(className="fa fa-plus fa-lg "),
-        #     id="open-select-modal",
-        #     className='floating_area'
-        # ),
         dcc.Store(id='last-param', data={}),
         dcc.Store(id='visual-type-data', data= None),
         dcc.Store(id='chosen-tformat', data= YEAR),

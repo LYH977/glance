@@ -273,10 +273,12 @@
 
 .icon-red:hover  {
     background: #ffcccc;
+
 }
 
 .icon-grey:hover,
 .icon-black:hover{
     background: #c7c7c7;
+
 }
 
