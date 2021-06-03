@@ -11,12 +11,14 @@
     position : absolute;
     top: 0;
     left: 0;
-    background: white     ;
+    background: #f2f2f2     ;
+
     /*clip-path: ellipse(61% 63% at 50% 25%);*/
     -webkit-user-select: none;  /* Chrome all / Safari all */
     -moz-user-select: none;     /* Firefox all */
     -ms-user-select: none;      /* IE 10+ */
     user-select: none;
+    transition: opacity 0.3s
 }
 
 .clip-container {
@@ -30,9 +32,11 @@
 .landing-img {
     height: 100%;
      width: 100%;
-    filter: grayscale(20%);
+    filter: grayscale(0%);
     clip-path: ellipse(61% 63% at 50% 25%);
      position:relative;
+         overflow: visible;
+
 /*
 
 
@@ -66,22 +70,9 @@
     left: 50%;
     margin-left: -250px;
     width: 500px;
-text-shadow: 0 0 10px #fff, 0 0 20px #0770a5, 0 0 30px #0770a5, 0 0 40px #0770a5, 0 0 50px #0770a5, 0 0 60px #0770a5, 0 0 70px #0770a5;
-
-
-/*
-      animation: glow 2s ease-in-out infinite alternate;
-
-*/
-}
-
-
-@-webkit-keyframes glow {
-  from {
     text-shadow: 0 0 10px #fff, 0 0 20px #0770a5, 0 0 30px #0770a5, 0 0 40px #0770a5, 0 0 50px #0770a5, 0 0 60px #0770a5, 0 0 70px #0770a5;
-  }
 
-  to {
-    text-shadow: 0 0 20px #fff, 0 0 30px #66d0f7, 0 0 40px #66d0f7, 0 0 50px #66d0f7, 0 0 60px #66d0f7, 0 0 70px #66d0f7, 0 0 80px #66d0f7;
-  }
-}
+
+
+
+

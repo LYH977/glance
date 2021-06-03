@@ -3,7 +3,7 @@
 }
 
 .visualization-stage {
-    background: #46648c;
+    background: #075277;
     position:relative;
     border-radius : 10px;
     overflow: hidden;
@@ -11,13 +11,13 @@
 
 }
 
-/*@keyframes example {
-  from {opacity: 0.5;}
+@keyframes example {
+  from {opacity: 0;}
   to {opacity: 1;}
-}*/
+}
 
 .visualization-container {
-    background: #46648c;
+    background: #075277;
     margin: 10px;
     position:relative;
     border-radius : 10px;
@@ -28,9 +28,23 @@
     z-index: 20;
     display: inline-block;
     padding: 10px 20px;
-  /*  animation-name: example;
-    animation-duration: 1s;*/
+    animation-name: example;
+    animation-duration: 1s;
+box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
+
+
+  /*
+    box-shadow:
+  0 2.8px 2.2px rgba(0, 0, 0, 0.034)
+  ,0 6.7px 5.3px rgba(0, 0, 0, 0.048)
+  ,0 12.5px 10px rgba(0, 0, 0, 0.06)
+  ,0 22.3px 17.9px rgba(0, 0, 0, 0.072)
+  ,0 41.8px 33.4px rgba(0, 0, 0, 0.086)
+;
+    */
 }
+
+
 
 .visual-box {
     height: 100%;
@@ -41,7 +55,7 @@
 }
 
 .visual-mask {
-    background: #46648c;
+    background: #075277;
     position:absolute;
     height: 106%;
     width: 100%;
@@ -79,7 +93,7 @@
 }
 
 .visual-title  {
-    background: #46648c;
+    background: #075277;
     color: white;
     border: 1px solid transparent;
     border-radius: 5px;
@@ -124,7 +138,7 @@
     width: 100%;
     bottom: 0;
     transition: height 0.5s;
-    background:#46648c;
+    background:#075277;
     position:absolute;
     z-index: 21
 

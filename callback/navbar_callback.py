@@ -27,7 +27,7 @@ def register_update_adjust_btn_color(app):
             wrapper_style = {'background':'#96c3ff'}
             svg_style = {'color':'#196fe3'}
         else:
-            wrapper_style = {'background': 'rgb(80, 80, 80)'}
+            wrapper_style = {'background': '#075277' }
             svg_style = {'color': 'white'}
         return wrapper_style, svg_style
 
@@ -94,6 +94,6 @@ def register_disable_floating_btn(app):
     )
     def disable_floating_btn(status):
         if status:
-            return True, {'filter': 'brightness(200%)', 'cursor': 'no-drop'}
+            return True, {'filter': 'brightness(50%)', 'cursor': 'no-drop'}
         else:
             return False,{}

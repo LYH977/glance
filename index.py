@@ -22,8 +22,12 @@ app.layout = html.Div([
 
 ],style={
      # 'background-image': 'linear-gradient(to bottom right, #189de4, #52b7e9, #146ca4, #46648c, #242444)',
-    'position':'relative'
-    })
+    'position':'relative',
+    'overflowX': 'hidden',
+    'width': '100vw',
+    'height': '100vh',
+
+})
 
 
 @app.callback(Output('page-content', 'children'),

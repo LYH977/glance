@@ -11,6 +11,9 @@ landing_page = html.Div(
     ],className='clip-container'),
 
 
-    id='empty-scene',
-    className='landing-scene'
+    id='landing-scene',
+    className='landing-scene',
+    style={}
 )
+
+# landing_page =html.P('See the world at a glance',className='landing-caption')

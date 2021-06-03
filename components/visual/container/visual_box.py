@@ -29,7 +29,7 @@ def visual_box_markup(create_clicks, param, figure, tformat, first_frame, dbname
                 ],
                 justify="around",
                 align='center',
-                style={'zIndex':20, 'background':'#46648c'}
+                style={'zIndex':20, 'background':'#075277'}
             ),
             dcc.Graph(
                 className='visualization',

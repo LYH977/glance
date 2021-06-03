@@ -24,7 +24,8 @@ def upload_btn_markup():
             n_clicks=0
         ),
         active=True,
-        className='nav-icon'
+        className='nav-icon',
+
     )
 
 def adjust_btn_markup():
@@ -36,7 +37,7 @@ def adjust_btn_markup():
         ),
         active=True,
         id = 'adjust-wrapper',
-        className='nav-icon'
+        className='nav-icon',
     )
 
 navbar = dbc.NavbarSimple(
@@ -48,13 +49,16 @@ navbar = dbc.NavbarSimple(
         select_btn_markup()
 
     ],
+    id='glance-nav',
     brand="Glance",
     brand_href="/pages/home",
     color="dark",
     dark=True,
     sticky= 'top',
+    className= 'transparent-navbar',
     style= {
         'zIndex':45,
+        # 'transition': 'background .1s'
     }
 )
 
