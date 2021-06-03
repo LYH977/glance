@@ -726,7 +726,7 @@ def register_handle_export_btn_click(app):
 def register_reset_export_interval(app):
     @app.callback(
         Output({'type': 'export-interval', 'index': MATCH}, 'n_intervals'),
-        [Input({'type': 'download-btn', 'index': MATCH}, 'n_clicks')],
+        [Input({'type': 'generate-btn', 'index': MATCH}, 'n_clicks')],
         prevent_initial_call=True
     )
     def reset_export_interval(click):
@@ -753,9 +753,11 @@ def register_update_generate_btn_name(app):
             raise PreventUpdate
         input_type = get_ctx_type(ctx)
         if input_type == 'export-interval':
-            # estimate = len(buffer['frames']) *2 +1
-            estimate = 3+1
+            estimate = len(buffer['frames'])
+            # estimate = 3+1
             result = estimate - interval
+
+
             if result > 0:
                 name = f'Ready in {result}s'
                 itv = dash.no_update
