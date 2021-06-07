@@ -25,6 +25,9 @@ def create_carousel(screen_height, screen_width, create_clicks, param, maxValue,
                # 'width': '500px',
                },
         children=html.Div([
+
+            dcc.Store(id={'type': 'ca-export-name', 'index': create_clicks}, data=None),
+
             dcc.Store(id={'type': 'my-index', 'index': create_clicks}, data=create_clicks),
             dcc.Store(id={'type': 'ca-is-animating', 'index': create_clicks}, data = False),
             # dcc.Store(id='ca-uuid', data = create_clicks),
@@ -37,7 +40,12 @@ def create_carousel(screen_height, screen_width, create_clicks, param, maxValue,
             dcc.Store(id={'type': 'last-edit-click-ts', 'index': create_clicks}, data=None),
             dcc.Store(id={'type': 'dataset-column-name', 'index': create_clicks}, data=columns),
             dcc.Store(id={'type': 'last-secondary-click-ts', 'index': create_clicks}, data=None),
-
+            dcc.Interval(
+                id={'type': 'ca-export-interval', 'index': create_clicks},
+                interval=1000,
+                n_intervals=0,
+                disabled=True
+            ),
             dcc.Interval(
                 id={'type': 'ca-interval', 'index': create_clicks},
                 interval=500,
@@ -113,38 +121,30 @@ def ca_popover_children_markup(create_clicks):
             [
                 dbc.DropdownMenuItem(divider=True),
                 dbc.Row([
+
                     dbc.Col(daq.BooleanSwitch(
                         id={'type': 'ca-live-mode', 'index': create_clicks},
                         on=False,
                         color="#9B51E0",
                         label='Live Mode',
                     ), width='auto'),
-                    dbc.Col( html.Span(
-                        html.I( className="fa fa-trash fa-lg icon-btn icon-red"),
-                        id={'type': 'dlt-btn', 'index': create_clicks},
-                        n_clicks=0,
-                    ), width='auto'),
+
+                    dbc.Col(html.Div([
+                        ca_generate_btn_markup(create_clicks),
+                        ca_download_btn_markup(create_clicks),
+                        ca_enable_generate_markup(create_clicks)
+                    ], className='flex-col')),
+
+
                 ], align= 'center', justify='around'),
 
-                # daq.BooleanSwitch(
-                #     id={'type': 'ca-live-mode', 'index': create_clicks},
-                #     on=False,
-                #     color="#9B51E0",
-                #     label='Live Mode',
-                # ),
                 dbc.DropdownMenuItem(divider=True),
 
-                # html.Button('Delete', id={'type': 'dlt-btn', 'index': create_clicks}),
-
-                # html.Div([
-                #     html.Span(
-                #         html.I( className="fa fa-trash fa-lg icon-btn icon-red"),
-                #         id={'type': 'dlt-btn', 'index': create_clicks},
-                #         n_clicks=0,
-                #     ),
-                #
-                # ])
-
+                dbc.Col(html.Span(
+                    html.I(className="fa fa-trash fa-lg icon-btn icon-red"),
+                    id={'type': 'dlt-btn', 'index': create_clicks},
+                    n_clicks=0,
+                ), width='auto'),
 
             ],
             # style={'maxWidth': '400px'},
@@ -165,3 +165,35 @@ def ca_name_section_markup(create_clicks, name1, type1):
             className='visual-title'
         ),
     ], className='flex')
+
+
+
+def ca_generate_btn_markup(create_clicks):
+    return dbc.Button(
+            'Generate MP4',
+            id={'type': 'ca-generate-btn', 'index': create_clicks},
+            color="info",
+            size='sm',
+    )
+
+def ca_download_btn_markup(create_clicks):
+    return html.Div(
+        html.A(
+            'Download MP4',
+            id={'type': 'ca-download-btn', 'index': create_clicks},
+            style={'width': '50%'},
+        ),
+        className='export-link',
+        style = {'display': 'none' },
+        id={'type': 'ca-download-btn-wrapper', 'index': create_clicks},
+    )
+
+def ca_enable_generate_markup(create_clicks):
+    return dbc.Button(
+            'Generate Again',
+            id={'type': 'ca-regenerate-btn', 'index': create_clicks},
+            color="link",
+            className="regenerate-btn shadow-none",
+            size= 'sm',
+            style={'display':'none'},
+    )

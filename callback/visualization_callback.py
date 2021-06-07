@@ -693,14 +693,11 @@ def register_handle_export_btn_click(app):
     @app.callback(
         [
             Output({'type': 'generate-btn', 'index': MATCH}, 'disabled'),
-            # Output({'type': 'export-interval', 'index': MATCH}, 'disabled'),
             Output({'type': 'export-name', 'index': MATCH}, 'data'),
         ],
         [
             Input({'type': 'generate-btn', 'index': MATCH}, 'n_clicks'),
             Input({'type': 'regenerate-btn', 'index': MATCH}, 'n_clicks'),
-            # Input({'type': 'export-interval', 'index': MATCH}, 'n_clicks'),
-
         ],
         [
             State({'type': 'generate-btn', 'index': MATCH}, 'disabled'),
@@ -754,10 +751,7 @@ def register_update_generate_btn_name(app):
         input_type = get_ctx_type(ctx)
         if input_type == 'export-interval':
             estimate = len(buffer['frames'])
-            # estimate = 3+1
             result = estimate - interval
-
-
             if result > 0:
                 name = f'Ready in {result}s'
                 itv = dash.no_update
@@ -914,7 +908,7 @@ def register_reset_lat_long(app):
         Input({'type': 'reset-marker-btn', 'index': MATCH}, 'n_clicks'),
         prevent_initial_call=True
     )
-    def reset_export_interval(reset):
+    def reset_lat_long(reset):
         return '',''
 
 # ############################################################################################################################################

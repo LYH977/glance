@@ -4,9 +4,11 @@ from dash.exceptions import PreventUpdate
 
 from components.carousel import create_ca_img
 from utils import collection
+from utils.export.export_data import export_img_mp4
 from utils.method import get_ctx_type, get_ctx_index, formatted_time_value, \
     select_query, get_last_timestamp
 from utils.constant import FRAME, TIME, CAROUSEL_CONSTANT, ITEM
+from datetime import datetime
 
 
 def register_display_image(app):
@@ -251,3 +253,117 @@ def register_ca_update_live_data(app):
             else:
                 collection.live_processing[input_index] = False
                 raise PreventUpdate
+
+#############################################################################################################################################
+
+
+
+def register_export_ca_visual(app):
+    @app.callback(
+        [
+            Output({'type': 'ca-download-btn', 'index': MATCH}, 'download'),
+            Output({'type': 'ca-download-btn', 'index': MATCH}, 'href'),
+            Output({'type': 'ca-download-btn-wrapper', 'index': MATCH}, 'style'),
+            Output({'type': 'ca-generate-btn', 'index': MATCH}, 'hidden'),
+        ],
+        [Input({'type': 'ca-generate-btn', 'index': MATCH}, 'disabled')],
+        [
+            State({'type': 'ca-export-name', 'index': MATCH}, 'data'),
+        ],
+        prevent_initial_call=True
+    )
+    def export_ca_visual(disabled, name):
+        if disabled:
+            ctx = dash.callback_context
+            input_index = get_ctx_index(ctx)
+            export_img_mp4(input_index, name)
+            dl = f'{name}.mp4'
+            path = app.get_asset_url(f'export/{dl}')
+            print(f'habis href {name}')
+            return dl, path, {'display': 'block'}, True
+        return None, None, {'display': 'none'}, False
+
+
+# ############################################################################################################################################
+
+def register_ca_handle_export_btn_click(app):
+    @app.callback(
+        [
+            Output({'type': 'ca-generate-btn', 'index': MATCH}, 'disabled'),
+            Output({'type': 'ca-export-name', 'index': MATCH}, 'data'),
+        ],
+        [
+            Input({'type': 'ca-generate-btn', 'index': MATCH}, 'n_clicks'),
+            Input({'type': 'ca-regenerate-btn', 'index': MATCH}, 'n_clicks'),
+        ],
+        [
+            State({'type': 'ca-generate-btn', 'index': MATCH}, 'disabled'),
+        ],
+        prevent_initial_call=True
+    )
+    def handle_ca_export_btn_click(btn_click, enable,   disabled):
+        ctx = dash.callback_context
+        if not ctx.triggered:
+            raise PreventUpdate
+        input_type = get_ctx_type(ctx)
+        if input_type== 'ca-generate-btn' and btn_click and not disabled:
+            now = int(datetime.now().timestamp())
+            return  True, now
+        elif input_type =='ca-regenerate-btn' and enable :
+            return False,  dash.no_update
+
+        raise PreventUpdate
+
+
+# ############################################################################################################################################
+
+def register_ca_reset_export_interval(app):
+    @app.callback(
+        Output({'type': 'ca-export-interval', 'index': MATCH}, 'n_intervals'),
+        [Input({'type': 'ca-generate-btn', 'index': MATCH}, 'n_clicks')],
+        prevent_initial_call=True
+    )
+    def reset_export_interval(click):
+        return 0
+
+
+# ############################################################################################################################################
+
+def register_ca_update_generate_btn_name(app):
+    @app.callback(
+        [
+            Output({'type': 'ca-generate-btn', 'index': MATCH}, 'children'),
+            Output({'type': 'ca-export-interval', 'index': MATCH}, 'disabled'),
+        ],
+        [
+            Input({'type': 'ca-export-interval', 'index': MATCH}, 'n_intervals'),
+            Input({'type': 'ca-generate-btn', 'index': MATCH}, 'disabled'),
+        ],
+        prevent_initial_call=True
+    )
+    def update_generate_btn_name(interval, disabled):
+        ctx = dash.callback_context
+        if not ctx.triggered:
+            raise PreventUpdate
+        input_type = get_ctx_type(ctx)
+        input_index = get_ctx_index(ctx)
+        if input_type == 'export-interval':
+            estimate = len(collection.data[input_index])
+            # estimate = 3+1
+            result = estimate - interval
+
+
+            if result > 0:
+                name = f'Ready in {result}s'
+                itv = dash.no_update
+            else:
+                name =  'Ready soon'
+                itv = True
+            return name, itv
+
+        elif input_type == 'generate-btn' :
+            if disabled:
+                return 'Generating...', False
+            else:
+                return 'Generate MP4', dash.no_update
+        raise  PreventUpdate
