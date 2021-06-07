@@ -256,7 +256,7 @@ def register_ca_update_live_data(app):
 
 #############################################################################################################################################
 
-
+#############################################################################################################################################
 
 def register_export_ca_visual(app):
     @app.callback(
@@ -347,12 +347,10 @@ def register_ca_update_generate_btn_name(app):
             raise PreventUpdate
         input_type = get_ctx_type(ctx)
         input_index = get_ctx_index(ctx)
-        if input_type == 'export-interval':
+        if input_type == 'ca-export-interval':
             estimate = len(collection.data[input_index])
             # estimate = 3+1
             result = estimate - interval
-
-
             if result > 0:
                 name = f'Ready in {result}s'
                 itv = dash.no_update
@@ -361,9 +359,21 @@ def register_ca_update_generate_btn_name(app):
                 itv = True
             return name, itv
 
-        elif input_type == 'generate-btn' :
+        elif input_type == 'ca-generate-btn' :
             if disabled:
                 return 'Generating...', False
             else:
                 return 'Generate MP4', dash.no_update
         raise  PreventUpdate
+
+
+def register_ca_toggle_enable_btn(app):
+    @app.callback(
+
+        Output({'type': 'ca-regenerate-btn', 'index': MATCH}, 'style'),
+        Input({'type': 'ca-download-btn', 'index': MATCH}, 'download'),
+
+        prevent_initial_call=True
+    )
+    def toggle_enable_btn(data):
+        return {'display':'block'}  if data is not None else  {'display':'none'}

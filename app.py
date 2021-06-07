@@ -4,7 +4,8 @@ import dash_bootstrap_components as dbc
 from callback.carousel_callback import register_display_image, register_ca_update_slider, register_update_ca_play_btn, \
     register_update_ca_playing_status, register_update_ca_live_mode, register_ca_update_atmax, \
     register_ca_update_live_data, register_reset_ca_slider_n_interval, register_export_ca_visual, \
-    register_ca_handle_export_btn_click, register_ca_reset_export_interval, register_ca_update_generate_btn_name
+    register_ca_handle_export_btn_click, register_ca_reset_export_interval, register_ca_update_generate_btn_name, \
+    register_ca_toggle_enable_btn
 
 from callback.container_callback import register_update_visual_container
 from callback.dashboard_callback import register_update_dashboard
@@ -129,6 +130,7 @@ register_export_ca_visual(app)
 register_ca_handle_export_btn_click(app)
 register_ca_reset_export_interval(app)
 register_ca_update_generate_btn_name(app)
+register_ca_toggle_enable_btn(app)
 
 
 

@@ -102,10 +102,21 @@ def create_carousel(screen_height, screen_width, create_clicks, param, maxValue,
                     size='sm',
                     className='play-btn'
                 ),
-                html.Label(df_frame[0], id={'type': 'ca-slider-label', 'index': create_clicks}, style={'color':'white'})
+                html.Label(
+                    df_frame[0],
+                    id={'type': 'ca-slider-label', 'index': create_clicks},
+                    style={
+                        'color':'white',
+                        'marginLeft':'50px',
+                        'transform':'scale(2)'
+                    })
+
             ]),
         ]),
                 )
+
+
+
 
 def create_ca_img(src):
     return html.Img(
@@ -140,11 +151,11 @@ def ca_popover_children_markup(create_clicks):
 
                 dbc.DropdownMenuItem(divider=True),
 
-                dbc.Col(html.Span(
+                html.Span(
                     html.I(className="fa fa-trash fa-lg icon-btn icon-red"),
                     id={'type': 'dlt-btn', 'index': create_clicks},
                     n_clicks=0,
-                ), width='auto'),
+                ),
 
             ],
             # style={'maxWidth': '400px'},
