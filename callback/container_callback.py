@@ -7,6 +7,7 @@ import task
 from components import container
 from components.carousel import create_ca_img
 from utils import collection
+from utils.export.export_data import export_img_mp4
 from utils.method import get_ctx_type, get_ctx_index, formatted_time_value, remove_from_collection, swapPositions
 from utils.constant import CAROUSEL, FRAME, TIME, CAROUSEL_CONSTANT, ITEM
 
@@ -62,7 +63,6 @@ def register_update_visual_container(app):
                 # print('param', param)
 
                 new_child = container.render_container(create_clicks, param, tformat, dbname, now, collection.new_col)
-                print('????????')
                 if param['vtype'] == CAROUSEL:  # carousel
                     temp = []
                     for row in collection.temp.index:

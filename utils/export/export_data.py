@@ -1,13 +1,21 @@
+from urllib.request import urlopen
+
 import numpy as np
 import plotly.graph_objects as go
 import cv2
+
+from utils import collection
+import time
+
+from utils.constant import FRAME
+
 
 def export_mp4(fig, filename, backup):
     images = []
     frames = []
     num_frames = len(fig['frames'])
     # print(fig)
-    for i in range(num_frames):
+    for i in range(1):
         if 'pointers' in fig['frames'][i]:
             export_data= [ fig['data'][1]]
             for pt in fig['frames'][i]['pointers']:
@@ -21,7 +29,8 @@ def export_mp4(fig, filename, backup):
 
         fig2.layout.title.text = fig['frames'][i]['name']
         img_bytes = fig2.to_image(format="png", scale=4)
-        # print(f'loading img ' )
+        print(img_bytes )
+
         images.append(img_bytes)
 
 
@@ -34,6 +43,41 @@ def export_mp4(fig, filename, backup):
 
     pathout = f'assets/export/{filename}.mp4'
     out = cv2.VideoWriter(pathout, cv2.VideoWriter_fourcc(*'mp4v'), 2, size)
+    for i in range(len(frames)):
+        out.write(frames[i])
+    out.release()
+    print('done export')
+
+
+###############################################################################################################################
+def export_img_mp4(index, filename):
+    images = []
+    frames = []
+    data = collection.data[index]
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    org = (50, 50)
+    fontScale = 1
+    color = (0, 0, 255)
+    thickness = 2
+    fix_shape = None
+
+    for x in range(0, len(data)):  # len(data)
+        req = urlopen(data.iloc[x]['link']).read()
+        images.append(req)
+
+    for count, im in enumerate(images):
+        nparr = np.fromstring(im , np.uint8)
+        frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        if fix_shape is None:
+            height, width, layers = frame.shape
+            fix_shape = (width, height)
+        else:
+            frame = cv2.resize(frame,fix_shape)
+
+        frame = cv2.putText(frame, data.iloc[count][FRAME], org, font,  fontScale, color, thickness, cv2.LINE_AA)
+        frames.append(frame)
+    pathout = f'assets/export/{filename}.mp4'
+    out = cv2.VideoWriter(pathout, cv2.VideoWriter_fourcc(*'mp4v'), 2, fix_shape)
     for i in range(len(frames)):
         out.write(frames[i])
     out.release()
