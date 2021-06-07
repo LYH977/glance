@@ -15,9 +15,9 @@ import random
 
 import cv2
 
-from utils.constant import FRAME, TIME, NOTIFICATION_PARAM, TAG, FIELD, SCATTER_MAP,  SCATTER_MAP_CONSTANT, \
-    NAME, LATITUDE, LONGITUDE, MAXIMUM,  MINIMUM, BAR_CHART_RACE, DENSITY, BAR_CHART_RACE_CONSTANT, \
-    ITEM, DENSITY_CONSTANT, CHOROPLETH, CHOROPLETH_CONSTANT, LOCATIONS
+from utils.constant import FRAME, TIME, NOTIFICATION_PARAM, TAG, FIELD, SCATTER_MAP, SCATTER_MAP_CONSTANT, \
+    NAME, LATITUDE, LONGITUDE, MAXIMUM, MINIMUM, BAR_CHART_RACE, DENSITY, BAR_CHART_RACE_CONSTANT, \
+    ITEM, DENSITY_CONSTANT, CHOROPLETH, CHOROPLETH_CONSTANT, LOCATIONS, PERCENT
 
 app = Celery("Celery App", broker='redis://localhost:6379' ,backend='redis://localhost:6379')
 redis_instance = redis.StrictRedis.from_url('redis://localhost:6379')
@@ -42,7 +42,7 @@ def parse_number(value):
     if value.is_integer():
         return int(value)
     else:
-        return value
+        return float("{:.2f}".format(value))
 
 def extract_extrema(vtype,  ma, df, parameter, col, type):
     msg = ''
@@ -102,7 +102,64 @@ def extract_extrema(vtype,  ma, df, parameter, col, type):
         )
     return {'msg':msg, 'field':field, 'name':name}
 
+def extract_percent(vtype,  id, df, parameter, col, previous, current):
+    msg = ''
+    name = ''
+    percent = current / previous * 100
+    percent = parse_number(percent)
+    movement = '↑' if percent >=0 else '↓'
 
+    if vtype ==  SCATTER_MAP:
+        # field = parse_number(df.loc[ma, col])
+        name = df.loc[id, parameter[SCATTER_MAP_CONSTANT[NAME]]]
+
+        msg = "**{field}%{movement}** *{column}* : {previous}→{current}, by `{name}({lat},{long})`".format(
+            name = name,
+            lat = df.loc[id, parameter[SCATTER_MAP_CONSTANT[LATITUDE]]],
+            long = df.loc[id, parameter[SCATTER_MAP_CONSTANT[LONGITUDE]]],
+            column = col,
+            field = percent,
+            movement=movement,
+            current = current,
+            previous = previous
+        )
+
+    elif vtype == BAR_CHART_RACE:
+        # field = parse_number(df.loc[ma, col])
+        name = df.loc[id, parameter[BAR_CHART_RACE_CONSTANT[ITEM]]]
+        msg = "**{field}%{movement}** *{column}* : {previous}→{current} by `{item}`".format(
+            column = col,
+            field = percent,
+            item = name,
+            movement=movement,
+            current=current,
+            previous=previous
+        )
+    elif vtype == DENSITY:
+        # field = parse_number(df.loc[ma, col])
+        msg = "**{field}%{movement}** *{column}* : {previous}→{current}, by `({lat},{long})`".format(
+            lat = df.loc[id, parameter[DENSITY_CONSTANT[LATITUDE]]],
+            long = df.loc[id, parameter[DENSITY_CONSTANT[LONGITUDE]]],
+            column = col,
+            field = percent,
+            movement=movement,
+            current=current,
+            previous=previous
+        )
+
+    elif vtype == CHOROPLETH:
+        # field = parse_number(df.loc[ma, col])
+        name = df.loc[id, parameter[CHOROPLETH_CONSTANT[NAME]]]
+        msg = "**{field}%{movement}** *{column}* : {previous}→{current}, by `{name}({location})`".format(
+            name = name,
+            location = df.loc[id, parameter[CHOROPLETH_CONSTANT[LOCATIONS]]],
+            column = col,
+            field = percent,
+            movement=movement,
+            current=current,
+            previous=previous
+        )
+    return {'msg':msg, 'field':percent, 'name':name}
 
 
 
@@ -139,7 +196,7 @@ def process_dataset(create_click, dataframe, vtype, parameter, now, old_celery =
 
     tags = []
     obj = {}
-    extract = [MAXIMUM, MINIMUM]
+    extract = [MAXIMUM, MINIMUM, PERCENT]
     frames = dataframe[FRAME].unique().tolist()
     notif_tags = NOTIFICATION_PARAM[vtype][TAG]
 
@@ -162,7 +219,6 @@ def process_dataset(create_click, dataframe, vtype, parameter, now, old_celery =
     if tags:
         tag_df = dataframe[tags]
         tag_df = tag_df.drop_duplicates()  # Lat, Long, Country
-        # print('tag_df', tag_df)
         tag_list = tag_df.index.tolist()
 
         notif_fields = NOTIFICATION_PARAM[vtype][FIELD]
@@ -179,12 +235,25 @@ def process_dataset(create_click, dataframe, vtype, parameter, now, old_celery =
 
             for col in fields:  # Confirmed, Deaths
                 column = target_df[col]
+                # print('clo: ', len(column))
+
+                for index in range(1, len(column)):
+                    current = column.iloc[index]
+                    previous = column.iloc[index-1]
+                    pid = column.index[index]
+                    if current != 0 and previous != 0 and current != previous:
+                        obj_data = extract_percent(vtype,  pid, target_df, parameter, col, previous, current)
+                        frame = target_df.loc[pid, FRAME]
+                        index = frames.index(frame)
+                        obj[index][PERCENT]['temp'][col].append(obj_data)
+
                 max_value = column.max()
                 min_value = column.min()
 
                 if max_value != min_value:
                     # find max
                     max_list = target_df.index[target_df[col] == max_value].tolist()
+                    # print('max_list: ', max_list)
                     for ma in max_list:
                         obj_data = extract_extrema(vtype,  ma, target_df, parameter, col, MAXIMUM)
                         frame = target_df.loc[ma, FRAME]
@@ -199,6 +268,7 @@ def process_dataset(create_click, dataframe, vtype, parameter, now, old_celery =
                         frame = target_df.loc[mi, FRAME]
                         index = frames.index(frame)
                         obj[index][MINIMUM]['temp'][col].append(obj_data)
+
         for k in obj.keys(): # index
             for e in extract: # MAX, MIN
                 for f in fields:
@@ -214,6 +284,7 @@ def process_dataset(create_click, dataframe, vtype, parameter, now, old_celery =
     print('done obj')
     print('create_click', create_click)
     print('now', now)
+    # print(obj)
 
     if len(old_celery) == 0:
         obj = json.dumps(obj, cls=plotly.utils.PlotlyJSONEncoder)

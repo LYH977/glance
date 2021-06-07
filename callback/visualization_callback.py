@@ -496,16 +496,11 @@ def register_update_celery_data(app):
             input_type = get_ctx_type(ctx)
             # input_index = get_ctx_index(ctx)
         if input_type == 'celery-interval':
-            # if not secondary: # not multilayer
             try:
-                # print('index ', index)
-                # print('now ', now)
-                result = redis_instance.get(f'{index}-{now}').decode("utf-8")
-                # print('result: ', result)
-                # result = result.decode("utf-8")
 
+                result = redis_instance.get(f'{index}-{now}').decode("utf-8")
                 result = json.loads(result)
-                # print('decoded')
+                print(result)
                 ctx = dash.callback_context
                 input_index = get_ctx_index(ctx)
                 count = {
