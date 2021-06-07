@@ -67,7 +67,11 @@ def register_update_visual_container(app):
                     temp = []
                     for row in collection.temp.index:
                         temp.append(
-                            create_ca_img(collection.temp.loc[row, param['parameter'][CAROUSEL_CONSTANT[ITEM]]]))
+                            create_ca_img(
+                                collection.temp.loc[row, param['parameter'][CAROUSEL_CONSTANT[ITEM]]],
+                                collection.temp.loc[row, FRAME]
+                            )
+                        )
                     collection.img_container[create_clicks] = temp
                 else:  # other than carousel
                     result = task.process_dataset.delay(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'], now)

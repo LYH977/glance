@@ -108,11 +108,11 @@ def register_update_ca_play_btn(app):
 # update playing status according to button click
 def register_update_ca_playing_status(app):
     @app.callback(
-        [
+        # [
             Output({'type':'ca-is-animating', 'index': MATCH}, 'data'),
             # Output({'type':'ca-interval', 'index': MATCH}, 'n_intervals'),
-            Output({'type':'ca-slider-label', 'index': MATCH}, 'children')
-        ],
+            # Output({'type':'ca-slider-label', 'index': MATCH}, 'children')
+        # ],
         [
             Input({'type':'ca-play-btn', 'index': MATCH}, 'n_clicks'),
             Input({'type':'ca-anim-slider', 'index': MATCH}, 'value'),
@@ -136,17 +136,14 @@ def register_update_ca_playing_status(app):
         df_date = collection.data[input_index][FRAME].unique()
         maxValue = df_date.shape[0] - 1
         if input_type== 'ca-anim-slider': #input from slider
-            return \
-                False if playing is True and s_value != interval or s_value == maxValue else dash.no_update,\
-                df_date[s_value]
+            return False if playing is True and s_value != interval or s_value == maxValue else dash.no_update
+                # df_date[s_value]
         elif  input_type== 'ca-play-btn':#input from play btn
-            return \
-                not playing, \
-                dash.no_update
+            return not playing
+                # dash.no_update
         elif  input_type== 'ca-live-mode':#input from play btn
-            return \
-                False if live is True else dash.no_update , \
-                dash.no_update
+            return False if live is True else dash.no_update
+                # dash.no_update
         else:
             raise PreventUpdate
 #############################################################################################################################################
@@ -245,7 +242,13 @@ def register_ca_update_live_data(app):
 
 
                 for row in result.index:
-                    collection.img_container[input_index].append( create_ca_img(result.loc[row, param['parameter'][CAROUSEL_CONSTANT[ITEM]]]) )
+                    collection.img_container[input_index].append(
+                        create_ca_img(
+                            result.loc[row, param['parameter'][CAROUSEL_CONSTANT[ITEM]]],
+                            result.loc[row, FRAME],
+
+                        )
+                    )
 
                 # fig = create_figure(collection.data[input_index], param, ftype)
                 return last_nano

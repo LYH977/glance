@@ -194,11 +194,11 @@ def register_update_play_btn(app):
 # update playing status according to button click
 def register_update_playing_status(app):
     @app.callback(
-        [
+        # [
             Output({'type': 'is-animating', 'index': MATCH}, 'data'),
             # Output({'type': 'interval', 'index': MATCH}, 'n_intervals'),
-            Output({'type': 'slider-label', 'index': MATCH}, 'children'),
-        ],
+            # Output({'type': 'slider-label', 'index': MATCH}, 'children'),
+        # ],
         [
             Input({'type': 'play-btn', 'index': MATCH}, 'n_clicks'),
             Input({'type': 'anim-slider', 'index': MATCH}, 'value'),
@@ -227,20 +227,17 @@ def register_update_playing_status(app):
             # label = df_frame[s_value]
 
             maxValue = len(buffer['frames']) -1
-            label = buffer['frames'][s_value]['name']
-            return \
-                False if playing is True and s_value != interval or s_value == maxValue else dash.no_update, \
-                label
+            # label = buffer['frames'][s_value]['name']
+            return False if playing is True and s_value != interval or s_value == maxValue else dash.no_update
+                # label
 
         elif input_type == 'play-btn':  # input from play btn
-            return \
-                not playing, \
-                dash.no_update
+            return not playing
+                # dash.no_update
 
         elif input_type == 'live-mode':  # input from play btn
-            return \
-                False if live is True else dash.no_update, \
-                dash.no_update
+            return False if live is True else dash.no_update
+                # dash.no_update
 
         raise PreventUpdate
 

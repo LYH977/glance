@@ -175,12 +175,16 @@ def register_toggle_modal_action_btn(app):
         if not ctx.triggered:
             raise PreventUpdate
         input_type = get_ctx_type(ctx)
-
+        print('see here:',ctx.triggered)
         if input_type == 'secondary-visual-btn':
+            if len(ctx.triggered) == 1  and get_ctx_value(ctx) is None:
+                print('passed')
+                return dash.no_update, dash.no_update, False, dash.no_update, secondary_visual
             style = {'display': 'none'}
             # input_index = get_ctx_index(ctx)
             for index, (first, second) in enumerate(zip(secondary_visual, last_secondary)):
                 if first != second:
+                    print('enteredK', first, second)
                     diff_index = get_ctx_index(ctx)
                     header = f'Add Secondary Layer for Visual {diff_index}'
                     return style, secondary_action_btn_markup(diff_index), True, header, secondary_visual
@@ -189,12 +193,11 @@ def register_toggle_modal_action_btn(app):
         elif input_type == 'secondary-action-btn':
             return dash.no_update, dash.no_update, False, dash.no_update, secondary_visual
 
-        # print('visual: ', secondary_visual)
-        # print('action: ', secondary_action)
-        # print('last_secondary: ', last_secondary)
+
         header = dash.no_update if input_type == 'cancel-create-visual' else 'Create Visualization'
+        modal_action = True if input_type == 'open-select-modal' else False
         style = {'display':'block'}
-        return style, None, not is_open, header, secondary_visual
+        return style, None, modal_action, header, secondary_visual
 
 
 #############################################################################################################################################

@@ -55,7 +55,7 @@ def export_img_mp4(index, filename):
     frames = []
     data = collection.data[index]
     font = cv2.FONT_HERSHEY_SIMPLEX
-    org = (50, 50)
+    org = (50, 20)
     fontScale = 1
     color = (0, 0, 255)
     thickness = 2

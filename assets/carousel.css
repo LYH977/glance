@@ -5,3 +5,29 @@
     margin: 20px;
     position:relative;
 }
+
+.ca-img-style {
+    height: 100%;
+    width: 100%;
+    overflow:hidden;
+
+}
+
+
+
+
+.ca-label-style {
+        position: absolute;
+        color: red;
+        font-size: 30px;
+        fontWeight: bold;
+        top:1%;
+        left:3%;
+}
+
+.ca-img-container {
+    height: 480px;
+    width: 100%;
+    position: relative;
+
+}

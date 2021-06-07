@@ -6,7 +6,7 @@ import dash_daq as daq
 
 from components.visual.utils.info import info_markup
 from utils import collection
-from utils.constant import CAROUSEL_CONSTANT, ITEM, TIME, CAROUSEL
+from utils.constant import CAROUSEL_CONSTANT, ITEM, TIME, CAROUSEL, FRAME
 from utils.method import set_slider_calendar, get_last_timestamp
 
 
@@ -80,9 +80,13 @@ def create_carousel(screen_height, screen_width, create_clicks, param, maxValue,
 
             ],justify="around", align='center'),
             html.Div(
-                create_ca_img(collection.temp.loc[0,param['parameter'][CAROUSEL_CONSTANT[ITEM]]]),
+                create_ca_img(
+                    collection.temp.loc[0,param['parameter'][CAROUSEL_CONSTANT[ITEM]]],
+                    collection.temp.loc[0, FRAME]
+                ),
                 id={'type': 'fade1', 'index': create_clicks},
-                style={ 'height': '480px', 'width': '100%'},
+                # style={ 'height': '480px', 'width': '100%', 'position':'relative'},
+                className='ca-img-container'
             ),
 
             dcc.Slider(
@@ -102,14 +106,14 @@ def create_carousel(screen_height, screen_width, create_clicks, param, maxValue,
                     size='sm',
                     className='play-btn'
                 ),
-                html.Label(
-                    df_frame[0],
-                    id={'type': 'ca-slider-label', 'index': create_clicks},
-                    style={
-                        'color':'white',
-                        'marginLeft':'50px',
-                        'transform':'scale(2)'
-                    })
+                # html.Label(
+                #     df_frame[0],
+                #     id={'type': 'ca-slider-label', 'index': create_clicks},
+                #     style={
+                #         'color':'white',
+                #         'marginLeft':'50px',
+                #         'transform':'scale(2)'
+                #     })
 
             ]),
         ]),
@@ -118,11 +122,20 @@ def create_carousel(screen_height, screen_width, create_clicks, param, maxValue,
 
 
 
-def create_ca_img(src):
-    return html.Img(
-        src=src,
-        style={'height': '100%', 'width': '100%', 'overflow':'hidden'}
-    )
+def create_ca_img(src, date='None'):
+    return [
+
+        html.Img(
+            src=src,
+            # style={'height': '100%', 'width': '100%', 'overflow':'hidden'}
+            className='ca-img-style'
+        ),
+        html.P(
+            date,
+            className='ca-label-style',
+
+        )
+    ]
 
 
 def ca_popover_children_markup(create_clicks):
