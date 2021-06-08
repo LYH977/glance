@@ -105,7 +105,7 @@ def extract_extrema(vtype,  ma, df, parameter, col, type):
 def extract_percent(vtype,  id, df, parameter, col, previous, current):
     msg = ''
     name = ''
-    percent = current / previous * 100
+    percent = (current-previous) / previous * 100
     percent = parse_number(percent)
     movement = '↑' if percent >=0 else '↓'
 
@@ -238,8 +238,8 @@ def process_dataset(create_click, dataframe, vtype, parameter, now, old_celery =
                 # print('clo: ', len(column))
 
                 for index in range(1, len(column)):
-                    current = column.iloc[index]
-                    previous = column.iloc[index-1]
+                    current = parse_number(column.iloc[index])
+                    previous = parse_number(column.iloc[index-1])
                     pid = column.index[index]
                     if current != 0 and previous != 0 and current != previous:
                         obj_data = extract_percent(vtype,  pid, target_df, parameter, col, previous, current)

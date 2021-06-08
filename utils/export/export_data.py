@@ -15,7 +15,7 @@ def export_mp4(fig, filename, backup):
     frames = []
     num_frames = len(fig['frames'])
     # print(fig)
-    for i in range(1):
+    for i in range(num_frames):
         if 'pointers' in fig['frames'][i]:
             export_data= [ fig['data'][1]]
             for pt in fig['frames'][i]['pointers']:

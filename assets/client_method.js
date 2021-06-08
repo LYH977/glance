@@ -1,5 +1,6 @@
 const MAXIMUM = 'MAXIMUM'
 const MINIMUM = 'MINIMUM'
+const PERCENT = 'PERCENT'
 const FULL = 'FULL'
 const FIRST = 'FIRST'
 const SECOND = 'SECOND'
@@ -259,7 +260,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                     throw window.dash_clientside.PreventUpdate
                 }
                 notif = (type.length > 0) ? cdata[slider][type]['data'] : ''
-                return [notif, cdata[slider][MAXIMUM]['count'], cdata[slider][MINIMUM]['count'] ]
+                return [notif, cdata[slider][MAXIMUM]['count'], cdata[slider][MINIMUM]['count'] , cdata[slider][PERCENT]['count']]
             }
 
             else if (input_type == 'anim-slider' && cdata ){
@@ -269,7 +270,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                     throw window.dash_clientside.PreventUpdate
                 }
                 notif = (type.length > 0) ? cdata[slider][type]['data'] : ''
-                return [notif, cdata[slider][MAXIMUM]['count'], cdata[slider][MINIMUM]['count']]
+                return [notif, cdata[slider][MAXIMUM]['count'], cdata[slider][MINIMUM]['count'], cdata[slider][PERCENT]['count']]
             }
             else if ( input_type == 'last-notif-click'){
 //                console.log('last-notif-click')
@@ -277,7 +278,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                     throw window.dash_clientside.PreventUpdate
                 }
                 notif = (type.length > 0) ? cdata[slider][type]['data'] : ''
-                return [notif, cdata[slider][MAXIMUM]['count'], cdata[slider][MINIMUM]['count']]
+                return [notif, cdata[slider][MAXIMUM]['count'], cdata[slider][MINIMUM]['count'], cdata[slider][PERCENT]['count']]
             }
             throw window.dash_clientside.PreventUpdate
         }

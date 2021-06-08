@@ -18,7 +18,7 @@ from utils.export.export_data import export_mp4
 from utils.method import get_ctx_type, get_ctx_index, formatted_time_value, \
     select_query, get_last_timestamp, insert_marker, reset_marker_trace, store_template, merge_frames, get_ctx_property
 from utils.constant import SCATTER_MAP, DENSITY, CHOROPLETH, BAR_CHART_RACE, \
-    FRAME, TIME, MAXIMUM, MINIMUM
+    FRAME, TIME, MAXIMUM, MINIMUM, PERCENT
 
 MAPBOX_GEOCODER = MapBox(os.environ['MAP_TOKEN'])
 
@@ -433,7 +433,9 @@ def register_toggle_collapse(app):
         [
             Input({'type': 'celery-data', 'index': MATCH}, 'data'),
             Input({'type': f'{MAXIMUM}-notif', 'index': MATCH}, 'n_clicks'),
-            Input({'type': f'{MINIMUM}-notif', 'index': MATCH}, 'n_clicks')
+            Input({'type': f'{MINIMUM}-notif', 'index': MATCH}, 'n_clicks'),
+            Input({'type': f'{PERCENT}-notif', 'index': MATCH}, 'n_clicks')
+
         ],
         [
             State({'type': 'last-notif-click', 'index': MATCH}, 'data'),
@@ -442,7 +444,7 @@ def register_toggle_collapse(app):
         ],
         prevent_initial_call=True
     )
-    def toggle_collapse(celery, max, min, state, is_open):
+    def toggle_collapse(celery, max, min,percent, state, is_open):
         ctx = dash.callback_context
         if not ctx.triggered:
             input_type = 'No input yet'
@@ -452,7 +454,9 @@ def register_toggle_collapse(app):
             ostyle, nstyle = assign_style(is_open)
             return dash.no_update, dash.no_update, ostyle, nstyle
 
-        if input_type == f'{MAXIMUM}-notif' and max is not None or input_type == f'{MINIMUM}-notif' and min is not None:
+        if input_type == f'{MAXIMUM}-notif' and max is not None \
+                or input_type == f'{MINIMUM}-notif' and min is not None\
+                or input_type == f'{PERCENT}-notif' and percent is not None:
             toggle = False if input_type == state and is_open else True
             ostyle, nstyle = assign_style(toggle)
             return input_type, toggle, ostyle, nstyle
@@ -506,6 +510,7 @@ def register_update_celery_data(app):
                 count = {
                     MAXIMUM: result[str(slider)][MAXIMUM]['count'],
                     MINIMUM: result[str(slider)][MINIMUM]['count'],
+                    PERCENT: result[str(slider)][PERCENT]['count'],
                 }
                 if not secondary:
                     return result, True, collapse_markup(input_index, count), dash.no_update
@@ -540,7 +545,8 @@ def register_update_notif_body(app):
         [
             Output({'type': 'notif-body', 'index': MATCH}, 'children'),
             Output({'type': f'{MAXIMUM}-badge', 'index': MATCH}, 'children'),
-            Output({'type': f'{MINIMUM}-badge', 'index': MATCH}, 'children')
+            Output({'type': f'{MINIMUM}-badge', 'index': MATCH}, 'children'),
+            Output({'type': f'{PERCENT}-badge', 'index': MATCH}, 'children')
         ],
 
         [
@@ -562,10 +568,12 @@ def register_toggle_badge_color(app):
         [
             Output({'type': f'{MAXIMUM}-badge', 'index': MATCH}, 'color'),
             Output({'type': f'{MINIMUM}-badge', 'index': MATCH}, 'color'),
+            Output({'type': f'{PERCENT}-badge', 'index': MATCH}, 'color'),
         ],
         [
             Input({'type': f'{MAXIMUM}-notif', 'index': MATCH}, 'n_clicks'),
-            Input({'type': f'{MINIMUM}-notif', 'index': MATCH}, 'n_clicks')
+            Input({'type': f'{MINIMUM}-notif', 'index': MATCH}, 'n_clicks'),
+            Input({'type': f'{PERCENT}-notif', 'index': MATCH}, 'n_clicks')
         ],
         [
             State({'type': 'last-notif-click', 'index': MATCH}, 'data'),
@@ -573,22 +581,25 @@ def register_toggle_badge_color(app):
         ],
         prevent_initial_call=True
     )
-    def toggle_badge_color(max, min, state, is_open):
+    def toggle_badge_color(max, min, percent, state, is_open):
         ctx = dash.callback_context
         if not ctx.triggered:
             input_type = 'No input yet'
         else:
             input_type = get_ctx_type(ctx)
         type = input_type.split('-')[0]
-        if input_type == f'{MAXIMUM}-notif' and max is not None or input_type == f'{MINIMUM}-notif' and min is not None:
+        if input_type == f'{MAXIMUM}-notif' and max is not None \
+                or input_type == f'{MINIMUM}-notif' and min is not None\
+                or input_type == f'{PERCENT}-notif' and percent is not None:
             obj = {
                 MAXIMUM: 'light',
-                MINIMUM: 'light'
+                MINIMUM: 'light',
+                PERCENT: 'light',
             }
 
             if input_type != state or (input_type == state and not is_open):
                 obj[type] = 'info'
-            return  obj[MAXIMUM], obj[MINIMUM]
+            return  obj[MAXIMUM], obj[MINIMUM], obj[PERCENT]
 
         raise PreventUpdate
 

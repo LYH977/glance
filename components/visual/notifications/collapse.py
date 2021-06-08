@@ -4,7 +4,7 @@ import dash_html_components as html
 import dash_daq as daq
 import dash_bootstrap_components as dbc
 
-from utils.constant import MAXIMUM, MINIMUM
+from utils.constant import MAXIMUM, MINIMUM, PERCENT
 
 
 def collapse_markup(create_clicks, count):
@@ -14,6 +14,8 @@ def collapse_markup(create_clicks, count):
                 [
                     notif_badge_markup(MAXIMUM, count[MAXIMUM], create_clicks),
                     notif_badge_markup(MINIMUM, count[MINIMUM], create_clicks),
+                    notif_badge_markup(PERCENT, count[PERCENT], create_clicks),
+
                 ],
                 no_gutters=True,
                 align='start',
