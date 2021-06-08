@@ -106,19 +106,19 @@ def extract_percent(vtype,  id, df, parameter, col, previous, current):
     msg = ''
     name = ''
     percent = (current-previous) / previous * 100
+    movement = '+' if percent >= 0 else '-'  #↑↓
     percent = parse_number(percent)
-    movement = '↑' if percent >=0 else '↓'
 
     if vtype ==  SCATTER_MAP:
         # field = parse_number(df.loc[ma, col])
         name = df.loc[id, parameter[SCATTER_MAP_CONSTANT[NAME]]]
 
-        msg = "**{field}%{movement}** *{column}* : {previous}→{current}, by `{name}({lat},{long})`".format(
+        msg = "**{movement}{field}%** *{column}* : {previous}→{current}, by `{name}({lat},{long})`".format(
             name = name,
             lat = df.loc[id, parameter[SCATTER_MAP_CONSTANT[LATITUDE]]],
             long = df.loc[id, parameter[SCATTER_MAP_CONSTANT[LONGITUDE]]],
             column = col,
-            field = percent,
+            field = abs(percent),
             movement=movement,
             current = current,
             previous = previous
@@ -127,9 +127,9 @@ def extract_percent(vtype,  id, df, parameter, col, previous, current):
     elif vtype == BAR_CHART_RACE:
         # field = parse_number(df.loc[ma, col])
         name = df.loc[id, parameter[BAR_CHART_RACE_CONSTANT[ITEM]]]
-        msg = "**{field}%{movement}** *{column}* : {previous}→{current} by `{item}`".format(
+        msg = "**{movement}{field}%** *{column}* : {previous}→{current} by `{item}`".format(
             column = col,
-            field = percent,
+            field = abs(percent),
             item = name,
             movement=movement,
             current=current,
@@ -137,11 +137,11 @@ def extract_percent(vtype,  id, df, parameter, col, previous, current):
         )
     elif vtype == DENSITY:
         # field = parse_number(df.loc[ma, col])
-        msg = "**{field}%{movement}** *{column}* : {previous}→{current}, by `({lat},{long})`".format(
+        msg = "**{movement}{field}%** *{column}* : {previous}→{current}, by `({lat},{long})`".format(
             lat = df.loc[id, parameter[DENSITY_CONSTANT[LATITUDE]]],
             long = df.loc[id, parameter[DENSITY_CONSTANT[LONGITUDE]]],
             column = col,
-            field = percent,
+            field = abs(percent),
             movement=movement,
             current=current,
             previous=previous
@@ -150,11 +150,11 @@ def extract_percent(vtype,  id, df, parameter, col, previous, current):
     elif vtype == CHOROPLETH:
         # field = parse_number(df.loc[ma, col])
         name = df.loc[id, parameter[CHOROPLETH_CONSTANT[NAME]]]
-        msg = "**{field}%{movement}** *{column}* : {previous}→{current}, by `{name}({location})`".format(
+        msg = "**{movement}{field}%** *{column}* : {previous}→{current}, by `{name}({location})`".format(
             name = name,
             location = df.loc[id, parameter[CHOROPLETH_CONSTANT[LOCATIONS]]],
             column = col,
-            field = percent,
+            field = abs(percent),
             movement=movement,
             current=current,
             previous=previous

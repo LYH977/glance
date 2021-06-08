@@ -13,8 +13,8 @@ def create_bar_chart_race(data, parameter):
         time_column = FRAME
     )
     fig = race_plot.plot(
-        item_label = 'Top 10 crops',
-        value_label = 'Production quantity (tonnes)',
+        item_label = parameter[BAR_CHART_RACE_CONSTANT[ITEM]],
+        value_label = parameter[BAR_CHART_RACE_CONSTANT[VALUE]],
         frame_duration = 800
     )
 

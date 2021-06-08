@@ -13,7 +13,9 @@ from utils.constant import FRAME
 def export_mp4(fig, filename, backup):
     images = []
     frames = []
-    num_frames = len(fig['frames'])
+    # num_frames = len(fig['frames'])
+    num_frames = 5
+
     # print(fig)
     for i in range(num_frames):
         if 'pointers' in fig['frames'][i]:
