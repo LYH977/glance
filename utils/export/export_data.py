@@ -13,8 +13,8 @@ from utils.constant import FRAME
 def export_mp4(fig, filename, backup):
     images = []
     frames = []
-    # num_frames = len(fig['frames'])
-    num_frames = 5
+    num_frames = len(fig['frames'])
+    # num_frames = 5
 
     # print(fig)
     for i in range(num_frames):
@@ -31,7 +31,7 @@ def export_mp4(fig, filename, backup):
 
         fig2.layout.title.text = fig['frames'][i]['name']
         img_bytes = fig2.to_image(format="png", scale=4)
-        print(img_bytes )
+        # print(img_bytes )
 
         images.append(img_bytes)
 

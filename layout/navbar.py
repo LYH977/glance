@@ -51,7 +51,7 @@ navbar = dbc.NavbarSimple(
     ],
     id='glance-nav',
     brand="Glance",
-    brand_href="/pages/home",
+    # brand_href="/pages/home",
     color="dark",
     dark=True,
     sticky= 'top',

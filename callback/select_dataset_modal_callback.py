@@ -175,16 +175,16 @@ def register_toggle_modal_action_btn(app):
         if not ctx.triggered:
             raise PreventUpdate
         input_type = get_ctx_type(ctx)
-        print('see here:',ctx.triggered)
+        # print('see here:',ctx.triggered)
         if input_type == 'secondary-visual-btn':
             if len(ctx.triggered) == 1  and get_ctx_value(ctx) is None:
-                print('passed')
+                # print('passed')
                 return dash.no_update, dash.no_update, False, dash.no_update, secondary_visual
             style = {'display': 'none'}
             # input_index = get_ctx_index(ctx)
             for index, (first, second) in enumerate(zip(secondary_visual, last_secondary)):
                 if first != second:
-                    print('enteredK', first, second)
+                    # print('enteredK', first, second)
                     diff_index = get_ctx_index(ctx)
                     header = f'Add Secondary Layer for Visual {diff_index}'
                     return style, secondary_action_btn_markup(diff_index), True, header, secondary_visual
@@ -530,7 +530,7 @@ def register_update_new_column(app):
                 }
                 return data, columns, toast
             except Exception as e:
-                print('error', e)
+                print('add column error', e)
                 toast = {
                     'children': 'Something wrong with operand. Please choose column with number only',
                     'is_open': True,

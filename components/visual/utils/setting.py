@@ -29,9 +29,10 @@ def popover_children_markup(create_clicks, type):
                 dbc.Row([
                     dbc.Col(live_mode_markup(create_clicks)),
                     dbc.Col(html.Div([
+                        download_csv_btn_markup(create_clicks),
                         generate_btn_markup(create_clicks),
-                        download_btn_markup(create_clicks),
-                        enable_generate_markup(create_clicks)
+                        download_mp4_btn_markup(create_clicks),
+                        enable_generate_markup(create_clicks),
                     ], className='flex-col')),
                 ], align='center'),
 
@@ -110,7 +111,7 @@ def generate_btn_markup(create_clicks):
             size='sm',
     )
 
-def download_btn_markup(create_clicks):
+def download_mp4_btn_markup(create_clicks):
     return html.Div(
         html.A(
             'Download MP4',
@@ -124,6 +125,7 @@ def download_btn_markup(create_clicks):
         id={'type': 'download-btn-wrapper', 'index': create_clicks},
     )
 
+
 def enable_generate_markup(create_clicks):
     return dbc.Button(
             'Generate Again',
@@ -134,6 +136,22 @@ def enable_generate_markup(create_clicks):
             style={'display':'none'},
     )
 
+
+def download_csv_btn_markup(create_clicks):
+    return html.Div([
+            dbc.Button(
+                'Download CSV',
+                id={'type': 'dl-csv-btn', 'index': create_clicks},
+                size='sm',
+                className="shadow-none",
+                color="secondary",
+                style={'marginBottom': '10px'},
+
+            ),
+            dcc.Download({'type': 'download-csv', 'index': create_clicks})
+        ])
+
+        # id={'type': 'download-btn-wrapper', 'index': create_clicks},
 
 def mapbox_type_markup(create_clicks, hidden):
     return html.Div([

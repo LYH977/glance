@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 import pandas as pd
+import dash_core_components as dcc
 import dash
 from dash.dependencies import Input, Output, State, MATCH, ClientsideFunction
 from dash.exceptions import PreventUpdate
@@ -16,7 +17,8 @@ from utils import collection
 from utils.collection import redis_instance
 from utils.export.export_data import export_mp4
 from utils.method import get_ctx_type, get_ctx_index, formatted_time_value, \
-    select_query, get_last_timestamp, insert_marker, reset_marker_trace, store_template, merge_frames, get_ctx_property
+    select_query, get_last_timestamp, insert_marker, reset_marker_trace, store_template, merge_frames, get_ctx_property, \
+    update_legend_theme, update_mapbox_type, update_colorscale, update_marker_data, update_live_visual_style
 from utils.constant import SCATTER_MAP, DENSITY, CHOROPLETH, BAR_CHART_RACE, \
     FRAME, TIME, MAXIMUM, MINIMUM, PERCENT
 
@@ -331,7 +333,7 @@ def register_update_live_data(app):
         else:
             input_type = get_ctx_type(ctx)
             input_index = get_ctx_index(ctx)
-
+        print('marker:', marker)
         if input_type =='live-interval' and collection.live_processing[input_index] is False:
             collection.live_processing[input_index] = True
             result = select_query(dbname, 'where time >{}'.format(ts))
@@ -347,51 +349,26 @@ def register_update_live_data(app):
                 last_nano = get_last_timestamp(result[TIME])
                 collection.data[input_index] = collection.data[input_index].append(result, ignore_index=True)
                 fig = create_figure(collection.data[input_index], param['parameter'], param['vtype'])
+                fig = fig.to_dict()
+                fig = update_live_visual_style(fig, legend, mapbox, colorscale, secondary, marker)
                 return last_nano, fig, dash.no_update, dash.no_update
             collection.live_processing[input_index] = False
             raise PreventUpdate
 
         elif input_type == 'legend-theme':
-            fig2 = buffer
-            if legend : #dark theme
-                fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(0,0,0,1)'
-                fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(255,255,255,1)'
-                fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(255,255,255,1)'
-                # fig2['layout']['paper_bgcolor'] = '#000'
-                if 'coloraxis2' in fig2['layout']:
-                    fig2['layout']['coloraxis2']['colorbar']['bgcolor'] = 'rgba(0,0,0,1)'
-                    fig2['layout']['coloraxis2']['colorbar']['title']['font']['color'] = 'rgba(255,255,255,1)'
-                    fig2['layout']['coloraxis2']['colorbar']['tickfont']['color'] = 'rgba(255,255,255,1)'
-
-            else: # light theme
-                fig2['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(255,255,255,1)'
-                fig2['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(0,0,0,1)'
-                fig2['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
-                # fig2['layout']['paper_bgcolor'] = '#fff'
-                if 'coloraxis2' in fig2['layout']:
-                    fig2['layout']['coloraxis2']['colorbar']['bgcolor'] = 'rgba(255,255,255,1)'
-                    fig2['layout']['coloraxis2']['colorbar']['title']['font']['color'] = 'rgba(0,0,0,1)'
-                    fig2['layout']['coloraxis2']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
-
+            fig2 = update_legend_theme(legend, buffer)
             return dash.no_update,fig2, dash.no_update, dash.no_update
 
         elif input_type == 'mapbox-type':
-            fig2 = buffer
-            fig2['layout']['mapbox']['style'] = mapbox
+            fig2 = update_mapbox_type(mapbox, buffer)
             return dash.no_update, fig2, dash.no_update, dash.no_update
 
         elif input_type == 'chosen-color-scale':
-            fig2 = buffer
-            fig2['layout']['coloraxis']['colorscale'] = colorscale['0']['value']
-            if len(secondary) != 0 and 'coloraxis2' in fig2['layout'] and len(colorscale['2']) != 0:
-                fig2['layout']['coloraxis2']['colorscale'] = colorscale['2']['value']
-
-            # fig2['data'][1] = insert_marker()
+            fig2 = update_colorscale(colorscale, secondary, buffer)
             return dash.no_update, fig2, dash.no_update, dash.no_update
 
         elif input_type == 'marker-data':
-            fig2 = buffer
-            fig2['data'][1] = marker
+            fig2 = update_marker_data(marker, buffer)
             return dash.no_update, fig2, dash.no_update, dash.no_update
 
         elif input_type == 'secondary-data':
@@ -504,7 +481,7 @@ def register_update_celery_data(app):
 
                 result = redis_instance.get(f'{index}-{now}').decode("utf-8")
                 result = json.loads(result)
-                print(result)
+                # print(result)
                 ctx = dash.callback_context
                 input_index = get_ctx_index(ctx)
                 count = {
@@ -973,7 +950,7 @@ def register_update_secondary_frames(app):
         if not ctx.triggered:
             raise PreventUpdate
         input_type = get_ctx_type(ctx)
-        print('see here: ', input_type)
+        # print('see here: ', input_type)
         if input_type == 'secondary-action-click' and click >0:
             collection.temp = collection.temp.dropna()
             collection.temp.reset_index(drop=True, inplace=True)
@@ -1035,7 +1012,6 @@ def register_toggle_secondary_btn_visibility(app):
         Output({'type': 'secondary-visual-btn', 'index': MATCH}, 'hidden'),
         [
             Input({'type': 'secondary-mode', 'index': MATCH}, 'data'),
-            # Input({'type': 'live-mode', 'index': MATCH}, 'on'),
         ],
         prevent_initial_call=True
     )
@@ -1153,13 +1129,19 @@ def register_toggle_enable_btn(app):
 
 # ############################################################################################################################################
 
-# def register_toggle_generate_btn(app):
-#     @app.callback(
-#
-#         Output({'type': 'generate-btn', 'index': MATCH}, 'disabled'),
-#         Input({'type': 'enable-btn', 'index': MATCH}, 'n_clicks'),
-#         prevent_initial_call=True
-#     )
-#     def toggle_enable_btn(click):
-#         if click:
-#             return False
+def register_download_csv(app):
+    @app.callback(
+
+        Output({'type': 'download-csv', 'index': MATCH}, 'data'),
+        Input({'type': 'dl-csv-btn', 'index': MATCH}, 'n_clicks'),
+        [
+            State({'type': 'db-name', 'index': MATCH}, 'data'),
+            State({'type': 'my-index', 'index': MATCH}, 'data'),
+        ],
+        prevent_initial_call=True
+    )
+    def download_csv(click, db, index):
+        print('clicked')
+        if click:
+            return dcc.send_data_frame(collection.data[index].to_csv, f"{db}.csv")
+        raise  PreventUpdate

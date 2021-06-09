@@ -38,7 +38,7 @@ from callback.visualization_callback import \
     register_update_secondary_frames, register_toggle_secondary_btn_visibility, register_toggle_live_mode, \
     register_update_secondary_action_click, register_update_info_secondary, \
     register_update_secondary_colorscale, register_close_legacy_popover, register_toggle_enable_btn, \
-    register_update_generate_btn_name
+    register_update_generate_btn_name, register_download_csv
 
 # meta_tags are required for the app layout to be mobile responsive
 from callback.upload_modal_callback import register_update_preview, register_update_datetime_modifier, \
@@ -115,7 +115,7 @@ register_update_secondary_colorscale(app)
 register_close_legacy_popover(app)
 register_toggle_enable_btn(app)
 register_update_generate_btn_name(app)
-
+register_download_csv(app)
 
 # carousel_callback
 register_display_image(app)

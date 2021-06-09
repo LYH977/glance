@@ -40,7 +40,7 @@ def insert_marker (name, coordinate):
     split_coordinate = coordinate.split(', ')
     lat = float(split_coordinate[0][1:])
     long = float(split_coordinate[1][:-1])
-    print('coo', coordinate)
+    # print('coo', coordinate)
     return {
         # 'coloraxis': "coloraxis",
         'hovertemplate': formatted_name,
@@ -58,6 +58,51 @@ def insert_marker (name, coordinate):
         'subplot': 'mapbox',
         'type': 'scattermapbox'
     }
+
+def update_legend_theme(legend, fig):
+    if legend:  # dark theme
+        fig['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(0,0,0,1)'
+        fig['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(255,255,255,1)'
+        fig['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(255,255,255,1)'
+        # fig['layout']['paper_bgcolor'] = '#000'
+        if 'coloraxis2' in fig['layout']:
+            fig['layout']['coloraxis2']['colorbar']['bgcolor'] = 'rgba(0,0,0,1)'
+            fig['layout']['coloraxis2']['colorbar']['title']['font']['color'] = 'rgba(255,255,255,1)'
+            fig['layout']['coloraxis2']['colorbar']['tickfont']['color'] = 'rgba(255,255,255,1)'
+
+    else:  # light theme
+        fig['layout']['coloraxis']['colorbar']['bgcolor'] = 'rgba(255,255,255,1)'
+        fig['layout']['coloraxis']['colorbar']['title']['font']['color'] = 'rgba(0,0,0,1)'
+        fig['layout']['coloraxis']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
+        # fig['layout']['paper_bgcolor'] = '#fff'
+        if 'coloraxis2' in fig['layout']:
+            fig['layout']['coloraxis2']['colorbar']['bgcolor'] = 'rgba(255,255,255,1)'
+            fig['layout']['coloraxis2']['colorbar']['title']['font']['color'] = 'rgba(0,0,0,1)'
+            fig['layout']['coloraxis2']['colorbar']['tickfont']['color'] = 'rgba(0,0,0,1)'
+    return fig
+
+
+def update_mapbox_type(mapbox, fig):
+    fig['layout']['mapbox']['style'] = mapbox
+    return fig
+
+
+def update_colorscale(colorscale, secondary, fig):
+    fig['layout']['coloraxis']['colorscale'] = colorscale['0']['value']
+    if len(secondary) != 0 and 'coloraxis2' in fig['layout'] and len(colorscale['2']) != 0:
+        fig['layout']['coloraxis2']['colorscale'] = colorscale['2']['value']
+    return fig
+
+def update_marker_data(marker, fig):
+    fig['data'][1] = marker
+    return fig
+
+def update_live_visual_style(fig, legend, mapbox, colorscale, secondary, marker):
+    fig = update_legend_theme(legend, fig)
+    fig = update_mapbox_type(mapbox, fig)
+    fig = update_colorscale(colorscale, secondary, fig)
+    fig = update_marker_data(marker, fig)
+    return fig
 
 def swapPositions(list, pos1, pos2):
     list[pos1], list[pos2] = list[pos2], list[pos1]
