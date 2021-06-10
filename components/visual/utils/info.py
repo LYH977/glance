@@ -9,6 +9,7 @@ from utils.constant import SEQUENTIAL_COLOR, SCATTER_MAP, DENSITY
 def info_table_markup(create_clicks, name1, type1,hidden):
     # hasMapbox = [SCATTER_MAP, DENSITY]
     # hidden = not type1 in hasMapbox
+    formatted_name1 = name1 if len(name1) <16 else name1[0:15] + '...'
     table_header = [
         html.Thead(html.Tr([
             html.Th("No"),
@@ -22,7 +23,7 @@ def info_table_markup(create_clicks, name1, type1,hidden):
     rows.append(
         html.Tr([
             html.Td(1),
-            html.Td(name1),
+            html.Td(formatted_name1),
             html.Td(type1),
             html.Td(
                 dbc.Select(
@@ -40,7 +41,6 @@ def info_table_markup(create_clicks, name1, type1,hidden):
                 ),
             ),
         ]))
-
     rows.append(
         html.Tr([
             html.Td(2),
@@ -61,25 +61,21 @@ def info_table_markup(create_clicks, name1, type1,hidden):
                     n_clicks=0
                 ),
             ),
-
         ],
         id={'type': 'tr-info-2', 'index': create_clicks},
         style= {'display': 'none' }
         ))
-
-
-
     table_body = [html.Tbody(rows)]
-
     return dbc.Table(
         table_header + table_body,
         bordered= True,
         responsive= True,
         hover= True,
         size='sm'
-
     )
 #
+
+
 def info_markup(create_clicks, name1, type1 ):
     hasMapbox = [SCATTER_MAP, DENSITY]
     hidden = not type1 in hasMapbox

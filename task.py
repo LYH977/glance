@@ -113,7 +113,7 @@ def extract_percent(vtype,  id, df, parameter, col, previous, current):
         # field = parse_number(df.loc[ma, col])
         name = df.loc[id, parameter[SCATTER_MAP_CONSTANT[NAME]]]
 
-        msg = "**{movement}{field}%** *{column}* : {previous}→{current}, by `{name}({lat},{long})`".format(
+        msg = "**{movement}{field}%** *{column}* : {previous} → {current}, by `{name}({lat},{long})`".format(
             name = name,
             lat = df.loc[id, parameter[SCATTER_MAP_CONSTANT[LATITUDE]]],
             long = df.loc[id, parameter[SCATTER_MAP_CONSTANT[LONGITUDE]]],
@@ -127,7 +127,7 @@ def extract_percent(vtype,  id, df, parameter, col, previous, current):
     elif vtype == BAR_CHART_RACE:
         # field = parse_number(df.loc[ma, col])
         name = df.loc[id, parameter[BAR_CHART_RACE_CONSTANT[ITEM]]]
-        msg = "**{movement}{field}%** *{column}* : {previous}→{current} by `{item}`".format(
+        msg = "**{movement}{field}%** *{column}* : {previous} → {current} by `{item}`".format(
             column = col,
             field = abs(percent),
             item = name,
@@ -137,7 +137,7 @@ def extract_percent(vtype,  id, df, parameter, col, previous, current):
         )
     elif vtype == DENSITY:
         # field = parse_number(df.loc[ma, col])
-        msg = "**{movement}{field}%** *{column}* : {previous}→{current}, by `({lat},{long})`".format(
+        msg = "**{movement}{field}%** *{column}* : {previous} → {current}, by `({lat},{long})`".format(
             lat = df.loc[id, parameter[DENSITY_CONSTANT[LATITUDE]]],
             long = df.loc[id, parameter[DENSITY_CONSTANT[LONGITUDE]]],
             column = col,
@@ -150,7 +150,7 @@ def extract_percent(vtype,  id, df, parameter, col, previous, current):
     elif vtype == CHOROPLETH:
         # field = parse_number(df.loc[ma, col])
         name = df.loc[id, parameter[CHOROPLETH_CONSTANT[NAME]]]
-        msg = "**{movement}{field}%** *{column}* : {previous}→{current}, by `{name}({location})`".format(
+        msg = "**{movement}{field}%** *{column}* : {previous} → {current}, by `{name}({location})`".format(
             name = name,
             location = df.loc[id, parameter[CHOROPLETH_CONSTANT[LOCATIONS]]],
             column = col,

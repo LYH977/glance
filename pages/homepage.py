@@ -16,7 +16,35 @@ from datetime import datetime
 from utils.export.export_data import export_mp4
 from plotly import graph_objects as go
 from copy import deepcopy
-
+# import openpyxl as xl
+#
+# wb = xl.load_workbook('datasets/daily corona china.xlsx')
+# sheet = wb['Sheet1']
+#
+# for row in range(3, sheet.max_row +1):
+#     current_province = sheet.cell(row,3).value
+#     current_confirm = sheet.cell(row,6).value
+#     current_recovered = sheet.cell(row, 7).value
+#     current_death = sheet.cell(row, 8).value
+#
+#     # current_new_confirm = sheet.cell(row, 9).value
+#     # current_new_recover = sheet.cell(row, 10).value
+#     # current_new_death = sheet.cell(row, 11).value
+#
+#     previous_province = sheet.cell(row-1, 3).value
+#     previous_confirm = sheet.cell(row-1, 6).value
+#     previous_recovered = sheet.cell(row-1, 7).value
+#     previous_death = sheet.cell(row-1, 8).value
+#
+#     if current_province == previous_province:
+#         sheet.cell(row, 10).value = current_confirm - previous_confirm
+#         sheet.cell(row, 11).value = current_recovered - previous_recovered
+#         sheet.cell(row, 12).value = current_death - previous_death
+#     else:
+#         sheet.cell(row, 10).value = current_confirm
+#         sheet.cell(row, 11).value = current_recovered
+#         sheet.cell(row, 12).value = current_death
+# wb.save('settle.xlsx')
 
 redis_instance = redis.StrictRedis.from_url(os.environ['REDIS_URL'])
 N = 100

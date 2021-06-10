@@ -12,6 +12,8 @@ from layout.navbar import navbar
 
 from utils.method import reset_var
 
+
+
 app.layout = html.Div([
     navbar,
     landing_page,
