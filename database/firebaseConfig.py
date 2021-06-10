@@ -1,5 +1,4 @@
 import pyrebase
-import urllib
 import os
 
 

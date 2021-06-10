@@ -78,10 +78,12 @@ def edit_parameter_option(columns, label, id, value, multi = False):
             multi= multi,
             value=value
         )
+    fWeight = 'bold' if label[-1] == '*' else 'normal'
+
     return  \
         dbc.FormGroup(
             [
-                dbc.Label(label, className="mr-2"),
+                dbc.Label(label, className="mr-2", style={'fontWeight':fWeight}),
                 dropdown,
             ],
             style={'width': '50%', 'padding':'5px'}
@@ -92,7 +94,7 @@ def time_format_option(tformat):
     return  \
         dbc.FormGroup(
                     [
-                        dbc.Label('Choose Time Format ?', className="mr-2"),
+                        dbc.Label('Choose Time Format', className="mr-2", style={'fontWeight':'bold'}),
                         dbc.Select(
                             style={'width': '100%'},
                             id='time-format_edit_modal',

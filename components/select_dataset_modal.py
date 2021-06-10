@@ -232,26 +232,11 @@ def parameter_option(name, id, type, parameter, multi = False):
             options=[{"label": i, "value": i} for i in columns],
             value=value
         )
-
-    # if not multi:
-    #     dropdown = dbc.Select(
-    #         style={'width': '100%'},
-    #         id=id,
-    #         options=[{"label": i, "value": i} for i in collection.temp.columns],
-    #         value = value
-    #     )
-    # else:
-    #     dropdown = dcc.Dropdown(
-    #         style={'width': '100%'},
-    #         id=id,
-    #         options=[{"label": i, "value": i} for i in collection.temp.columns],
-    #         multi= multi,
-    #         value = value
-    #     )
+    fWeight = 'bold' if name[-1] == '*' else 'normal'
     return  \
         dbc.FormGroup(
                     [
-                        dbc.Label(name, className="mr-2"),
+                        dbc.Label(name, className="mr-2", style={'fontWeight':fWeight}),
                         dropdown,
                     ],
                     # className="mr-3",
@@ -287,7 +272,7 @@ def time_format_option():
     return  \
         dbc.FormGroup(
                     [
-                        dbc.Label('Choose Time Format', className="mr-2"),
+                        dbc.Label('Choose Time Format', className="mr-2", style={'fontWeight':'bold'}),
                         dbc.Select(
                             style={'width': '100%'},
                             id='time-format',
