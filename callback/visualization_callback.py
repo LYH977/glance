@@ -374,6 +374,11 @@ def register_update_live_data(app):
         elif input_type == 'secondary-data':
             if len(secondary) != 0:
                 fig2 = buffer
+
+                # if param['vtype'] == SCATTER_MAP:
+                #     for fr in secondary['frames']:
+                #         fr['data'][0]['marker']['allowoverlap'] = True
+
                 fig2['data'][2] = secondary['frames'][0]['data'][0]
                 fig2['layout']['coloraxis2'] = secondary['coloraxis']
                 fig2['layout']['coloraxis']['colorbar']['y'] = 0.496

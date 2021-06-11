@@ -29,7 +29,9 @@ def create_scattermap(data, parameter, toConfigure ):
         # hover_data=['Active', 'Confirmed']
         # custom_data=['Date']
     )
-    # print('after fig', fig)
+    # fig['data'][0]['marker']['allowoverlap'] = True
+    # for fr in fig['frames']:
+    #     fr['data'][0]['marker']['allowoverlap'] = True
     if toConfigure:
         configure_fig(fig, SCATTER_MAP, True)
 

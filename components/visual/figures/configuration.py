@@ -39,6 +39,9 @@ def configure_fig(fig, type, add_trace = False):
         fig.layout.margin.l = 0
     else:                       # when bar chart race is chosen
         fig.layout.margin.t = 50
+
+
+
     fig.layout.title.y = 0.98
     fig.layout.title.x = 0.1
     fig.layout.title.text = fig['frames'][0]['name']
