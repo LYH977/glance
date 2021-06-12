@@ -136,7 +136,6 @@ def extract_percent(vtype,  id, df, parameter, col, previous, current):
             previous=previous
         )
     elif vtype == DENSITY:
-        # field = parse_number(df.loc[ma, col])
         msg = "**{movement}{field}%** *{column}* : {previous} → {current}, by `({lat},{long})`".format(
             lat = df.loc[id, parameter[DENSITY_CONSTANT[LATITUDE]]],
             long = df.loc[id, parameter[DENSITY_CONSTANT[LONGITUDE]]],
@@ -191,52 +190,40 @@ def setup_periodic_tasks(sender, **kwargs):
 @app.task
 def process_dataset(create_click, dataframe, vtype, parameter, now, old_celery = {}):
     dataframe = pd.DataFrame.from_dict(dataframe)
-    print('starting',now)
-
-
+    
     tags = []
     obj = {}
     extract = [MAXIMUM, MINIMUM, PERCENT]
-    frames = dataframe[FRAME].unique().tolist()
-    notif_tags = NOTIFICATION_PARAM[vtype][TAG]
-
-
-    for f in range(len(frames)):
+    frames = dataframe[FRAME].unique().tolist() # get all the unique frame
+    notif_tags = NOTIFICATION_PARAM[vtype][TAG] # get the tags of selected visual type
+    for f in range(len(frames)):  # prepare neccessary attribute in obj dict
         obj[f] = {'frame': frames[f]}
         for e in extract:
             obj[f][e] = {'count':0, 'data':'', 'temp':{}}
             for v in NOTIFICATION_PARAM[vtype][FIELD]:
                 obj[f][e]['temp'][parameter[v]] = []
 
-
-
     for t in notif_tags:
-        tags.append(parameter[t])
-
-    tags = list(dict.fromkeys(tags)) # remove duplicate items
-
+        tags.append(parameter[t]) # append necessary tags
+    tags = list(dict.fromkeys(tags))
 
     if tags:
-        tag_df = dataframe[tags]
-        tag_df = tag_df.drop_duplicates()  # Lat, Long, Country
+        tag_df = dataframe[tags]  # selected columns, e.g. Lat, Long, Country
+        tag_df = tag_df.drop_duplicates()  # remove duplicate items
         tag_list = tag_df.index.tolist()
-
-        notif_fields = NOTIFICATION_PARAM[vtype][FIELD]
+        notif_fields = NOTIFICATION_PARAM[vtype][FIELD] # get the fields of selected visual type
         fields = []
         for f in notif_fields:
-            fields.append(parameter[f])
+            fields.append(parameter[f]) # append necessary fields
 
         for i in tag_list:  # row of tagged data frame
             condition = True
             for col in tags:
                 condition = condition & (dataframe[col] == tag_df.loc[i, col])
             target_df = dataframe[condition]  # sort out dataframe by country
-            # print(target_df)
-
-            for col in fields:  # Confirmed, Deaths
+            for col in fields:  # used columns , e.g. Confirmed, Deaths
+                #find percent
                 column = target_df[col]
-                # print('clo: ', len(column))
-
                 for index in range(1, len(column)):
                     current = parse_number(column.iloc[index])
                     previous = parse_number(column.iloc[index-1])
@@ -246,21 +233,18 @@ def process_dataset(create_click, dataframe, vtype, parameter, now, old_celery =
                         frame = target_df.loc[pid, FRAME]
                         index = frames.index(frame)
                         obj[index][PERCENT]['temp'][col].append(obj_data)
-
+                # end of find percent
                 max_value = column.max()
                 min_value = column.min()
-
                 if max_value != min_value:
                     # find max
                     max_list = target_df.index[target_df[col] == max_value].tolist()
-                    # print('max_list: ', max_list)
                     for ma in max_list:
                         obj_data = extract_extrema(vtype,  ma, target_df, parameter, col, MAXIMUM)
                         frame = target_df.loc[ma, FRAME]
                         index=frames.index(frame)
                         obj[index][MAXIMUM]['temp'][col].append(obj_data)
-
-
+                    # end of find max
                     # find min
                     min_list = target_df.index[target_df[col] == min_value].tolist()
                     for mi in min_list:
@@ -268,7 +252,7 @@ def process_dataset(create_click, dataframe, vtype, parameter, now, old_celery =
                         frame = target_df.loc[mi, FRAME]
                         index = frames.index(frame)
                         obj[index][MINIMUM]['temp'][col].append(obj_data)
-
+                    # end of find min
         for k in obj.keys(): # index
             for e in extract: # MAX, MIN
                 for f in fields:

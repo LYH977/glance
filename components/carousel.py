@@ -124,16 +124,13 @@ def create_carousel(screen_height, screen_width, create_clicks, param, maxValue,
 
 def create_ca_img(src, date='None'):
     return [
-
         html.Img(
             src=src,
-            # style={'height': '100%', 'width': '100%', 'overflow':'hidden'}
             className='ca-img-style'
         ),
         html.P(
             date,
             className='ca-label-style',
-
         )
     ]
 

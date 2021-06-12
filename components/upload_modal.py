@@ -24,7 +24,7 @@ layout = html.Div([
                         dcc.Store(id='datetime-value', data = None),
                         dcc.Upload(
                             id='upload-dataset',
-                            children=html.Button('Upload File'),
+                            children=dbc.Button('Upload File'),
                             multiple=True
                         ),
                         html.Div(id='preview', style={'overflow':'auto'} ),
@@ -85,11 +85,11 @@ def dt_modifier_markup(value):
         [
             dcc.Store(id='dt-filled', data = False),
             dcc.Store(id='dt-format', data= False),
-            dbc.Label('Measurement Name*'),
-            dbc.Input(id='name-input', placeholder="e.g. Coronavirus", type="text"),
+            dbc.Label('Measurement Name*',style={'fontWeight':'bold',}),
+            dbc.Input(id='name-input', placeholder="e.g. Coronavirus", type="text",style={'paddingBottom':'5px'}),
             dbc.FormGroup(
                 [
-                    dbc.Label("Tags", html_for="dropdown"),
+                    dbc.Label("Tag(s)", html_for="dropdown"),
                     dcc.Dropdown(
                         id="dt-tags",
                         multi = True,
@@ -113,7 +113,7 @@ def dt_modifier_markup(value):
 def dt_dropdown_markup(options):
     return dbc.FormGroup(
         [
-            dbc.Label("Choose Datetime column*", html_for="dropdown"),
+            dbc.Label("Choose Datetime column*", html_for="dropdown",style={'fontWeight':'bold'}),
             dcc.Dropdown(
                 id="dt-dropdown",
                 options = options

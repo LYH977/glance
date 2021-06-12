@@ -27,7 +27,6 @@ def create_density(data, parameter, toConfigure ):
         zoom = 0,
         animation_frame = FRAME,
         mapbox_style = "dark",
-        # height= 200
 
     )
     # print('after fig', fig)

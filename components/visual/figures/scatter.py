@@ -12,6 +12,7 @@ def create_scattermap(data, parameter, toConfigure ):
         SCATTER_MAP_CONSTANT[LATITUDE],
         SCATTER_MAP_CONSTANT[LONGITUDE]
     ])
+
     fig = px.scatter_mapbox(
         data, lat = parameter[SCATTER_MAP_CONSTANT[LATITUDE]],
         lon = parameter[SCATTER_MAP_CONSTANT[LONGITUDE]],
@@ -22,13 +23,9 @@ def create_scattermap(data, parameter, toConfigure ):
         hover_name = parameter[SCATTER_MAP_CONSTANT[NAME]],
         mapbox_style = 'dark', zoom=1,
         animation_frame = FRAME,
-        # animation_group="Province/State",
-        # width=swidth ,
-
         hover_data = parameter[SCATTER_MAP_CONSTANT[MESSAGE]]
-        # hover_data=['Active', 'Confirmed']
-        # custom_data=['Date']
     )
+
     # fig['data'][0]['marker']['allowoverlap'] = True
     # for fr in fig['frames']:
     #     fr['data'][0]['marker']['allowoverlap'] = True

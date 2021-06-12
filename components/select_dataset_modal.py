@@ -166,34 +166,7 @@ def output_form_markup(type, is_secondary):
     options = [ parameter_option(i, j, FIGURE_PARAM[type],parameter, k) for i,j,k in unpack_parameter(FIGURE_PARAM[type]) ]
     if not is_secondary:
         options.append(time_format_option())
-    # print('sdfsdf',parameter)
-    # print('ss', False if None in parameter.values() else True)
-    # results = {
-    #     'increment': False if None in parameter.values() else True,
-    #     'element':
-    #         html.Div([
-    #             dcc.Store(id=SM_PARAM, data={'is_filled': False, 'parameter': parameter if type == SCATTER_MAP else None}),
-    #             # dcc.Store(id=SG_PARAM, data={'is_filled': False, 'parameter': parameter if type == SCATTER_GEO else None}),
-    #             dcc.Store(id=D_PARAM, data={'is_filled': False, 'parameter': parameter if type == DENSITY else None}),
-    #             dcc.Store(id=CH_PARAM, data={'is_filled': False, 'parameter': parameter if type == CHOROPLETH else None}),
-    #             dcc.Store(id=CA_PARAM, data={'is_filled': False, 'parameter': parameter if type == CAROUSEL else None}),
-    #             dcc.Store(id=BC_PARAM, data={'is_filled': False, 'parameter': parameter if type == BAR_CHART_RACE else None}),
-    #
-    #             dbc.Form(
-    #                 options,
-    #                 inline=True,
-    #                 # style={'background':'red'}
-    #             )
-    #     ])
-    # }
-    # return results
     return html.Div([
-        # dcc.Store(id=SM_PARAM, data={'is_filled': False, 'parameter': parameter if type == SCATTER_MAP else None}),
-        # dcc.Store(id=D_PARAM, data={'is_filled': False, 'parameter': parameter if type == DENSITY else None}),
-        # dcc.Store(id=CH_PARAM, data={'is_filled': False, 'parameter': parameter if type == CHOROPLETH else None}),
-        # dcc.Store(id=CA_PARAM, data={'is_filled': False, 'parameter': parameter if type == CAROUSEL else None}),
-        # dcc.Store(id=BC_PARAM, data={'is_filled': False, 'parameter': parameter if type == BAR_CHART_RACE else None}),
-
         dbc.Form(
             options,
             inline=True,
@@ -272,7 +245,7 @@ def time_format_option():
     return  \
         dbc.FormGroup(
                     [
-                        dbc.Label('Choose Time Format', className="mr-2", style={'fontWeight':'bold'}),
+                        dbc.Label('Time Format*', className="mr-2", style={'fontWeight':'bold'}),
                         dbc.Select(
                             style={'width': '100%'},
                             id='time-format',
