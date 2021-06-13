@@ -100,7 +100,9 @@ def update_marker_data(marker, fig):
 def update_live_visual_style(fig, legend, mapbox, colorscale, secondary, marker):
     fig = update_legend_theme(legend, fig)
     fig = update_mapbox_type(mapbox, fig)
-    fig = update_colorscale(colorscale, secondary, fig)
+    if None not in colorscale['0']['value'] :
+        print('yes')
+        fig = update_colorscale(colorscale, secondary, fig)
     fig = update_marker_data(marker, fig)
     return fig
 

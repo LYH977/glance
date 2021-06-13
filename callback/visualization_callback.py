@@ -333,7 +333,7 @@ def register_update_live_data(app):
         else:
             input_type = get_ctx_type(ctx)
             input_index = get_ctx_index(ctx)
-        print('marker:', marker)
+        # print('marker:', marker)
         if input_type =='live-interval' and collection.live_processing[input_index] is False:
             collection.live_processing[input_index] = True
             result = select_query(dbname, 'where time >{}'.format(ts))
@@ -364,6 +364,7 @@ def register_update_live_data(app):
             return dash.no_update, fig2, dash.no_update, dash.no_update
 
         elif input_type == 'chosen-color-scale':
+            print('colorscale ', colorscale)
             fig2 = update_colorscale(colorscale, secondary, buffer)
             return dash.no_update, fig2, dash.no_update, dash.no_update
 
