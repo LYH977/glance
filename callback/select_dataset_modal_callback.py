@@ -153,7 +153,7 @@ def register_toggle_modal_action_btn(app):
             Output("add-secondary-area", "children"),
             Output("modal", "is_open"),
             Output("modal-head", "children"),
-            Output({'type': "last-secondary-click-ts", 'index': ALL}, "data"),
+            Output({'type': "last-secondary-visual-click-ts", 'index': ALL}, "data"),
         ],
         [
             Input("open-select-modal", "n_clicks"),
@@ -164,7 +164,7 @@ def register_toggle_modal_action_btn(app):
         ],
         [
             State("modal", "is_open"),
-            State({'type': "last-secondary-click-ts", 'index': ALL}, "data"),
+            State({'type': "last-secondary-visual-click-ts", 'index': ALL}, "data"),
 
         ],
         prevent_initial_call=True
@@ -175,16 +175,13 @@ def register_toggle_modal_action_btn(app):
         if not ctx.triggered:
             raise PreventUpdate
         input_type = get_ctx_type(ctx)
-        # print('see here:',ctx.triggered)
         if input_type == 'secondary-visual-btn':
             if len(ctx.triggered) == 1  and get_ctx_value(ctx) is None:
-                # print('passed')
                 return dash.no_update, dash.no_update, False, dash.no_update, secondary_visual
             style = {'display': 'none'}
             # input_index = get_ctx_index(ctx)
             for index, (first, second) in enumerate(zip(secondary_visual, last_secondary)):
                 if first != second:
-                    # print('enteredK', first, second)
                     diff_index = get_ctx_index(ctx)
                     header = f'Add Secondary Layer for Visual {diff_index}'
                     return style, secondary_action_btn_markup(diff_index), True, header, secondary_visual
@@ -240,10 +237,6 @@ def register_enable_create_btn(app):
             return True, {}, [True for i in secondary]
         if input_type == 'create-visual' and create>0:
             return True, dash.no_update, [True for i in secondary]
-        # if input_type == 'activate-click':
-        #     print('clicked')
-        #     return False, dash.no_update, [True for i in secondary]
-
         if isinstance(input_value, dict):
             data = {'vtype': vtype, 'parameter':input_value['parameter'] }
             return not input_value['is_filled'], data, [False for i in secondary]

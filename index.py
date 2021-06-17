@@ -25,7 +25,7 @@ app.layout = html.Div([
 ],style={
      # 'background-image': 'linear-gradient(to bottom right, #189de4, #52b7e9, #146ca4, #46648c, #242444)',
     'position':'relative',
-    'overflowX': 'hidden',
+    'overflowX': 'auto',
     'width': '100vw',
     'height': '100vh',
 
@@ -53,4 +53,8 @@ def display_page(pathname):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, dev_tools_hot_reload = False)
+    app.run_server(
+        debug=True,
+        dev_tools_hot_reload = False,
+        # host='192.168.0.123'
+    )

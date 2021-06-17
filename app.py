@@ -25,7 +25,7 @@ from callback.select_dataset_modal_callback import \
     register_clear_popup_value, register_close_popup, register_update_visual_dropdown, register_toggle_modal_action_btn, \
     register_update_visual_type_data
 
-from callback.toast_callback import register_update_toast
+from callback.toast_callback import register_update_toast, register_update_secondary_toast
 
 from callback.visualization_callback import \
     register_update_figure, register_update_slider, register_update_playing_status, \
@@ -52,7 +52,8 @@ app = dash.Dash(
     external_stylesheets=[dbc.themes.BOOTSTRAP, 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'],
     suppress_callback_exceptions=True,
     update_title=None,
-    meta_tags=[{'name': 'viewport', 'content': 'width=device-width, initial-scale=1.0'}]
+    meta_tags=[{'name': 'viewport', 'content': 'width=device-width, initial-scale=1.0'}],
+    title='Glance'
 )
 # app.css.append_css({'external_url': 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'})
 
@@ -157,6 +158,7 @@ register_update_visual_container(app)
 
 #  toast callback
 register_update_toast(app)
+register_update_secondary_toast(app)
 
 #navbar callback
 register_toggle_mask_interface(app)

@@ -16,7 +16,6 @@ def export_mp4(fig, filename, backup):
     num_frames = len(fig['frames'])
     # num_frames = 5
 
-    # print(fig)
     for i in range(num_frames):
         if 'pointers' in fig['frames'][i]:
             export_data= [ fig['data'][1]]
@@ -31,8 +30,6 @@ def export_mp4(fig, filename, backup):
 
         fig2.layout.title.text = fig['frames'][i]['name']
         img_bytes = fig2.to_image(format="png", scale=4)
-        # print(img_bytes )
-
         images.append(img_bytes)
 
 

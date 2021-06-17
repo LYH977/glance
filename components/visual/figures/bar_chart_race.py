@@ -19,6 +19,5 @@ def create_bar_chart_race(data, parameter):
     )
 
     configure_fig(fig, BAR_CHART_RACE)
-    # print(fig)
 
     return fig

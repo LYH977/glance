@@ -40,7 +40,6 @@ def insert_marker (name, coordinate):
     split_coordinate = coordinate.split(', ')
     lat = float(split_coordinate[0][1:])
     long = float(split_coordinate[1][:-1])
-    # print('coo', coordinate)
     return {
         # 'coloraxis': "coloraxis",
         'hovertemplate': formatted_name,
@@ -101,7 +100,6 @@ def update_live_visual_style(fig, legend, mapbox, colorscale, secondary, marker)
     fig = update_legend_theme(legend, fig)
     fig = update_mapbox_type(mapbox, fig)
     if None not in colorscale['0']['value'] :
-        print('yes')
         fig = update_colorscale(colorscale, secondary, fig)
     fig = update_marker_data(marker, fig)
     return fig
@@ -222,7 +220,6 @@ def merge_frames(list1, list2):
             'name':li['name'],
             'pointers': pointers
         })
-    # print(pointers_fr)
 
 
     return {

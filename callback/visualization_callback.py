@@ -364,7 +364,6 @@ def register_update_live_data(app):
             return dash.no_update, fig2, dash.no_update, dash.no_update
 
         elif input_type == 'chosen-color-scale':
-            print('colorscale ', colorscale)
             fig2 = update_colorscale(colorscale, secondary, buffer)
             return dash.no_update, fig2, dash.no_update, dash.no_update
 
@@ -936,7 +935,7 @@ def register_update_secondary_frames(app):
     @app.callback(
         [
             Output({'type': 'secondary-data', 'index': MATCH}, 'data'),
-            # Output({'type': 'edit-toast', 'index': MATCH}, 'data'),
+            Output({'type': 'secondary-toast', 'index': MATCH}, 'data'),
             Output({'type': 'secondary-info', 'index': MATCH}, 'data'),
 
         ],
@@ -956,7 +955,7 @@ def register_update_secondary_frames(app):
         if not ctx.triggered:
             raise PreventUpdate
         input_type = get_ctx_type(ctx)
-        # print('see here: ', input_type)
+        input_index = get_ctx_index(ctx)
         if input_type == 'secondary-action-click' and click >0:
             collection.temp = collection.temp.dropna()
             collection.temp.reset_index(drop=True, inplace=True)
@@ -980,32 +979,32 @@ def register_update_secondary_frames(app):
                 secondary_data['coloraxis']['colorbar']['title']['text'] = \
                 secondary_data['coloraxis']['colorbar']['title']['text'] + '(2)'
 
-                # toast = {
-                #     'children': f"Layer 2 is successfully added.",
-                #     'is_open': True,
-                #     'icon': 'success',
-                #     'header': 'SUCCESS'
-                # }
-                return secondary_data,  {'name':dbname, 'type':  param['vtype']}
+                toast = {
+                    'children': f"Secondary layer is successfully added into Visual {input_index}.",
+                    'is_open': True,
+                    'icon': 'success',
+                    'header': 'SUCCESS'
+                }
+                return secondary_data, toast, {'name':dbname, 'type':  param['vtype']}
             except Exception as e:
                 print('edit error:', e)
-                # toast = {
-                #     'children': f"Data format is not accepted. Please try again with other format.",
-                #     'is_open': True,
-                #     'icon': 'danger',
-                #     'header': 'DANGER'
-                # }
-                return dash.no_update,  None
+                toast = {
+                    'children': f"Data format is not accepted. Please try again with other format.",
+                    'is_open': True,
+                    'icon': 'danger',
+                    'header': 'DANGER'
+                }
+                return dash.no_update, toast,  None
             # return secondary_data
 
         elif input_type == 'del-secondary-btn' and del_click>0:
-            # toast = {
-            #     'children': f"Layer 2 is successfully deleted.",
-            #     'is_open': True,
-            #     'icon': 'info',
-            #     'header': 'SUCCESS'
-            # }
-            return {},  None
+            toast = {
+                'children': f"Secondary layer is successfully deleted from Visual {input_index}.",
+                'is_open': True,
+                'icon': 'info',
+                'header': 'SUCCESS'
+            }
+            return {}, toast, None
 
         raise PreventUpdate
 
@@ -1048,18 +1047,6 @@ def register_toggle_live_mode(app):
         isOn = False if condition else dash.no_update
         isDisabled = True if condition else False
         return isOn, isDisabled
-
-# ############################################################################################################################################
-
-# def register_toggle_add_secondary_visual_btn(app):
-#     @app.callback(
-#
-#         Output({'type': 'secondary-visual-btn', 'index': MATCH}, 'disabled'),
-#         Input({'type': 'live-mode', 'index': MATCH}, 'on'),
-#         prevent_initial_call=True
-#     )
-#     def toggle_add_secondary_visual_btn(live):
-#         return True if live else False
 
 
 # ############################################################################################################################################
@@ -1147,7 +1134,6 @@ def register_download_csv(app):
         prevent_initial_call=True
     )
     def download_csv(click, db, index):
-        print('clicked')
         if click:
             return dcc.send_data_frame(collection.data[index].to_csv, f"{db}.csv")
         raise  PreventUpdate

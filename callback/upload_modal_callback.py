@@ -22,11 +22,11 @@ def parse_contents(contents, filename):
         if 'csv' in filename:
             # Assume that the user uploaded a CSV file
             collection.temp = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
-            print('csv', collection.temp)
+            # print('csv', collection.temp)
         elif 'xls' in filename:
             # Assume that the user uploaded an data file
             collection.temp = pd.read_excel(io.BytesIO(decoded))
-            print('xls', collection.temp)
+            # print('xls', collection.temp)
     except Exception as e:
         print(e)
         return html.Div([
@@ -150,7 +150,7 @@ def register_update_datetime_format(app):
                 dt_obj = datetime.strptime(str(dt), input)
                 return True
             except Exception as e:
-                print(e)
+                print('datetime error',e)
                 return False
         else:
             raise PreventUpdate
@@ -241,7 +241,7 @@ def register_handle_upload_click(app):
             }
             return toast
         except Exception as e:
-            print('error', e)
+            print('upload error', e)
             toast = {
                 'children': f'Error found in the dataset : {e}',
                 'is_open': True,

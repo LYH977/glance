@@ -11,11 +11,12 @@ layout = html.Div([
             dismissable=True,
             duration = 2500,
             icon="danger",
-            style={"position": "fixed", "top": 10, "left": '50%', "width": 350, 'marginLeft':-175,  'zIndex': 50, 'background': 'white'},
+            style={"position": "fixed", "top": 10, "left": '50%', "width": 350, 'marginLeft':-175,  'zIndex': 9999, 'background': 'white'},
         ),
     dcc.Store(id='dashboard-toast', data=None),
     dcc.Store(id='upload-toast', data=None),
     dcc.Store(id='create-new-column-toast', data=None),
-    dcc.Store(id='edit-toast', data=None),
+    dcc.Store(id='secondary-toast-head', data=None),
+    # dcc.Store(id='secondary-toast-manager', data=None),
 
 ])

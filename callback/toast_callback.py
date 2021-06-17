@@ -30,13 +30,14 @@ def register_update_toast(app):
            Input('upload-toast', 'data'),
            Input('dashboard-toast', 'data'),
            Input('create-new-column-toast', 'data'),
+           Input('secondary-toast-head', 'data'),
            # Input({'type': 'edit-toast', 'index': ALL}, 'data'),
 
        ],
         # State({'type': "last-edit-toast", 'index': ALL}, "data"),
        prevent_initial_call=True
     )
-    def update_toast(upload, dashboard,new_column):
+    def update_toast(upload, dashboard,new_column, secondary):
         ctx = dash.callback_context
         if not ctx.triggered:
             raise PreventUpdate
@@ -54,8 +55,34 @@ def register_update_toast(app):
             return new_column['children'], new_column['is_open'], new_column['icon'], new_column['header'],
                 #  [x for x in edit]
 
+        elif input_type == 'secondary-toast-head' and secondary is not None:
+            return secondary['children'], secondary['is_open'], secondary['icon'], secondary['header'],
+                #  [x for x in edit]
+
         # elif input_type == 'edit-toast' :
         #     for index, (first, second) in enumerate(zip(edit, last_edit)):
         #         if first != second:
         #             return first['children'], first['is_open'], first['icon'], first['header'], [x for x in edit]
+        raise PreventUpdate
+
+#############################################################################################################################################
+def register_update_secondary_toast(app):
+    @app.callback(
+
+        Output('secondary-toast-head', 'data'),
+       [
+
+           Input({'type': 'secondary-toast', 'index': ALL}, 'data'),
+
+       ],
+        State({'type': "last-secondary-toast-ts", 'index': ALL}, "data"),
+       prevent_initial_call=True
+    )
+    def update_toast(secondary, last_secondary):
+        for index, (first, second) in enumerate(zip(secondary, last_secondary)):
+            if first != second:
+                data={}
+                for x,y in first.items():
+                    data[x] = y
+                return data
         raise PreventUpdate

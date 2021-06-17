@@ -16,5 +16,4 @@ def render_container(create_clicks, param, tformat, dbname, now, new_col):
     if(param['vtype'] != CAROUSEL):
         return create_visualization(screen_height, screen_width, create_clicks,  param, maxValue, df_frame, tformat, dbname, now, new_col)
     else:
-        # print(collection.temp)
         return create_carousel(screen_height, screen_width, create_clicks,  param, maxValue, df_frame, tformat, dbname)

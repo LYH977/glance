@@ -13,7 +13,7 @@ def name_section_markup(create_clicks, name1, type1):
         dcc.Input(
             id={'type': 'visual-title', 'index': create_clicks},
             type="text",
-            value=f'Visualization {create_clicks}',
+            value=f'{type1} {create_clicks}',
             maxLength=18,
             autoFocus=False,
             autoComplete='off',

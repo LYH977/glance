@@ -60,8 +60,6 @@ def register_update_visual_container(app):
             collection.live_processing[create_clicks] = False
             now = datetime.now().timestamp()
             try:
-                # print('param', param)
-
                 new_child = container.render_container(create_clicks, param, tformat, dbname, now, collection.new_col)
                 if param['vtype'] == CAROUSEL:  # carousel
                     temp = []
@@ -110,7 +108,7 @@ def register_update_visual_container(app):
                     remove_from_collection(delete_index)
                     break
             toast = {
-                'children': f"Visualization {delete_index} is successfully deleted.",
+                'children': f"Visual {delete_index} is successfully deleted.",
                 'is_open': True,
                 'icon': 'info',
                 'header': 'SUCCESS'
@@ -151,12 +149,8 @@ def register_update_visual_container(app):
             collection.live_processing[edit_index] = False
             now = datetime.now().timestamp()
             backup_frame = collection.data[edit_index][FRAME].map(lambda x: x)
-            # print(backup_frame)
-            # print(type(backup_frame))
             collection.data[edit_index][FRAME] = collection.data[edit_index][TIME].map(lambda x: formatted_time_value(x, chosen_tformat))
 
-            # print('chosen_tformat', chosen_tformat)
-            # print('param_to_edit', param_to_edit)
 
             try:
                 new_child = container.render_container(edit_index, param_to_edit, chosen_tformat, edit_dbname, now,  collection.new_col)
@@ -171,22 +165,18 @@ def register_update_visual_container(app):
                                                         param_to_edit['vtype'], param_to_edit['parameter'], now)
                 div_children[edit_location] = new_child
                 toast = {
-                    'children': f"Visualization {edit_index} is successfully edited.",
+                    'children': f"Visual {edit_index} is successfully edited.",
                     'is_open': True,
                     'icon': 'info',
                     'header': 'INFO'
                 }
                 collection.new_col = {'expression': [], 'numeric_col': []}
-                # print(collection.data[edit_index][FRAME])
                 return div_children, toast
             except Exception as e:
                 print('edit visual error: ', e)
                 # remove_from_collection(create_clicks)
                 collection.new_col = {'expression': [], 'numeric_col': []}
-                # print(backup_frame)
-
                 collection.data[edit_index][FRAME] = backup_frame
-                # print(collection.data[edit_index][FRAME])
                 toast = {
                     'children': f"Data format is not accepted. Please try again with other format.",
                     'is_open': True,

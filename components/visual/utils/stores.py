@@ -43,9 +43,9 @@ def stores_markup(create_clicks, param, figure, tformat,  initial_frame, dbname,
         dcc.Store(id={'type': 'secondary-mode', 'index': create_clicks}, data = False),
         dcc.Store(id={'type': 'backup-celery', 'index': create_clicks}, data = {}),
         dcc.Store(id={'type': 'backup-frames', 'index': create_clicks}, data ={}),
-        dcc.Store(id={'type': 'last-secondary-click-ts', 'index': create_clicks}, data=None),
-        dcc.Store(id={'type': 'last-edit-click-ts', 'index': create_clicks}, data=None),
-        # dcc.Store(id={'type': 'edit-toast', 'index': create_clicks}, data=None),
+        dcc.Store(id={'type': 'last-secondary-visual-click-ts', 'index': create_clicks}, data=None),
+        dcc.Store(id={'type': 'last-secondary-toast-ts', 'index': create_clicks}, data=None),
+        dcc.Store(id={'type': 'secondary-toast', 'index': create_clicks}, data=None),
         # dcc.Store(id={'type': 'last-edit-toast', 'index': create_clicks}, data=None),
         dcc.Store(id={'type': 'dl-trigger', 'index': create_clicks}, data=None)
 

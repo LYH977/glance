@@ -148,9 +148,11 @@ def ca_visual_box_markup(create_clicks, param, tformat, df_frame, dbname, maxVal
         dcc.Store(id={'type': 'ca-at-max', 'index': create_clicks}, data=False),
         dcc.Store(id={'type': 'ca-current-frame', 'index': create_clicks}, data=df_frame[0]),
         dcc.Store(id={'type': 'db-name', 'index': create_clicks}, data=dbname),
-        dcc.Store(id={'type': 'last-edit-click-ts', 'index': create_clicks}, data=None),
+        # dcc.Store(id={'type': 'last-edit-click-ts', 'index': create_clicks}, data=None),
         dcc.Store(id={'type': 'dataset-column-name', 'index': create_clicks}, data=columns),
-        dcc.Store(id={'type': 'last-secondary-click-ts', 'index': create_clicks}, data=None),
+        dcc.Store(id={'type': 'last-secondary-visual-click-ts', 'index': create_clicks}, data=None),
+        dcc.Store(id={'type': 'last-secondary-toast-ts', 'index': create_clicks}, data=None),
+        dcc.Store(id={'type': 'secondary-toast', 'index': create_clicks}, data=None),
         dcc.Interval(
             id={'type': 'ca-export-interval', 'index': create_clicks},
             interval=1000,
