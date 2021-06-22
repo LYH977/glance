@@ -32,6 +32,8 @@
     animation-duration: 1s;
     box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
 
+    width:45vw;
+        height : 635px;
 
   /*
     box-shadow:
@@ -41,6 +43,7 @@
   ,0 22.3px 17.9px rgba(0, 0, 0, 0.072)
   ,0 41.8px 33.4px rgba(0, 0, 0, 0.086)
 ;
+height : 88vh;
     */
 }
 
@@ -110,6 +113,7 @@
 
 .notif-badge {
     margin: 0 10px 0 0;
+    display: inline-block;
 
 }
 .notif-body-wrapper{
@@ -296,3 +300,27 @@
 
 }
 
+/**-------------------------------------- 1000px -------------------------------------- **/
+@media (max-width: 1000px) {
+
+    .visualization-container {
+        width:90%;
+        /*
+                height : 88vh;
+
+        */
+    }
+
+
+}
+
+/**-------------------------------------- 600px -------------------------------------- **/
+@media (max-width: 600px) {
+
+    .visualization-container {
+        height : 635px;
+        width:550px;
+    }
+
+
+}

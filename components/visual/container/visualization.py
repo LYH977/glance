@@ -18,13 +18,18 @@ px.set_mapbox_access_token(access_token)
 
 def create_visualization(screen_height, screen_width, create_clicks,  param, maxValue, df_frame, tformat,dbname, now, new_col):
     figure = create_figure(collection.data[create_clicks], param['parameter'], param['vtype'])
+    # print('screen_height',screen_height)
+    # print('screen_width',screen_width)
+
     return html.Div(
 
         id={'type': 'visualization-container', 'index': create_clicks},
         className='visualization-container',
         style={
-                'height': screen_height * 0.72,
-                'width': screen_width / 2.2,
+                # 'height': screen_height * 0.72,
+                # 'width': screen_width / 2.2,
+                # 'height': '80vh',
+                # 'width': '50vw',
             },
         children=html.Div([
             visual_mask_markup(create_clicks),

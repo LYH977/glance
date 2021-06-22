@@ -20,8 +20,7 @@ def create_carousel(screen_height, screen_width, create_clicks, param, maxValue,
         className='visualization-container ',
         id={'type': 'visualization-container', 'index': create_clicks},
         style={
-            'height': screen_height* 0.72,
-           'width': screen_width/2.2,
+
                # 'width': '500px',
                },
         children =  html.Div([
@@ -89,7 +88,7 @@ def ca_name_section_markup(create_clicks, name1, type1):
         dcc.Input(
             id={'type': 'visual-title', 'index': create_clicks},
             type="text",
-            value=f'Visualization {create_clicks}',
+            value=f'Carousel {create_clicks}',
             maxLength=18,
             autoFocus=False,
             autoComplete='off',
@@ -148,7 +147,7 @@ def ca_visual_box_markup(create_clicks, param, tformat, df_frame, dbname, maxVal
         dcc.Store(id={'type': 'ca-at-max', 'index': create_clicks}, data=False),
         dcc.Store(id={'type': 'ca-current-frame', 'index': create_clicks}, data=df_frame[0]),
         dcc.Store(id={'type': 'db-name', 'index': create_clicks}, data=dbname),
-        # dcc.Store(id={'type': 'last-edit-click-ts', 'index': create_clicks}, data=None),
+        dcc.Store(id={'type': 'last-edit-click-ts', 'index': create_clicks}, data=None),
         dcc.Store(id={'type': 'dataset-column-name', 'index': create_clicks}, data=columns),
         dcc.Store(id={'type': 'last-secondary-visual-click-ts', 'index': create_clicks}, data=None),
         dcc.Store(id={'type': 'last-secondary-toast-ts', 'index': create_clicks}, data=None),
@@ -161,7 +160,7 @@ def ca_visual_box_markup(create_clicks, param, tformat, df_frame, dbname, maxVal
         ),
         dcc.Interval(
             id={'type': 'ca-interval', 'index': create_clicks},
-            interval=500,
+            interval=1000,
             n_intervals=0,
             max_intervals=maxValue,
             disabled=True

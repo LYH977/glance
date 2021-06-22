@@ -22,14 +22,10 @@ app.layout = html.Div([
     upload_modal.layout,
     toast.layout
 
-],style={
-     # 'background-image': 'linear-gradient(to bottom right, #189de4, #52b7e9, #146ca4, #46648c, #242444)',
-    'position':'relative',
-    'overflowX': 'auto',
-    'width': '100vw',
-    'height': '100vh',
+],
+    className= 'index-layout'
 
-})
+)
 
 
 @app.callback(Output('page-content', 'children'),
@@ -55,6 +51,6 @@ def display_page(pathname):
 if __name__ == '__main__':
     app.run_server(
         debug=True,
-        dev_tools_hot_reload = False,
+        dev_tools_hot_reload = True,
         # host='192.168.0.123'
     )

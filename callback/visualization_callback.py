@@ -375,12 +375,10 @@ def register_update_live_data(app):
             if len(secondary) != 0:
                 fig2 = buffer
 
-                # if param['vtype'] == SCATTER_MAP:
-                #     for fr in secondary['frames']:
-                #         fr['data'][0]['marker']['allowoverlap'] = True
 
                 fig2['data'][2] = secondary['frames'][0]['data'][0]
                 fig2['layout']['coloraxis2'] = secondary['coloraxis']
+                fig2 = update_legend_theme(legend, fig2)
                 fig2['layout']['coloraxis']['colorbar']['y'] = 0.496
                 fig2['layout']['coloraxis']['colorbar']['len'] = 0.505
                 fig2['layout']['coloraxis']['colorbar']['title']['text'] = fig2['layout']['coloraxis']['colorbar']['title']['text'] + '(1)'

@@ -76,7 +76,7 @@ def register_update_visual_container(app):
                     # task.process_dataset(create_clicks, collection.temp.to_dict(), param['vtype'], param['parameter'], now)
                 div_children.append(new_child)
                 toast = {
-                    'children': f"Visualization {create_clicks} is successfully created.",
+                    'children': f"Visual {create_clicks} is successfully created.",
                     'is_open': True,
                     'icon': 'success',
                     'header': 'SUCCESS'

@@ -75,7 +75,7 @@ def register_toggle_mask_interface(app):
                 'transitionDuration': '0.1s',
                 'transitionDelay': '0.7s',
                           }
-            container_style = {'height':resolution['height']* 0.72, 'width':resolution['width']/2.2}
+            container_style = {}
             visual_style = {'opacity': 1.0}
 
         return [mask_style for i in range(0, total)],\

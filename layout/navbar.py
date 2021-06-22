@@ -54,8 +54,10 @@ navbar = dbc.NavbarSimple(
     # brand_href="/pages/home",
     color="dark",
     dark=True,
-    sticky= 'top',
+    fixed= 'top',
     className= 'transparent-navbar',
+    expand='xs',
+    # fluid= True,
     style= {
         'zIndex':45,
         # 'transition': 'background .1s'

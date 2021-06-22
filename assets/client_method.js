@@ -231,7 +231,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
             else if(input_type == 'secondary-data'){
                 if (Object.keys(secondary).length !== 0){
                     fig2 = JSON.parse(JSON.stringify(new_fig))
-                    fig2['data'][2] = secondary['frames'][0]['data'][0]
+//                    fig2['data'][2] = secondary['frames'][0]['data'][0]
                     fig2['layout']['coloraxis2'] = secondary['coloraxis']
                     fig2['layout']['coloraxis']['colorbar']['y'] = 0.496
                     fig2['layout']['coloraxis']['colorbar']['len'] = 0.505
