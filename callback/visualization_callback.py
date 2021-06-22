@@ -284,12 +284,16 @@ def register_update_live_mode(app):
         [
             Output({'type': 'live-interval', 'index': MATCH}, 'disabled'),
             Output({'type': 'play-btn', 'index': MATCH}, 'disabled'),
+            Output({'type': 'color-scale-dropdown', 'index': MATCH}, 'disabled'),
+            Output({'type': 'mapbox-type', 'index': MATCH}, 'disabled'),
+
         ],
         [Input({'type': 'live-mode', 'index': MATCH}, 'on')],
         prevent_initial_call=True
     )
     def update_live_mode(live):
-        return not live, live
+        return not live, live, live, live
+
 
 
 #############################################################################################################################################
@@ -707,6 +711,7 @@ def register_reset_export_interval(app):
     @app.callback(
         Output({'type': 'export-interval', 'index': MATCH}, 'n_intervals'),
         [Input({'type': 'generate-btn', 'index': MATCH}, 'n_clicks')],
+
         prevent_initial_call=True
     )
     def reset_export_interval(click):
@@ -723,11 +728,12 @@ def register_update_generate_btn_name(app):
         [
             Input({'type': 'export-interval', 'index': MATCH}, 'n_intervals'),
             Input({'type': 'generate-btn', 'index': MATCH}, 'disabled'),
+            Input({'type': 'regenerate-btn', 'index': MATCH}, 'n_clicks'),
         ],
         State({'type': 'back-buffer', 'index': MATCH}, 'data'),
         prevent_initial_call=True
     )
-    def update_generate_btn_name(interval, disabled, buffer):
+    def update_generate_btn_name(interval, disabled, enable, buffer):
         ctx = dash.callback_context
         if not ctx.triggered:
             raise PreventUpdate
@@ -748,6 +754,8 @@ def register_update_generate_btn_name(app):
                 return 'Generating...', False
             else:
                 return 'Generate MP4', dash.no_update
+        elif input_type == 'regenerate-btn' and enable:
+            return  'Generate MP4', True
         raise  PreventUpdate
 
 

@@ -1,6 +1,7 @@
 import dash
 from dash.dependencies import Input, Output, State, MATCH
 from dash.exceptions import PreventUpdate
+import dash_core_components as dcc
 
 from components.carousel import create_ca_img
 from utils import collection
@@ -341,10 +342,12 @@ def register_ca_update_generate_btn_name(app):
         [
             Input({'type': 'ca-export-interval', 'index': MATCH}, 'n_intervals'),
             Input({'type': 'ca-generate-btn', 'index': MATCH}, 'disabled'),
+            Input({'type': 'ca-regenerate-btn', 'index': MATCH}, 'n_clicks'),
+
         ],
         prevent_initial_call=True
     )
-    def update_generate_btn_name(interval, disabled):
+    def update_generate_btn_name(interval, disabled, enable):
         ctx = dash.callback_context
         if not ctx.triggered:
             raise PreventUpdate
@@ -367,6 +370,8 @@ def register_ca_update_generate_btn_name(app):
                 return 'Generating...', False
             else:
                 return 'Generate MP4', dash.no_update
+        elif input_type == 'ca-regenerate-btn' and enable:
+            return  'Generate MP4', True
         raise  PreventUpdate
 
 
@@ -380,3 +385,21 @@ def register_ca_toggle_enable_btn(app):
     )
     def toggle_enable_btn(data):
         return {'display':'block'}  if data is not None else  {'display':'none'}
+
+# ############################################################################################################################################
+
+def register_ca_download_csv(app):
+    @app.callback(
+
+        Output({'type': 'ca-download-csv', 'index': MATCH}, 'data'),
+        Input({'type': 'ca-dl-csv-btn', 'index': MATCH}, 'n_clicks'),
+        [
+            State({'type': 'db-name', 'index': MATCH}, 'data'),
+            State({'type': 'my-index', 'index': MATCH}, 'data'),
+        ],
+        prevent_initial_call=True
+    )
+    def ca_download_csv(click, db, index):
+        if click:
+            return dcc.send_data_frame(collection.data[index].to_csv, f"{db}.csv")
+        raise  PreventUpdate

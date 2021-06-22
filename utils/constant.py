@@ -163,7 +163,7 @@ DENSITY_PARAM = {
 }
 
 CHOROPLETH_PARAM = {
-    CHOROPLETH_CONSTANT[LOCATIONS] : { 'label':'Locations*', 'value': None , 'multi': False, 'hint':['loc', 'location']},
+    CHOROPLETH_CONSTANT[LOCATIONS] : { 'label':'Locations*', 'value': None , 'multi': False, 'hint':['loc', 'location', 'iso']},
     CHOROPLETH_CONSTANT[COLOR] : { 'label':'Color*', 'value': None , 'multi': False, 'hint':['col', 'color']},
     CHOROPLETH_CONSTANT[NAME] : {'label': 'Name*', 'value': None, 'multi': False, 'hint':['name']},
     CHOROPLETH_CONSTANT[MESSAGE] : {'label': 'Additional Message', 'value': [], 'multi': True, 'hint':['msg', 'message', 'note', 'remark']},
@@ -171,7 +171,7 @@ CHOROPLETH_PARAM = {
 }
 
 CAROUSEL_PARAM = {
-    CAROUSEL_CONSTANT[ITEM] : { 'label':'Item*', 'value': None , 'multi': False, 'hint':['item', 'link']},
+    CAROUSEL_CONSTANT[ITEM] : { 'label':'Link*', 'value': None , 'multi': False, 'hint':['link', 'url']},
 
 }
 

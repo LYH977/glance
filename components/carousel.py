@@ -61,6 +61,7 @@ def ca_popover_children_markup(create_clicks):
                     ), width='auto'),
 
                     dbc.Col(html.Div([
+                        ca_download_csv_btn_markup(create_clicks),
                         ca_generate_btn_markup(create_clicks),
                         ca_download_btn_markup(create_clicks),
                         ca_enable_generate_markup(create_clicks)
@@ -119,6 +120,19 @@ def ca_download_btn_markup(create_clicks):
         id={'type': 'ca-download-btn-wrapper', 'index': create_clicks},
     )
 
+def ca_download_csv_btn_markup(create_clicks):
+    return html.Div([
+            dbc.Button(
+                'Download CSV',
+                id={'type': 'ca-dl-csv-btn', 'index': create_clicks},
+                size='sm',
+                className="shadow-none",
+                color="secondary",
+                style={'marginBottom': '10px'},
+
+            ),
+            dcc.Download({'type': 'ca-download-csv', 'index': create_clicks})
+        ])
 def ca_enable_generate_markup(create_clicks):
     return dbc.Button(
             'Generate Again',

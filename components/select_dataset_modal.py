@@ -1,6 +1,7 @@
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
+
 from dash.dependencies import Input, Output, State
 import dash_table
 import dash
@@ -75,10 +76,11 @@ def dataset_portal_markup(filename, is_secondary):
 
 def snapshot_markup (filename, is_secondary):
     select_opt = SECONDARY_FIGURE_OPTION if is_secondary else FIGURE_OPTION
+    suggestions = suggest_visual(is_secondary)
+
     return html.Div([
         html.Div([
-            html.H6(f'Filename: {filename}'),
-            html.H6('Below are the first 5 rows.'),
+            # html.P(f'First 5 rows of "{filename}"'),
             dash_table.DataTable(
                 id = 'portal-datatable',
                 data = collection.temp.head(5).to_dict('records'),
@@ -143,6 +145,7 @@ def snapshot_markup (filename, is_secondary):
             ]),
         ]
         , style={'overflow':'auto'}),
+        suggestions,
 
         html.Br(),
         dbc.FormGroup(
@@ -307,7 +310,6 @@ def expression_box_markup(id):
                         id=f'operand-container-{id}',
                         children = operand_container_markup('dropdown', id)
                     ),
-
                 ],
                 className='operand',
             ),
@@ -339,3 +341,32 @@ def secondary_action_btn_markup(create_click):
         n_clicks= 0,
         disabled= True
     )
+
+def suggest_visual(is_secondary):
+    visuals = FIGURE_OPTION if not is_secondary else SECONDARY_FIGURE_OPTION
+    suggestions = []
+    columns = collection.temp.columns
+
+    for vis in visuals:     #density, scatter, choropleth..
+        type = FIGURE_PARAM[vis]            # SCATTER_MAP_PARAM
+        total_param = len(type)
+        no_matched = 0
+        for param in type.values():     #{ 'label':'Latitude*', 'value': None , 'multi': False, 'hint':['lat', 'latitude'] },
+
+            for col in columns:
+               temp = col
+               if any(word in temp.lower() for word in param['hint']):
+                   no_matched += 1
+                   break
+        mark =  float("{:.2f}".format(no_matched /total_param ))
+        if mark > 0:
+            suggestions.append(vis)
+    if len(suggestions) == 0:
+        return html.P('')
+    else:
+        suggestion = ', '.join([str(elem) for elem in suggestions])
+        return dcc.Markdown(f'''
+Suggestion: *__{suggestion}__*
+''')
+
+

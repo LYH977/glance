@@ -2,5 +2,14 @@
     position:relative;
     width: 100vw;
     height: 100vh;
-    overflow-x:auto;
+    overflow-x:hidden;
+}
+
+/**-------------------------------------- 600px -------------------------------------- **/
+@media (max-width: 600px) {
+    .index-layout {
+        overflow-x:auto;
+    }
+
+
 }

@@ -151,7 +151,7 @@ def download_csv_btn_markup(create_clicks):
             dcc.Download({'type': 'download-csv', 'index': create_clicks})
         ])
 
-        # id={'type': 'download-btn-wrapper', 'index': create_clicks},
+
 
 def mapbox_type_markup(create_clicks, hidden):
     return html.Div([
