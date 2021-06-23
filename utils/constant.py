@@ -260,8 +260,16 @@ MAPBOX_TYPES = [ 'streets',  'light', 'dark', 'satellite-streets']
 
 SEQUENTIAL_COLOR = [
 
-   'Pinkyl',  'Purples',  'Plotly3', 'PuBu','PuBuGn',  'PuRd','Purp', 'Purpor',
+   # 'Pinkyl',  'Purples',  'Plotly3', 'PuBu','PuBuGn',  'PuRd','Purp', 'Purpor',
 
+    'Agsunset',
+    'Blues',
+    'Hot',
+    'Inferno',
+    'Jet',
+    'Oranges',
+    'Pinkyl', 'Plotly3',
+    'Rainbow',
 
 ]
 

@@ -12,7 +12,7 @@ def create_choropleth(data,parameter):
         hover_name = parameter[CHOROPLETH_CONSTANT[NAME]],
         animation_frame = FRAME,
         hover_data = parameter[CHOROPLETH_CONSTANT[MESSAGE]],
-        color_continuous_scale=px.colors.sequential.Plasma,
+        color_continuous_scale=px.colors.sequential.Pinkyl,
     )
     configure_fig(fig, CHOROPLETH)
     return fig

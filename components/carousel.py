@@ -228,7 +228,7 @@ def ca_visual_box_markup(create_clicks, param, tformat, df_frame, dbname, maxVal
         ),
         html.Div([
             dbc.Button(
-                'play',
+                'Play',
                 id={'type': 'ca-play-btn', 'index': create_clicks},
                 color="light",
                 size='sm',

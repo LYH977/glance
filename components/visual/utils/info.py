@@ -3,10 +3,10 @@ import dash_html_components as html
 import dash_daq as daq
 import dash_bootstrap_components as dbc
 
-from utils.constant import SEQUENTIAL_COLOR, SCATTER_MAP, DENSITY
+from utils.constant import SEQUENTIAL_COLOR, SCATTER_MAP, DENSITY, CHOROPLETH
 
 
-def info_table_markup(create_clicks, name1, type1,hidden):
+def info_table_markup(create_clicks, name1, type1,hiddenMapbox, hiddenColorScale):
     # hasMapbox = [SCATTER_MAP, DENSITY]
     # hidden = not type1 in hasMapbox
     formatted_name1 = name1 if len(name1) <16 else name1[0:15] + '...'
@@ -15,7 +15,7 @@ def info_table_markup(create_clicks, name1, type1,hidden):
             html.Th("No"),
             html.Th("Dataset"),
             html.Th("Type"),
-            html.Th("Colorscale",style={'display': 'none'if hidden else 'block'  }),
+            html.Th("Colorscale",style={'display': 'none'if hiddenColorScale else 'block'  }),
             html.Th("Action"),
         ]))
     ]
@@ -31,7 +31,7 @@ def info_table_markup(create_clicks, name1, type1,hidden):
                     options=[{"label": c, "value": c} for c in SEQUENTIAL_COLOR],
                     value='Pinkyl' ,
                     bs_size='sm'
-                ),style={'display': 'none' if hidden else 'block' }
+                ),style={'display': 'none' if hiddenColorScale else 'block' }
             ),
             html.Td(
                 html.Span(
@@ -52,7 +52,7 @@ def info_table_markup(create_clicks, name1, type1,hidden):
                     options=[{"label": c, "value": c} for c in SEQUENTIAL_COLOR],
                     value= 'Plotly3', # 2nd Plotly3
                     bs_size= 'sm'
-                ),style={'display': 'none'if hidden else 'block'  }
+                ),style={'display': 'none'if hiddenMapbox else 'block'  }
             ),
             html.Td(
                 html.Span(
@@ -78,7 +78,10 @@ def info_table_markup(create_clicks, name1, type1,hidden):
 
 def info_markup(create_clicks, name1, type1 ):
     hasMapbox = [SCATTER_MAP, DENSITY]
-    hidden = not type1 in hasMapbox
+    hasColorScale = [SCATTER_MAP, DENSITY, CHOROPLETH]
+    hiddenMapbox = not type1 in hasMapbox
+    hiddenColorScale = not type1 in hasColorScale
+
     return html.Div(
         [
             dbc.Badge(
@@ -92,12 +95,12 @@ def info_markup(create_clicks, name1, type1 ):
             dbc.Popover(
 
                 [
-                    info_table_markup(create_clicks, name1, type1, hidden),
+                    info_table_markup(create_clicks, name1, type1, hiddenMapbox, hiddenColorScale),
                     html.Span(
                         html.I(className="fa fa-plus-square fa-lg icon-btn icon-black"),
                         id={'type': 'secondary-visual-btn', 'index': create_clicks},
                         n_clicks=0,
-                        hidden= hidden
+                        hidden= hiddenMapbox
                     )
                 ],
                 id={'type': 'legacy-popover', 'index': create_clicks},
