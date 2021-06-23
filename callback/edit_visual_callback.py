@@ -7,7 +7,7 @@ import dash
 import numexpr as ne
 import numpy as np
 from dash.exceptions import PreventUpdate
-
+import copy
 from components.carousel import create_ca_img
 from components.edit_visual_modal import edit_visual_portal_markup
 from database.dbConfig import client
@@ -70,6 +70,8 @@ def register_toggle_open_edit_modal(app):
                 if first != second:
                     diff_index = get_ctx_index(ctx)
                     header = f'Edit Visual {diff_index} ({old_param[index]["vtype"]})'
+                    print('index', index)
+                    print('columns', columns)
                     return  True, \
                             header,\
                             edit_visual_portal_markup(old_param[index], columns[index], tformat[index]), \

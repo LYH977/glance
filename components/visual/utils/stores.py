@@ -11,9 +11,9 @@ from utils.method import get_last_timestamp, reset_marker_trace, store_template
 
 
 def stores_markup(create_clicks, param, figure, tformat,  initial_frame, dbname, now,  new_col):
-    columns = collection.temp.columns.tolist()
+    columns = collection.data[create_clicks].columns.tolist()
     columns.remove('frame')
-    last_nano = get_last_timestamp(collection.temp[TIME])
+    last_nano = get_last_timestamp(collection.data[create_clicks][TIME])
     total_rows = len(collection.data[create_clicks].index)
     color = px.colors.convert_colors_to_same_type(px.colors.sequential.Pinkyl)
     return html.Div([

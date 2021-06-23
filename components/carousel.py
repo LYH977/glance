@@ -3,7 +3,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 import dash_daq as daq
-
+from urllib.request import urlopen
 from components.visual.container.visual_mask import visual_mask_markup
 from components.visual.utils.info import info_markup
 from utils import collection
@@ -30,9 +30,15 @@ def create_carousel(screen_height, screen_width, create_clicks, param, maxValue,
     )
 
 
+def is_url_image(image_url):
+   image_formats_head = 'http'
+   image_formats = ['.png', '.jpg', '.jpeg','.PNG', '.JPG', '.JPEG']
+   if image_url[0:4] != image_formats_head or not any(substring in image_url for substring in image_formats):
+       raise Exception("link is not image url")
 
 
 def create_ca_img(src, date='None'):
+    is_url_image(src)
     return [
         html.Img(
             src=src,
@@ -145,9 +151,9 @@ def ca_enable_generate_markup(create_clicks):
 
 
 def ca_visual_box_markup(create_clicks, param, tformat, df_frame, dbname, maxValue):
-    columns = collection.temp.columns.tolist()
+    columns = collection.data[create_clicks].columns.tolist()
     columns.remove('frame')
-    last_nano = get_last_timestamp(collection.temp[TIME])
+    last_nano = get_last_timestamp(collection.data[create_clicks][TIME])
     return html.Div(
         className='visual-box',
         children =[
@@ -208,8 +214,8 @@ def ca_visual_box_markup(create_clicks, param, tformat, df_frame, dbname, maxVal
         html.Div(
             html.Div(
                 create_ca_img(
-                    collection.temp.loc[0, param['parameter'][CAROUSEL_CONSTANT[ITEM]]],
-                    collection.temp.loc[0, FRAME]
+                    collection.data[create_clicks].loc[0, param['parameter'][CAROUSEL_CONSTANT[ITEM]]],
+                    collection.data[create_clicks].loc[0, FRAME]
                 ),
                 id={'type': 'fade1', 'index': create_clicks},
                 className='ca-img-container'

@@ -941,7 +941,7 @@ def register_update_secondary_frames(app):
     @app.callback(
         [
             Output({'type': 'secondary-data', 'index': MATCH}, 'data'),
-            Output({'type': 'secondary-toast', 'index': MATCH}, 'data'),
+            # Output({'type': 'secondary-toast', 'index': MATCH}, 'data'),
             Output({'type': 'secondary-info', 'index': MATCH}, 'data'),
 
         ],
@@ -963,6 +963,8 @@ def register_update_secondary_frames(app):
         input_type = get_ctx_type(ctx)
         input_index = get_ctx_index(ctx)
         if input_type == 'secondary-action-click' and click >0:
+            print('add 2nd btn: ', input_index)
+
             collection.temp = collection.temp.dropna()
             collection.temp.reset_index(drop=True, inplace=True)
             collection.temp[FRAME] = collection.temp[TIME].map(lambda x: formatted_time_value(x, tformat))
@@ -991,7 +993,7 @@ def register_update_secondary_frames(app):
                     'icon': 'success',
                     'header': 'SUCCESS'
                 }
-                return secondary_data, toast, {'name':dbname, 'type':  param['vtype']}
+                return secondary_data,  {'name':dbname, 'type':  param['vtype']}
             except Exception as e:
                 print('edit error:', e)
                 toast = {
@@ -1000,17 +1002,18 @@ def register_update_secondary_frames(app):
                     'icon': 'danger',
                     'header': 'DANGER'
                 }
-                return dash.no_update, toast,  None
+                return dash.no_update,   None
             # return secondary_data
 
         elif input_type == 'del-secondary-btn' and del_click>0:
+            print('delete 2nd btn: ', input_index)
             toast = {
                 'children': f"Secondary layer is successfully deleted from Visual {input_index}.",
                 'is_open': True,
                 'icon': 'info',
                 'header': 'SUCCESS'
             }
-            return {}, toast, None
+            return {},  None
 
         raise PreventUpdate
 

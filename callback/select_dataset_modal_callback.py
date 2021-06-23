@@ -485,7 +485,7 @@ def register_update_new_column(app):
                     'header': 'DANGER'
                 }
                 return dash.no_update, dash.no_update, toast
-            if eq == '(Equation will appear here)':
+            if eq == '(Equation)':
                 toast = {
                     'children': 'No operator/operand selected',
                     'is_open': True,
@@ -494,8 +494,10 @@ def register_update_new_column(app):
                 }
                 return dash.no_update, dash.no_update, toast
             try:
+
                 copydf = collection.temp.copy(deep=True)
                 if type['0'] == 'dropdown' and od1 is not None:
+                    # print()
                     copydf[od1] = pd.to_numeric(copydf[od1])
                     append_numeric_col_list(collection.new_col, od1)
 
@@ -506,8 +508,11 @@ def register_update_new_column(app):
                 if type['2'] == 'dropdown' and od3 is not None:
                     copydf[od3] = pd.to_numeric(copydf[od3])
                     append_numeric_col_list(collection.new_col, od3)
-
+                print(copydf.dtypes)
+                print(eq)
                 new_col = copydf.eval(eq)
+                print(2)
+
                 collection.temp[name] = new_col
                 collection.new_col['expression'].append({
                     'name': name,

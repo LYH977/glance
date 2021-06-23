@@ -196,19 +196,6 @@ def parameter_option(name, id, type, parameter, multi = False):
         )
     else:
         columns = filter_column(type[id]['is_numeric'], columns)
-        # if type[id]['is_numeric']:
-        #     filtered_columns = []
-        #     for col in columns:
-        #         if collection.temp.dtypes[col] != 'object':
-        #             filtered_columns.append(col)
-        #         else:
-        #                 try:
-        #                     x = float(collection.temp[col].iloc[0])
-        #                     y = float(collection.temp[col].iloc[-1])
-        #                     filtered_columns.append(col)
-        #                 except ValueError:
-        #                     print('non-numeric column')
-        #     columns = filtered_columns
         value = None
         for col in columns:
             temp = col
@@ -397,6 +384,6 @@ def filter_column(is_numeric, columns):
                     y = float(collection.temp[col].iloc[-1])
                     filtered_columns.append(col)
                 except ValueError:
-                    print('non-numeric column')
+                    pass
         return filtered_columns
     return columns

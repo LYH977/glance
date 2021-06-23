@@ -158,7 +158,9 @@ def register_update_visual_container(app):
                     temp = []
                     for row in collection.data[edit_index].index:
                         temp.append(create_ca_img(
-                            collection.data[edit_index].loc[row, param_to_edit['parameter'][CAROUSEL_CONSTANT[ITEM]]]))
+                            collection.data[edit_index].loc[row, param_to_edit['parameter'][CAROUSEL_CONSTANT[ITEM]]],
+                            collection.data[create_clicks].loc[row, FRAME]
+                        ))
                     collection.img_container[edit_index] = temp
                 else:  # other than carousel
                     result = task.process_dataset.delay(edit_index, collection.data[edit_index].to_dict(),

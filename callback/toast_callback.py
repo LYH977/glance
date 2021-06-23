@@ -69,7 +69,10 @@ def register_update_toast(app):
 def register_update_secondary_toast(app):
     @app.callback(
 
-        Output('secondary-toast-head', 'data'),
+        [
+            Output('secondary-toast-head', 'data'),
+            Output({'type': "last-secondary-toast-ts", 'index': ALL}, "data"),
+         ],
        [
 
            Input({'type': 'secondary-toast', 'index': ALL}, 'data'),
@@ -84,5 +87,5 @@ def register_update_secondary_toast(app):
                 data={}
                 for x,y in first.items():
                     data[x] = y
-                return data
+                return data, last_secondary
         raise PreventUpdate
