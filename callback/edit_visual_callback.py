@@ -80,7 +80,6 @@ def register_toggle_open_edit_modal(app):
             return False, dash.no_update, None, edit_ts, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
         elif input_type == 'confirm-edit-visual' and confirm >0:
             return False, dash.no_update, None, edit_ts, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
-        print('raise PreventUpdate')
         raise PreventUpdate
 
 

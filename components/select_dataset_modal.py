@@ -80,16 +80,16 @@ def snapshot_markup (filename, is_secondary):
 
     return html.Div([
         html.Div([
-            # html.P(f'First 5 rows of "{filename}"'),
+            html.P(f'Below are random 5 rows:-'),
             dash_table.DataTable(
                 id = 'portal-datatable',
-                data = collection.temp.head(5).to_dict('records'),
+                data = collection.temp.sample(n = 5).to_dict('records'),
                 columns = [{'name': i, 'id': i} for i in collection.temp.columns],
                 style_cell={
                     'textAlign': 'center',
                     'overflow': 'hidden',
                     'textOverflow': 'ellipsis',
-                    'maxWidth': 0
+                    # 'maxWidth': 0
                 },
                 style_data_conditional=[
                     {
@@ -114,10 +114,10 @@ def snapshot_markup (filename, is_secondary):
                                     type="text",
                                     maxLength=10,
                                     size='13',
-                                    placeholder='Column Name'
+                                    placeholder='Name'
                                 ),
                                 html.P(' =', className='equation-window'),
-                                html.P('(Equation will appear here)', className='equation-window',
+                                html.P('(Equation)', className='equation-window',
                                          id='equation-window'),
 
                             ],
@@ -195,6 +195,20 @@ def parameter_option(name, id, type, parameter, multi = False):
             value=value
         )
     else:
+        columns = filter_column(type[id]['is_numeric'], columns)
+        # if type[id]['is_numeric']:
+        #     filtered_columns = []
+        #     for col in columns:
+        #         if collection.temp.dtypes[col] != 'object':
+        #             filtered_columns.append(col)
+        #         else:
+        #                 try:
+        #                     x = float(collection.temp[col].iloc[0])
+        #                     y = float(collection.temp[col].iloc[-1])
+        #                     filtered_columns.append(col)
+        #                 except ValueError:
+        #                     print('non-numeric column')
+        #     columns = filtered_columns
         value = None
         for col in columns:
             temp = col
@@ -318,10 +332,11 @@ def expression_box_markup(id):
         ], )
 
 def operand_container_markup(type, id):
+    filtered_col = filter_column(True, collection.temp.columns)
     if type == 'dropdown':
         return dbc.Select(
             id=f'operand-{id}',
-            options=[{"label": i, "value": i} for i in collection.temp.columns],
+            options=[{"label": i, "value": i} for i in filtered_col],
         )
     elif type == 'number':
         return dbc.Input(
@@ -370,3 +385,18 @@ Suggestion: *__{suggestion}__*
 ''')
 
 
+def filter_column(is_numeric, columns):
+    if is_numeric:
+        filtered_columns = []
+        for col in columns:
+            if collection.temp.dtypes[col] != 'object':
+                filtered_columns.append(col)
+            else:
+                try:
+                    x = float(collection.temp[col].iloc[0])
+                    y = float(collection.temp[col].iloc[-1])
+                    filtered_columns.append(col)
+                except ValueError:
+                    print('non-numeric column')
+        return filtered_columns
+    return columns

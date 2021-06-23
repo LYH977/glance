@@ -445,7 +445,7 @@ def register_update_equation(app):
         operation2 = f'{operator2} {operand2}' if operator2 != '' and operand2 != '' else '' # +B/-B
         operation3 = f'{operator3} {operand3}'  if operator3 != '' and operand3 != '' else ''# +C/-C
         equation = f'{operation1} {operation2} {operation3}'
-        return '(Equation will appear here)' if not equation or equation.isspace() else equation
+        return '(Equation)' if not equation or equation.isspace() else equation
 
 
 
@@ -484,7 +484,7 @@ def register_update_new_column(app):
                     'icon': 'danger',
                     'header': 'DANGER'
                 }
-                return dash.no_update, dash.no_update,
+                return dash.no_update, dash.no_update, toast
             if eq == '(Equation will appear here)':
                 toast = {
                     'children': 'No operator/operand selected',
@@ -513,7 +513,7 @@ def register_update_new_column(app):
                     'name': name,
                     'equation': eq
                 })
-                data = collection.temp.head(5).to_dict('records')
+                data = collection.temp.sample(n = 5).to_dict('records')
                 columns = [{'name': i, 'id': i} for i in collection.temp.columns]
                 toast = {
                     'children': f'{name} is successfully added.',
@@ -631,15 +631,7 @@ def register_clear_popup_value(app):
         else:
             input_type = get_ctx_type(ctx)
             # input_value = get_ctx_value(ctx)
-        # result = {
-        #     'name': dash.no_update,
-        #     'op0': dash.no_update,
-        #     'op1': dash.no_update,
-        #     'op2': dash.no_update,
-        #     'or0': dash.no_update,
-        #     'or1': dash.no_update,
-        #     'or2': dash.no_update,
-        # }
+
         if input_type == "confirm-new-col" or input_type == "reset-new-col":
             return '', None, None, None, None, None, None
         elif input_type == "exp-undo-0" :
