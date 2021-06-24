@@ -30,9 +30,15 @@ def popover_children_markup(create_clicks, type):
                     dbc.Col(live_mode_markup(create_clicks)),
                     dbc.Col(html.Div([
                         download_csv_btn_markup(create_clicks),
+                        html.Div(
+                            [
                         generate_btn_markup(create_clicks),
                         download_mp4_btn_markup(create_clicks),
                         enable_generate_markup(create_clicks),
+                            ],
+                            id={'type': 'export-place', 'index': create_clicks},
+                        ),
+
                     ], className='flex-col')),
                 ], align='center'),
 

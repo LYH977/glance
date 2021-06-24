@@ -384,7 +384,7 @@ def register_update_live_data(app):
                 fig2['layout']['coloraxis2'] = secondary['coloraxis']
                 fig2 = update_legend_theme(legend, fig2)
                 fig2['layout']['coloraxis']['colorbar']['y'] = 0.496
-                fig2['layout']['coloraxis']['colorbar']['len'] = 0.505
+                fig2['layout']['coloraxis']['colorbar']['len'] = 0.4
                 fig2['layout']['coloraxis']['colorbar']['title']['text'] = fig2['layout']['coloraxis']['colorbar']['title']['text'] + '(1)'
                 merged = merge_frames(fig2['frames'], secondary['frames'])
                 fig2['frames'] = merged['frames']
@@ -691,7 +691,7 @@ def register_handle_export_btn_click(app):
         ],
         prevent_initial_call=True
     )
-    def handle_export_btn_click(btn_click, enable,   disabled):
+    def handle_export_btn_click(btn_click, enable,  disabled):
         ctx = dash.callback_context
         if not ctx.triggered:
             raise PreventUpdate
@@ -936,6 +936,17 @@ def register_update_secondary_action_click(app):
 
 # ############################################################################################################################################
 
+def register_update_export_place(app):
+    @app.callback(
+        Output({'type': 'export-place', 'index': MATCH}, 'hidden'),
+        Input({'type': 'secondary-mode', 'index': MATCH}, 'data'),
+        prevent_initial_call=True
+    )
+    def toggle_export_place(secondary):
+        return secondary
+
+# ############################################################################################################################################
+
 
 def register_update_secondary_frames(app):
     @app.callback(
@@ -982,8 +993,8 @@ def register_update_secondary_frames(app):
                     'frames': figure['frames'],
                     'coloraxis': figure['layout']['coloraxis']
                 }
-                secondary_data['coloraxis']['colorbar']['y'] = 0.01
-                secondary_data['coloraxis']['colorbar']['len'] = 0.495
+                secondary_data['coloraxis']['colorbar']['y'] = 0.05
+                secondary_data['coloraxis']['colorbar']['len'] = 0.4
                 secondary_data['coloraxis']['colorbar']['title']['text'] = \
                 secondary_data['coloraxis']['colorbar']['title']['text'] + '(2)'
 

@@ -29,7 +29,7 @@ def export_mp4(fig, filename, backup):
         fig2 = go.Figure(data=export_data, layout=fig['layout'])
 
         fig2.layout.title.text = fig['frames'][i]['name']
-        img_bytes = fig2.to_image(format="png", scale=4)
+        img_bytes = fig2.to_image(format="png", scale=2)
         images.append(img_bytes)
 
 

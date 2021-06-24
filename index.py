@@ -50,7 +50,7 @@ def display_page(pathname):
 
 if __name__ == '__main__':
     app.run_server(
-        debug=True,
+        debug=False,
         dev_tools_hot_reload = False,
-        host='192.168.0.123'
+        # host='192.168.0.123'
     )
