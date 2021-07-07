@@ -10,10 +10,7 @@ from celery import Celery
 import json
 import pandas as pd
 import numpy as np
-import plotly.graph_objects as go
-import random
 
-import cv2
 
 from utils.constant import FRAME, TIME, NOTIFICATION_PARAM, TAG, FIELD, SCATTER_MAP, SCATTER_MAP_CONSTANT, \
     NAME, LATITUDE, LONGITUDE, MAXIMUM, MINIMUM, BAR_CHART_RACE, DENSITY, BAR_CHART_RACE_CONSTANT, \

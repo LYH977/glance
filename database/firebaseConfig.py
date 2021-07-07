@@ -3,13 +3,13 @@ import os
 
 
 firebaseConfig = {
-  'apiKey': os.environ['FB_APIKEY'],
-  'authDomain': os.environ['FB_AUTHDOMAIN'],
-  'databaseURL': os.environ['FB_DBURL'],
-  'projectId': os.environ['FB_PID'],
-  'storageBucket': os.environ['FB_STORAGEBUCKET'],
-  'messagingSenderId': os.environ['FB_MSGSID'],
-  'appId': os.environ['FB_APPID']
+  'apiKey': os.environ['FB_APIKEY'],          #AIzaSyDH5k2kKDRA1hDs-nO4cjpJt9mPQT57qGI
+  'authDomain': os.environ['FB_AUTHDOMAIN'],  #glance-4685b.firebaseapp.com
+  'databaseURL': os.environ['FB_DBURL'],      #https://glance-4685b-default-rtdb.firebaseio.com
+  'projectId': os.environ['FB_PID'],          #glance-4685b
+  'storageBucket': os.environ['FB_STORAGEBUCKET'],  #glance-4685b.appspot.com
+  'messagingSenderId': os.environ['FB_MSGSID'],   #890425994643
+  'appId': os.environ['FB_APPID']                 #1:890425994643:web:c11540eab9f1a9339fcc66
 }
 
 firebase=pyrebase.initialize_app(firebaseConfig)

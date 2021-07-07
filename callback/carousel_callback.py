@@ -36,22 +36,10 @@ def register_display_image(app):
             new_max = len(collection.img_container[input_index])
             val = new_max - 1
         imgsrc =  collection.img_container[input_index][val]
-        # img = html.Img(src=imgsrc, style={ 'height':300, 'width':300 })
-        # img = html.Img(src="https://firebasestorage.googleapis.com/v0/b/glance-4685b.appspot.com/o/images%2Ftest.jpg?alt=media")
         return imgsrc
 
 #############################################################################################################################################
 
-
-# update slider according to interval
-# def register_ca_update_slider(app):
-#     @app.callback(
-#         Output({'type':'ca-anim-slider', 'index': MATCH}, 'value'),
-#         [Input({'type':'ca-interval', 'index': MATCH}, 'n_intervals')],
-#         State({'type':'ca-is-animating', 'index': MATCH}, 'data')
-#     )
-#     def update_ca_slider(value,animate):
-#         return value if animate is True else dash.no_update
 
 def register_ca_update_slider(app):
     @app.callback(
@@ -138,13 +126,10 @@ def register_update_ca_playing_status(app):
         maxValue = df_date.shape[0] - 1
         if input_type== 'ca-anim-slider': #input from slider
             return False if playing is True and s_value != interval or s_value == maxValue else dash.no_update
-                # df_date[s_value]
         elif  input_type== 'ca-play-btn':#input from play btn
             return not playing
-                # dash.no_update
         elif  input_type== 'ca-live-mode':#input from play btn
             return False if live is True else dash.no_update
-                # dash.no_update
         else:
             raise PreventUpdate
 #############################################################################################################################################
@@ -251,7 +236,6 @@ def register_ca_update_live_data(app):
                         )
                     )
 
-                # fig = create_figure(collection.data[input_index], param, ftype)
                 return last_nano
 
             else:

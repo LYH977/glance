@@ -1,121 +1,196 @@
-const express = require('express')
-const cors = require('cors')
-const Influx = require('influx')
+const express = require("express");
+const cors = require("cors");
+const Influx = require("influx");
 
-require('dotenv').config()
+require("dotenv").config();
 
-const app = express()
-const port = process.env.PORT || 3000
+const app = express();
+const port = process.env.PORT || 3000;
 
-app.use(cors())
-app.use(express.json())
+app.use(cors());
+app.use(express.json());
 
-const dataRouter = require('./routes/data')
+const dataRouter = require("./routes/data");
 
-app.use('/data', dataRouter)
+app.use("/data", dataRouter);
 
-app.listen(port, ()=>{
-    console.log(`Server statred onb port ${port}` )
-})
+app.listen(port, () => {
+  console.log(`Server statred onb port ${port}`);
+});
 
-measurement = 'live'
-year = 1977
+urban = [
+  {
+    year: 2001,
+    link: "https://firebasestorage.googleapis.com/v0/b/glance-4685b.appspot.com/o/images%2F2001.PNG?alt=media&token=099696a5-2dab-4d67-a6fe-84edfa4ae0c4",
+  },
+  {
+    year: 2002,
+    link: "https://firebasestorage.googleapis.com/v0/b/glance-4685b.appspot.com/o/images%2F2002.PNG?alt=media&token=d3003419-8992-458c-a76c-1cbf8507755e",
+  },
+  {
+    year: 2003,
+    link: "https://firebasestorage.googleapis.com/v0/b/glance-4685b.appspot.com/o/images%2F2003.PNG?alt=media&token=ce7058db-22b9-4e30-95d6-c2e492d192d9",
+  },
+  {
+    year: 2004,
+    link: "https://firebasestorage.googleapis.com/v0/b/glance-4685b.appspot.com/o/images%2F2004.PNG?alt=media&token=382de0cf-ab27-4ccf-8187-7c7dc08f22f0",
+  },
+  {
+    year: 2005,
+    link: "https://firebasestorage.googleapis.com/v0/b/glance-4685b.appspot.com/o/images%2F2005.PNG?alt=media&token=852068e7-7e39-4e99-89c5-ce79111c6b8c",
+  },
+  {
+    year: 2006,
+    link: "https://firebasestorage.googleapis.com/v0/b/glance-4685b.appspot.com/o/images%2F2006.PNG?alt=media&token=b5ee8cb7-2d9f-4eaf-adb5-2cef9555fed1",
+  },
+  {
+    year: 2007,
+    link: "https://firebasestorage.googleapis.com/v0/b/glance-4685b.appspot.com/o/images%2F2007.PNG?alt=media&token=636ab487-26a2-4683-b9ca-42f80ac87f47",
+  },
+  {
+    year: 2008,
+    link: "https://firebasestorage.googleapis.com/v0/b/glance-4685b.appspot.com/o/images%2F2008.PNG?alt=media&token=feff7163-256a-49f0-a8a6-b4aafd806c97",
+  },
+  {
+    year: 2009,
+    link: "https://firebasestorage.googleapis.com/v0/b/glance-4685b.appspot.com/o/images%2F2009.PNG?alt=media&token=70ee773e-8876-4d81-abff-be3a82a7cd78",
+  },
+  {
+    year: 2010,
+    link: "https://firebasestorage.googleapis.com/v0/b/glance-4685b.appspot.com/o/images%2F2010.PNG?alt=media&token=35049230-69b0-4075-a316-4a813159bf2c",
+  },
+  {
+    year: 2011,
+    link: "https://firebasestorage.googleapis.com/v0/b/glance-4685b.appspot.com/o/images%2F2011.PNG?alt=media&token=f410d87e-85fc-4675-995a-76f1d8086848",
+  },
+  {
+    year: 2012,
+    link: "https://firebasestorage.googleapis.com/v0/b/glance-4685b.appspot.com/o/images%2F2012.PNG?alt=media&token=6a7331b2-aede-41e2-bf21-f0b2a8ed998f",
+  },
+  {
+    year: 2013,
+    link: "https://firebasestorage.googleapis.com/v0/b/glance-4685b.appspot.com/o/images%2F2013.PNG?alt=media&token=c53decad-4ecf-48ff-8c9c-6669d6225894",
+  },
+  {
+    year: 2014,
+    link: "https://firebasestorage.googleapis.com/v0/b/glance-4685b.appspot.com/o/images%2F2014.PNG?alt=media&token=fb587ea0-ce85-4a7c-a726-508ffa851638",
+  },
+  {
+    year: 2015,
+    link: "https://firebasestorage.googleapis.com/v0/b/glance-4685b.appspot.com/o/images%2F2015.PNG?alt=media&token=bd02699a-4d84-448c-b537-bf4333b9501e",
+  },
+  {
+    year: 2016,
+    link: "https://firebasestorage.googleapis.com/v0/b/glance-4685b.appspot.com/o/images%2F2016.PNG?alt=media&token=300bd820-364c-4f32-8970-3eb25104ed11",
+  },
+  {
+    year: 2017,
+    link: "https://firebasestorage.googleapis.com/v0/b/glance-4685b.appspot.com/o/images%2F2017.PNG?alt=media&token=aa589b04-0b60-4ee4-b587-b4b7c387c18a",
+  },
+  {
+    year: 2018,
+    link: "https://firebasestorage.googleapis.com/v0/b/glance-4685b.appspot.com/o/images%2F2018.PNG?alt=media&token=dab73785-121d-4773-9a4b-869643075f74",
+  },
+];
+
+// // for carousel measaurement
+// const max = 17
+// measurement = 'urban'
+// var count = 0
+// year = urban[count]['year']
+// const influx = new Influx.InfluxDB({
+//     host: 'localhost',
+//     database: 'glance',
+//     schema: [
+//       {
+//         measurement,
+//         fields: {
+//           link: Influx.FieldType.STRING,
+//         },
+//         tags: [ ]
+//       }
+//     ]
+//    })
+
+// function pumpdata(){
+//   if (count > max){
+//     clearInterval(currentInterval)
+//   }
+//   let d = new Date(year++, 0, 1, 0, 0, 0);
+//   let offset = d.getTimezoneOffset() * 60 * 1000;
+//   let timestamp = (d - offset)*1000000
+//   let link = urban[count]['link']
+//   count++
+
+//   influx.writePoints([
+//     {
+//       measurement,
+//       tags: {  },
+//       fields: {  link },
+//       timestamp
+//     }
+//   ]).then(() => {
+//     return influx.query(`
+//       select * from ${measurement}`)
+//   }).then(rows => {
+//     if (count > max){
+//       clearInterval(currentInterval)
+//     }
+//     rows.forEach(row => console.log(`${row.time} `))
+//     console.log('-------------------------------')
+//   })
+// }
+// currentInterval = setInterval(pumpdata, 2000)
+
+// for Thunderstorm measaurement
+measurement = "Thunderstorm";
+year = 2015;
 const influx = new Influx.InfluxDB({
-    host: 'localhost',
-    database: 'glance',
-    schema: [
-      {
-        measurement,
-        fields: {
-          Magnitude: Influx.FieldType.FLOAT,
-        },
-        tags: ['Latitude', 'Longitude' ]
-      }
-    ]
-   })
-
-function generateRandomNumber(min, max, decimal) {
-  num = Math.random() * (max - min) + min;
-  return Math.round(num * Math.pow(10,decimal)) / Math.pow(10,decimal)
-
-};
-
-function pumpdata(){
-  let d = new Date(year++, 0, 1, 0, 0, 0);
-  let offset = d.getTimezoneOffset() * 60 * 1000;
-  let timestamp = (d - offset)*1000000
-  let Latitude = generateRandomNumber(-85, 85, 3)
-  let Longitude = generateRandomNumber(-180, 180, 3)
-  let Magnitude = generateRandomNumber(0, 10, 2)
-
-
-  influx.writePoints([
+  host: "localhost",
+  database: "glance",
+  schema: [
     {
       measurement,
-      tags: { Latitude,  Longitude },
-      fields: {  Magnitude },
-      timestamp
-    }
-  ]).then(() => {
-    return influx.query(`
-      select * from ${measurement}`)
-  }).then(rows => {
-    rows.forEach(row => console.log(`${row.time} `))
-    console.log('-------------------------------')
-  })
+      fields: {
+        Mag: Influx.FieldType.FLOAT,
+      },
+      tags: ["Lat", "Long"],
+    },
+  ],
+});
+function generateRandomNumber(min, max, decimal) {
+  num = Math.random() * (max - min) + min;
+  return Math.round(num * Math.pow(10, decimal)) / Math.pow(10, decimal);
 }
 
-setInterval(pumpdata, 2000)
+function pumpdata() {
+  var i = 0;
+  objarray = [];
+  let d = new Date(year++, 0, 1, 0, 0, 0);
+  let offset = d.getTimezoneOffset() * 60 * 1000;
+  let timestamp = (d - offset) * 1000000;
 
+  for (i = 0; i < 20; i++) {
+    let Lat = generateRandomNumber(-70, 70, 3);
+    let Long = generateRandomNumber(-170, 170, 3);
+    let Mag = generateRandomNumber(0, 10, 2);
+    objarray.push({
+      measurement,
+      tags: { Lat, Long },
+      fields: { Mag },
+      timestamp,
+    });
+  }
 
-// //connection
-// const {InfluxDB} = require('@influxdata/influxdb-client')
-// const token = process.env.TOKEN
-// const org = 'glanceapp2020@gmail.com'
-// const bucket = "glanceapp2020's Bucket"
-// const client = new InfluxDB({url: 'https://eu-central-1-1.aws.cloud2.influxdata.com', token: token})
-
-// //write api x
-// const {Point} = require('@influxdata/influxdb-client')
-// const writeApi = client.getWriteApi(org, bucket)
-// writeApi.useDefaultTags({host: 'host1'})
-// const point = new Point('testing')
-//   .tag('lat',12)
-//   .tag('long', 34)
-//   .floatField('used_percent', 100)
-//   .booleanField('booo', true)
-// writeApi.writePoint(point)
-// writeApi
-//     .close()
-//     .then(() => {
-//         console.log('FINISHED')
-//     })
-//     .catch(e => {
-//         console.error(e)
-//         console.log('\\nFinished ERROR')
-//     })
-
-// //read api
-// const queryApi = client.getQueryApi(org)
-// const query =
-// `from(bucket: "${bucket}") |>
-// range(start: -1h) |>
-// filter(fn: (r) => r._measurement == "testing")   |>
-// pivot( rowKey:["_time"], columnKey: ["_field"],  valueColumn: "_value")`
-// queryApi.queryRows(query, {
-//   next(row, tableMeta) {
-//     const o = tableMeta.toObject(row)
-//     console.log(o)
-//     console.log('---end--')
-//     // console.log(
-//     //   `${o._time} ${o._measurement} in '${o.location}' (${o.example}): ${o._field}=${o._value}`
-//     // )
-//   },
-//   error(error) {
-//     console.error(error)
-//     console.log('\\nFinished ERROR')
-//   },
-//   complete() {
-//     console.log('\\nFinished SUCCESS')
-//   },
-// })
+  influx
+    .writePoints(objarray)
+    .then(() => {
+      return influx.query(`
+      select * from ${measurement}`);
+    })
+    .then((rows) => {
+      rows.forEach((row) => console.log(`${row.time} `));
+      console.log("-------------------------------");
+    });
+}
+setInterval(pumpdata, 2000);

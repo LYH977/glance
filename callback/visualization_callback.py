@@ -24,7 +24,6 @@ from utils.constant import SCATTER_MAP, DENSITY, CHOROPLETH, BAR_CHART_RACE, \
 
 MAPBOX_GEOCODER = MapBox(os.environ['MAP_TOKEN'])
 
-current_ind = '0'
 
 def handleOutOfRangeNotif(celery, slider):
     length = len(celery)
@@ -224,22 +223,14 @@ def register_update_playing_status(app):
             input_index = get_ctx_index(ctx)
 
         if input_type == 'anim-slider':  # input from slider
-            # df_frame = collection.data[input_index][FRAME].unique()
-            # maxValue = df_frame.shape[0] - 1
-            # label = df_frame[s_value]
-
             maxValue = len(buffer['frames']) -1
-            # label = buffer['frames'][s_value]['name']
             return False if playing is True and s_value != interval or s_value == maxValue else dash.no_update
-                # label
 
         elif input_type == 'play-btn':  # input from play btn
             return not playing
-                # dash.no_update
 
         elif input_type == 'live-mode':  # input from play btn
             return False if live is True else dash.no_update
-                # dash.no_update
 
         raise PreventUpdate
 
@@ -337,7 +328,6 @@ def register_update_live_data(app):
         else:
             input_type = get_ctx_type(ctx)
             input_index = get_ctx_index(ctx)
-        # print('marker:', marker)
         if input_type =='live-interval' and collection.live_processing[input_index] is False:
             collection.live_processing[input_index] = True
             result = select_query(dbname, 'where time >{}'.format(ts))
@@ -766,7 +756,6 @@ def register_update_marker_namelist(app):
         Output({'type': 'marker-namelist', 'index': MATCH}, 'children'),
         Input({'type': 'marker-search-name', 'index': MATCH}, 'value'),
         [
-            # State({'type': 'marker-data', 'index': MATCH}, 'data'),
             State({'type': 'my-index', 'index': MATCH}, 'data'),
         ],
 
@@ -778,8 +767,6 @@ def register_update_marker_namelist(app):
         try:
             results = MAPBOX_GEOCODER.geocode(query=value, exactly_one=False, )
             namelist = []
-            # if len(marker['lat']) !=0: # if marker is specified
-            #     namelist.append(namelist_marked_item_markup(marker['name'],marker['coordinate']))
             for result,id in zip(results, range(0, len(results))):
                 raw = result.raw
                 lat = raw['geometry']['coordinates'][1]

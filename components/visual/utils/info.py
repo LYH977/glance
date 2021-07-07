@@ -101,7 +101,8 @@ def info_markup(create_clicks, name1, type1 ):
                         id={'type': 'secondary-visual-btn', 'index': create_clicks},
                         n_clicks=0,
                         hidden= hiddenMapbox
-                    )
+
+    )
                 ],
                 id={'type': 'legacy-popover', 'index': create_clicks},
                 target=f"popover-badge-{create_clicks}",
